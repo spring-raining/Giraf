@@ -1,0 +1,143 @@
+body {
+    min-width: 900px;
+    max-width: none !important;
+}
+
+.hidden {
+    display: none !important;
+}
+
+span.glyphicon-cog {
+    /*font-size: 1.1em;*/
+}
+
+.navbar {
+    border-width: 0;
+}
+
+#logo {
+    background: url(logo.png) no-repeat left center;
+    background-size: 50px;
+    width: 50px;
+    height: 50px;
+    padding-left: 60px;
+}
+
+.jumbotron {
+    margin: 0;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.jumbotron:nth-of-type(odd) {
+    background-color: #ddd;
+}
+
+#video_wrapper {
+    width: 640px;
+    position: relative;
+    margin: 0 auto;
+}
+
+#video {
+    width: 640px;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+#drop_here {
+    width: 620px;
+    height: 300px;
+    padding: 50px;
+    margin: 10px;
+    display: block;
+    position: absolute;
+    top: 0;
+    text-align: center;
+
+    border: 4px dashed #fff;
+    border-radius: 40px;
+}
+
+#drop_here.active {
+    background-color: rgba(92, 184, 92, 0.3);
+    border: 4px dashed #5cb85c;
+}
+
+.thumbnail {
+    width: 160px;
+    margin: 0;
+    display: inline;
+}
+
+#thumbnail_wrapper .thumbnail {
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#timeline_wrapper {
+    white-space: nowrap;
+    overflow-x: scroll;
+}
+
+#timeline_holder {
+    display: inline;
+}
+
+#timeline_skeleton {
+    display: none;
+}
+
+#add_timeline {
+    display: table-cell;
+    vertical-align: 55px;
+}
+
+.panel {
+    width: 340px;
+    display: inline-block;
+    margin-right: 4px;
+}
+
+.panel-heading {
+    cursor: move;
+    height: 38px;
+    padding: 7px;
+}
+
+.panel-body {
+    padding: 7px;
+}
+
+.loading {
+}
+
+#jumbo_result {
+    padding-top: 60px;
+}
+
+#jumbo_result p {
+    margin-top: 15px;
+}
+
+#result_image {
+    box-shadow: 0 6px 14px rgba(0,0,0,0.6);
+}
+
+.dropdown-menu {
+    text-align: left;
+}
+
+.dropdown-menu li {
+    cursor: pointer;
+}
+
+#modal_crop_img {
+    width: 558px;
+}
+
+#modal_crop_top {
+    white-space: nowrap;
+}

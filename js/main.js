@@ -50,6 +50,7 @@
         var makeFinalize, renderThumbnail, thumbnails, toggleVideoPlay;
         thumbnails = new Thumbnails;
         settings.disable(false);
+        $("#capture").removeClass("disabled");
         renderThumbnail = function() {
           if (!rendering) {
             return thumbnails.update(settings);
@@ -104,7 +105,7 @@
             return timelines.updateMakeButton();
           };
         })(this);
-        return $("#make").click(function() {
+        $("#make").click(function() {
           var arr, canvas, context, cropCoord, deferred, frameNumber, gif, ratio, resultHeight, resultWidth, sourceHeight, sourceWidth, video;
           video = $video.get(0);
           cropCoord = settings.getCropCoord();
@@ -128,7 +129,7 @@
             var img;
             img = $("#result_image").get(0);
             img.src = URL.createObjectURL(blob);
-            $("#result_status").text("Rendering finished : Filesize " + (blob.size > 1000000 ? "" + ((blob.size / 1000000).toFixed(2)) + "MB" : "" + ((blob.size / 1000).toFixed(2)) + "KB"));
+            $("#result_status").text("Rendering finished : Filesize " + (blob.size >= 1000000 ? "" + ((blob.size / 1000000).toFixed(2)) + "MB" : "" + ((blob.size / 1000).toFixed(2)) + "KB"));
             return makeFinalize();
           });
           video.controls = false;
@@ -192,6 +193,29 @@
             return video.currentTime = arr[0];
           });
           return deferred.resolve();
+        });
+        return $("#capture").click(function() {
+          var canvas, context, cropCoord, ratio, resultHeight, resultWidth, sourceHeight, sourceWidth, video;
+          video = $video.get(0);
+          cropCoord = settings.getCropCoord();
+          sourceWidth = settings.isCrop() ? cropCoord.w : video.videoWidth;
+          sourceHeight = settings.isCrop() ? cropCoord.h : video.videoHeight;
+          ratio = (settings.getGifSize(sourceWidth)) / sourceWidth;
+          resultWidth = settings.getGifSize(sourceWidth);
+          resultHeight = sourceHeight * ratio;
+          canvas = $("<canvas>").get(0);
+          context = canvas.getContext("2d");
+          canvas.width = resultWidth;
+          canvas.height = resultHeight;
+          if (settings.isCrop()) {
+            context.drawImage(video, cropCoord.x, cropCoord.y, cropCoord.w, cropCoord.h, 0, 0, resultWidth, resultHeight);
+          } else {
+            context.drawImage(video, 0, 0, resultWidth, resultHeight);
+          }
+          if (settings.getEffectScript() !== "") {
+            eval(settings.getEffectScript());
+          }
+          return $("#result_image").attr("src", canvas.toDataURL());
         });
       });
     });

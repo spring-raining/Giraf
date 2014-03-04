@@ -92,6 +92,7 @@ $ ->
       # --- video loaded ---
       thumbnails = new Thumbnails
       settings.disable false
+      $("#capture").removeClass "disabled"
 
       #$(".thumbnail").each ->
         #c = $(this).get(0)
@@ -170,7 +171,9 @@ $ ->
         gif.on "finished", (blob) ->
           img = $("#result_image").get(0)
           img.src = URL.createObjectURL blob
-          $("#result_status").text "Rendering finished : Filesize " + if (blob.size > 1000000) then "#{ (blob.size / 1000000).toFixed 2 }MB" else "#{ (blob.size / 1000).toFixed 2 }KB"
+          $("#result_status").text "Rendering finished : Filesize " +
+          if (blob.size >= 1000000) then "#{ (blob.size / 1000000).toFixed 2 }MB"
+          else "#{ (blob.size / 1000).toFixed 2 }KB"
           makeFinalize()
 
         video.controls = false
@@ -229,6 +232,29 @@ $ ->
           video.currentTime = arr[0]
 
         deferred.resolve()
+
+      $("#capture").click ->
+        video = $video.get(0)
+        cropCoord = settings.getCropCoord()
+        sourceWidth = if settings.isCrop() then cropCoord.w else video.videoWidth
+        sourceHeight = if settings.isCrop() then cropCoord.h else video.videoHeight
+        ratio = (settings.getGifSize sourceWidth) / sourceWidth
+        resultWidth = settings.getGifSize sourceWidth
+        resultHeight = sourceHeight * ratio
+
+        canvas = $("<canvas>").get(0)
+        context = canvas.getContext("2d")
+        canvas.width = resultWidth
+        canvas.height = resultHeight
+
+        if settings.isCrop() then context.drawImage video,
+          cropCoord.x, cropCoord.y, cropCoord.w, cropCoord.h, # source
+          0, 0, resultWidth, resultHeight                     # dest
+        else context.drawImage video,
+          0, 0, resultWidth, resultHeight
+        if settings.getEffectScript() isnt ""
+          eval settings.getEffectScript()
+        $("#result_image").attr "src", canvas.toDataURL()
 
 
 class Thumbnails

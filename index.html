@@ -3,6 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="ブラウザ上で動画からgifアニメを作ります。">
+    <meta name="keywords" content="gif,gifアニメ,動画,giraf,anime,animation">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Giraf</title>
 
@@ -23,7 +25,8 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span></a>
                 <ul class="dropdown-menu">
-                    <li class="dropdown-header">Giraf v1.0</li>
+                    <li class="dropdown-header">Giraf v1.1</li>
+                    <li><a href="" data-toggle="modal" data-target="#modal_updateinfo">アップデート情報</a></li>
                     <li><a href="" data-toggle="modal" data-target="#modal_acknowledgement">謝辞</a></li>
                     <li class="divider"></li>
                     <li><a href="http://github.com/spring-raining/Giraf" target="_blank">Github</a></li>
@@ -103,6 +106,9 @@
         </div>
         <button type="button" id="make" class="btn btn-primary disabled">
             <span class="glyphicon glyphicon-film"></span> 作成
+        </button>
+        <button type="button" id="capture" class="btn btn-info disabled">
+            <span class="glyphicon glyphicon-camera"></span> キャプチャ
         </button>
     </div>
 </div>
@@ -220,7 +226,7 @@
 </div>
 
 <!-- 画像を切り抜き -->
-<div class="modal fade" id="modal_crop" tabindex="-1" role="dialog" aria-labelledby="modal_gif_size_label" aria-hidden="true">
+<div class="modal fade" id="modal_crop" tabindex="-1" role="dialog" aria-labelledby="modal_crop_label" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -256,7 +262,7 @@
 </div>
 
 <!-- 謝辞 -->
-<div class="modal fade" id="modal_acknowledgement" tabindex="-1" role="dialog" aria-labelledby="modal_gif_size_label" aria-hidden="true">
+<div class="modal fade" id="modal_acknowledgement" tabindex="-1" role="dialog" aria-labelledby="modal_acknowledgement_label" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -272,6 +278,31 @@
                     <li><a href="http://jqueryui.com/">jQuery UI</a></li>
                     <li><a href="http://deepliquid.com/content/Jcrop.html">Jcrop</a></li>
                 </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- アップデート情報 -->
+<div class="modal fade" id="modal_updateinfo" tabindex="-1" role="dialog" aria-labelledby="modal_updateinfo_label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="modal_updateinfo_label">アップデート情報</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    v1.1 (2014/3/5)
+                    <ul><li>キャプチャ機能追加</li></ul>
+                </p>
+                <p>
+                    v1.0 (2014/2/26)
+                    <ul><li>公開</li></ul>
+                </p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>

@@ -47,7 +47,7 @@
     });
     return $(fileHandler).bind("data_url_prepared", function(event, urls) {
       return (loadVideo(urls[0])).done(function(image_url) {
-        var makeFinalize, renderThumbnail, thumbnails, toggleVideoPlay;
+        var finalize, renderThumbnail, thumbnails, toggleVideoPlay;
         thumbnails = new Thumbnails;
         settings.disable(false);
         $("#capture").removeClass("disabled");
@@ -97,16 +97,17 @@
         $("#refresh").click(function() {
           return renderThumbnail();
         });
-        makeFinalize = (function(_this) {
+        finalize = (function(_this) {
           return function() {
             $video.get(0).controls = true;
             rendering = false;
             settings.disable(false);
-            return timelines.updateMakeButton();
+            timelines.updateMakeButton();
+            return $("#capture").removeClass("disabled");
           };
         })(this);
         $("#make").click(function() {
-          var arr, canvas, context, cropCoord, deferred, frameNumber, gif, ratio, resultHeight, resultWidth, sourceHeight, sourceWidth, video;
+          var arr, canvas, context, cropCoord, deferred, firstTime, frameNumber, gif, ratio, resultHeight, resultWidth, sourceHeight, sourceWidth, video;
           video = $video.get(0);
           cropCoord = settings.getCropCoord();
           sourceWidth = settings.isCrop() ? cropCoord.w : video.videoWidth;
@@ -130,11 +131,12 @@
             img = $("#result_image").get(0);
             img.src = URL.createObjectURL(blob);
             $("#result_status").text("Rendering finished : Filesize " + (blob.size >= 1000000 ? "" + ((blob.size / 1000000).toFixed(2)) + "MB" : "" + ((blob.size / 1000).toFixed(2)) + "KB"));
-            return makeFinalize();
+            return finalize();
           });
           video.controls = false;
           video.pause();
           $("#make").addClass("disabled");
+          $("#capture").addClass("disabled");
           canvas = $("<canvas>").get(0);
           context = canvas.getContext("2d");
           canvas.width = resultWidth;
@@ -143,10 +145,11 @@
           settings.disable(true);
           arr = timelines.getFrameList(settings);
           frameNumber = arr.length;
+          firstTime = arr[0];
           $("#progress_1").css("width", "0");
           $("#progress_2").css("width", "0");
           if (frameNumber < 2) {
-            makeFinalize();
+            finalize();
             return;
           }
           deferred = $.Deferred();
@@ -186,8 +189,13 @@
                   copy: true,
                   delay: 1000.0 / settings.getCaptureFrame() / settings.getGifSpeed()
                 });
-                arr.shift();
-                return video.currentTime = arr[0];
+                if (arr.length === 1) {
+                  arr.shift();
+                  return video.currentTime = firstTime;
+                } else {
+                  arr.shift();
+                  return video.currentTime = arr[0];
+                }
               };
             })(this));
             return video.currentTime = arr[0];

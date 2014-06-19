@@ -25,7 +25,7 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span></a>
                 <ul class="dropdown-menu">
-                    <li class="dropdown-header">Giraf v1.1</li>
+                    <li class="dropdown-header">Giraf v1.11</li>
                     <li><a href="" data-toggle="modal" data-target="#modal_updateinfo">アップデート情報</a></li>
                     <li><a href="" data-toggle="modal" data-target="#modal_acknowledgement">謝辞</a></li>
                     <li class="divider"></li>
@@ -263,7 +263,7 @@
 
 <!-- 謝辞 -->
 <div class="modal fade" id="modal_acknowledgement" tabindex="-1" role="dialog" aria-labelledby="modal_acknowledgement_label" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -288,13 +288,17 @@
 
 <!-- アップデート情報 -->
 <div class="modal fade" id="modal_updateinfo" tabindex="-1" role="dialog" aria-labelledby="modal_updateinfo_label" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title" id="modal_updateinfo_label">アップデート情報</h4>
             </div>
             <div class="modal-body">
+                <p>
+                    v1.11 (2014/6/19)
+                    <ul><li>gif作成時にエラーを起こして停止する問題を修正</li></ul>
+                </p>
                 <p>
                     v1.1 (2014/3/5)
                     <ul><li>キャプチャ機能追加</li></ul>
@@ -311,8 +315,8 @@
     </div>
 </div>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/jquery.Jcrop.js"></script>
 <script src="js/gif.js"></script>

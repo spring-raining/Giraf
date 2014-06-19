@@ -142,11 +142,12 @@ $ ->
       $("#refresh").click ->
         renderThumbnail()
 
-      makeFinalize = =>
+      finalize = =>
         $video.get(0).controls = true
         rendering = false
         settings.disable false
         timelines.updateMakeButton()
+        $("#capture").removeClass "disabled"
 
       $("#make").click ->
         video = $video.get(0)
@@ -174,11 +175,12 @@ $ ->
           $("#result_status").text "Rendering finished : Filesize " +
           if (blob.size >= 1000000) then "#{ (blob.size / 1000000).toFixed 2 }MB"
           else "#{ (blob.size / 1000).toFixed 2 }KB"
-          makeFinalize()
+          finalize()
 
         video.controls = false
         video.pause()
         $("#make").addClass "disabled"
+        $("#capture").addClass "disabled"
 
         canvas = $("<canvas>").get(0)
         context = canvas.getContext("2d")
@@ -191,11 +193,12 @@ $ ->
 
         arr = timelines.getFrameList settings
         frameNumber = arr.length
+        firstTime = arr[0]
         $("#progress_1").css "width", "0"
         $("#progress_2").css "width", "0"
 
         if frameNumber < 2
-          makeFinalize()
+          finalize()
           return
 
         deferred = $.Deferred()
@@ -227,8 +230,12 @@ $ ->
             gif.addFrame canvas,
                 copy: true
                 delay: 1000.0 / settings.getCaptureFrame() / settings.getGifSpeed()
-            arr.shift()
-            video.currentTime = arr[0]
+            if arr.length is 1
+              arr.shift()
+              video.currentTime = firstTime
+            else
+              arr.shift()
+              video.currentTime = arr[0]
           video.currentTime = arr[0]
 
         deferred.resolve()

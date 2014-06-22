@@ -437,7 +437,7 @@ class Timeline
 
 
 class Settings
-  captureFrameValues = [1, 2, 3, 4, 8, 12, 24, 30, 60]
+  captureFrameValues = [1, 2, 3, 4, 6, 8, 12, 15, 24, 30]
   gifSpeedValues = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 5]
   gifSizeValues = [40, 80, 120, 240, 320, 480, 640, 720]
 
@@ -463,6 +463,7 @@ class Settings
     @$gifSize.val @gifSizeVal
 
     @initJcrop()
+    @initCodeMirror()
 
     ###@$captureFrame.bind "change", =>
       if "change" in @event then @event["change"]()
@@ -498,15 +499,15 @@ class Settings
       $("#modal_gif_speed").modal "hide"
 
     # modal_effect
-    $("#modal_effect").on "hidden.bs.modal", =>
-      $("#form_effect").val @effectScript
+    $("#modal_effect").on "hide.bs.modal", =>
+      @codeMirrorApi.setValue @effectScript
 
     $("#modal_effect_save").bind "click", =>
-      @effectScript = $("#form_effect").val()
+      @effectScript = @codeMirrorApi.getValue()
       $("#modal_effect").modal "hide"
 
-    $(".modal-effect-preset").bind "click", ->
-      $("#form_effect").val preset[parseInt ($(@).attr "data-value"), 10]
+    $(".modal-effect-preset").bind "click", self:@, (event) ->
+      event.data.self.codeMirrorApi.setValue preset[parseInt ($(@).attr "data-value"), 10]
 
     # modal_crop
     $("#modal_crop").on "shown.bs.modal", =>
@@ -555,6 +556,15 @@ class Settings
     else
       @jcropApi.release()
       @jcropApi.disable()
+
+  initCodeMirror: ->
+    @codeMirrorApi = CodeMirror $("#form_effect_holder").get(0),
+      mode: "javascript"
+      indentUnit: 4
+      lineNumbers: true
+      styleActiveLine: true
+      matchBrackets: true
+      autoCloseBrackets: true
 
   bind: (type, fn) ->
     @event[type] = fn

@@ -141,3 +141,14 @@ span.glyphicon-cog {
 #modal_crop_top {
     white-space: nowrap;
 }
+
+
+/*
+ *  CodeMirror
+ */
+.CodeMirror {
+    width: 100%;
+    border: 1px solid #ccc;
+    font-family: Osaka-mono, "Osaka-等幅", "ＭＳ ゴシック", monospace;
+    font-size: 14px;
+}

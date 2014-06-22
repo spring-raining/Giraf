@@ -10,6 +10,7 @@
 
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/jquery.Jcrop.min.css">
+    <link rel="stylesheet" href="css/codemirror.css">
     <link rel="stylesheet" href="css/main.css">
     <link rel="icon" type="image/vnd.microsoft.icon" href="favicon.ico">
 
@@ -25,7 +26,7 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span></a>
                 <ul class="dropdown-menu">
-                    <li class="dropdown-header">Giraf v1.11</li>
+                    <li class="dropdown-header">Giraf v1.2</li>
                     <li><a href="" data-toggle="modal" data-target="#modal_updateinfo">アップデート情報</a></li>
                     <li><a href="" data-toggle="modal" data-target="#modal_acknowledgement">謝辞</a></li>
                     <li class="divider"></li>
@@ -215,7 +216,7 @@
                         context:出力画像に用いるcanvas要素のコンテキスト / resultWidth:出力画像の幅 / resultHeight:出力画像の高さ<br>
                         信頼出来るスクリプト以外は実行しないでください。
                     </span>
-                    <textarea name="effect" id="form_effect" class="form-control" rows="14"></textarea>
+                    <div id="form_effect_holder"></div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -277,6 +278,7 @@
                     <li><a href="http://jquery.com/">jQuery</a></li>
                     <li><a href="http://jqueryui.com/">jQuery UI</a></li>
                     <li><a href="http://deepliquid.com/content/Jcrop.html">Jcrop</a></li>
+                    <li><a href="http://codemirror.net/">CodeMirror</a></li>
                 </ul>
             </div>
             <div class="modal-footer">
@@ -295,6 +297,10 @@
                 <h4 class="modal-title" id="modal_updateinfo_label">アップデート情報</h4>
             </div>
             <div class="modal-body">
+                <p>
+                    v1.2 (2014/6/22)
+                    <ul><li>「効果を追加」のエディタを改善</li></ul>
+                </p>
                 <p>
                     v1.11 (2014/6/19)
                     <ul><li>gif作成時にエラーを起こして停止する問題を修正</li></ul>
@@ -318,7 +324,12 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
-<script src="js/jquery.Jcrop.js"></script>
+<script src="js/jquery.Jcrop.min.js"></script>
+<script src="js/lib/codemirror.min.js"></script>
+<script src="js/mode/javascript/javascript.js"></script>
+<script src="js/addon/edit/closebrackets.js"></script>
+<script src="js/addon/edit/matchbrackets.js"></script>
+<script src="js/addon/selection/active-line.js"></script>
 <script src="js/gif.js"></script>
 <script src="js/main.js"></script>
 

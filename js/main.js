@@ -502,7 +502,7 @@
   Settings = (function() {
     var captureFrameValues, gifSizeValues, gifSpeedValues;
 
-    captureFrameValues = [1, 2, 3, 4, 8, 12, 24, 30, 60];
+    captureFrameValues = [1, 2, 3, 4, 6, 8, 12, 15, 24, 30];
 
     gifSpeedValues = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 5];
 
@@ -536,6 +536,7 @@
       this.$gifSpeed.val(this.gifSpeedVal);
       this.$gifSize.val(this.gifSizeVal);
       this.initJcrop();
+      this.initCodeMirror();
 
       /*@$captureFrame.bind "change", =>
         if "change" in @event then @event["change"]()
@@ -589,19 +590,21 @@
           return $("#modal_gif_speed").modal("hide");
         };
       })(this));
-      $("#modal_effect").on("hidden.bs.modal", (function(_this) {
+      $("#modal_effect").on("hide.bs.modal", (function(_this) {
         return function() {
-          return $("#form_effect").val(_this.effectScript);
+          return _this.codeMirrorApi.setValue(_this.effectScript);
         };
       })(this));
       $("#modal_effect_save").bind("click", (function(_this) {
         return function() {
-          _this.effectScript = $("#form_effect").val();
+          _this.effectScript = _this.codeMirrorApi.getValue();
           return $("#modal_effect").modal("hide");
         };
       })(this));
-      $(".modal-effect-preset").bind("click", function() {
-        return $("#form_effect").val(preset[parseInt($(this).attr("data-value"), 10)]);
+      $(".modal-effect-preset").bind("click", {
+        self: this
+      }, function(event) {
+        return event.data.self.codeMirrorApi.setValue(preset[parseInt($(this).attr("data-value"), 10)]);
       });
       $("#modal_crop").on("shown.bs.modal", (function(_this) {
         return function() {
@@ -672,6 +675,17 @@
         this.jcropApi.release();
         return this.jcropApi.disable();
       }
+    };
+
+    Settings.prototype.initCodeMirror = function() {
+      return this.codeMirrorApi = CodeMirror($("#form_effect_holder").get(0), {
+        mode: "javascript",
+        indentUnit: 4,
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        autoCloseBrackets: true
+      });
     };
 
     Settings.prototype.bind = function(type, fn) {

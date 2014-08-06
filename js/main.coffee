@@ -1,7 +1,6 @@
 $video = $("#video")
 $backVideo = $("<video>")
-#canvas = $("#tmp_canvas").get(0)
-#ctx = canvas.getContext("2d")
+gifjsWorkerDist = "js/gifjs/dist/gif.worker.js"
 
 preset = ["""
 var imageData = context.getImageData(0, 0, resultWidth, resultHeight);
@@ -160,7 +159,7 @@ $ ->
 
         gif = new GIF
           workers: 4
-          workerScript: "js/gif.worker.js"
+          workerScript: gifjsWorkerDist
           quality: 10
           width: resultWidth
           height: resultHeight

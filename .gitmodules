@@ -1,0 +1,3 @@
+[submodule "js/gifjs"]
+	path = js/gifjs
+	url = git@github.com:spring-raining/gif.js.git

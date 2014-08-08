@@ -122,7 +122,10 @@
             workerScript: gifjsWorkerDist,
             quality: 10,
             width: resultWidth,
-            height: resultHeight
+            height: resultHeight,
+            dither: false,
+            pattern: true,
+            globalPalette: true
           });
           gif.on("progress", function(p) {
             $("#progress_2").css("width", p * 100 + "%");

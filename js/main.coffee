@@ -163,6 +163,9 @@ $ ->
           quality: 10
           width: resultWidth
           height: resultHeight
+          dither: false
+          pattern: true
+          globalPalette: true
 
         gif.on "progress", (p) ->
           $("#progress_2").css "width", p*100 + "%"

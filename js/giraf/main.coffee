@@ -58,6 +58,9 @@ $ ->
     $file_input: $("#form_video")
   settings = new Settings
 
+  footage = new Giraf.Footage("Yo");
+  do footage.hoge
+
   $(fileHandler)
   .on 'enter', ->
     $('#drop_here').addClass 'active'

@@ -2,27 +2,6 @@
 (function() {
   var $backVideo, $video, FileHandler, Settings, Thumbnail, Thumbnails, Timeline, Timelines, gifjsWorkerDist, preset;
 
-  window.Giraf = (function() {
-    function Giraf() {}
-
-    return Giraf;
-
-  })();
-
-  window.Giraf.Footage = (function() {
-    function Footage(aaa) {
-      this.aaa = aaa;
-      console.log("footage const");
-    }
-
-    Footage.prototype.hoge = function() {
-      return console.log("hoge: " + this.aaa);
-    };
-
-    return Footage;
-
-  })();
-
   $video = $("#video");
 
   $backVideo = $("<video>");

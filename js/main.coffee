@@ -1,3 +1,9 @@
+Giraf = {} unless Giraf?
+Giraf.Main = {} unless Giraf.Main?
+
+
+# js/giraf/main.coffee
+
 $video = $("#video")
 $backVideo = $("<video>")
 gifjsWorkerDist = "js/gifjs/dist/gif.worker.js"

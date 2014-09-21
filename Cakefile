@@ -6,6 +6,12 @@ ignoreDirs = [
   "lib"
 ]
 
+tailScript =
+"""
+app = new Giraf.App
+app.run()
+"""
+
 destFile = "js/main"
 
 fs = require "fs"
@@ -134,6 +140,7 @@ build = (watch, callback, {useMapping} = {}) ->
     for filename in enumerateFiles(coffees, jsDir)
       buf = fs.readFileSync filename
       fs.appendFileSync "#{destFile}.coffee", "\n\n# #{filename}\n\n" + buf
+    fs.appendFileSync "#{destFile}.coffee", "\n\n" + tailScript
 
     useMapping ?= false
     if typeof watch is 'function'
@@ -143,6 +150,7 @@ build = (watch, callback, {useMapping} = {}) ->
     options = ['-c', "#{destFile}.coffee"]
     options.unshift '-m' if useMapping
     options.unshift '-w' if watch
+    options.unshift '-b'
     launch 'coffee', options, callback
 
 watchAndBuild = (callback, {useMapping} = {}) ->

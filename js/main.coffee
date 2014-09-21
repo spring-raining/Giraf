@@ -1,233 +1,286 @@
 Giraf = {} unless Giraf?
-Giraf.Main = {} unless Giraf.Main?
+Giraf._base = {} unless Giraf._base?
+Giraf.App = {} unless Giraf.App?
+Giraf.FileHandler = {} unless Giraf.FileHandler?
+Giraf.Settings = {} unless Giraf.Settings?
+Giraf.Thumbnail = {} unless Giraf.Thumbnail?
+Giraf.Thumbnails = {} unless Giraf.Thumbnails?
+Giraf.Timeline = {} unless Giraf.Timeline?
+Giraf.Timelines = {} unless Giraf.Timelines?
+Giraf.View = {} unless Giraf.View?
+Giraf.View._base = {} unless Giraf.View._base?
 
 
-# js/giraf/main.coffee
+# js/giraf/_base.coffee
 
-$video = $("#video")
-$backVideo = $("<video>")
-gifjsWorkerDist = "js/gifjs/dist/gif.worker.js"
+class Giraf._base
+  # Giraf._base
 
-preset = ["""
-var imageData = context.getImageData(0, 0, resultWidth, resultHeight);
-var data = imageData.data;
+# js/giraf/app.coffee
 
-for (i=0; i < data.length; i+=4) {
-    var black = 0.34*data[i] + 0.5*data[i+1] + 0.16*data[i+2];
-    data[i] = black;
-    data[i+1] = black;
-    data[i+2] = black;
-}
-context.putImageData(imageData, 0, 0);
-""","""
-var imageData = context.getImageData(0, 0, resultWidth, resultHeight);
-var data = imageData.data;
-var gain = 5; //数字が大きくなるとコントラストが強くなる
+class Giraf.App extends Giraf._base
 
-for (i=0; i < data.length; i++) {
-    data[i] = 255 / (1 + Math.exp((128 - data[i]) / 128.0 * gain));
-}
-context.putImageData(imageData, 0, 0);
-""","""
-var imageData = context.getImageData(0, 0, resultWidth, resultHeight);
-var data = imageData.data;
-var diff = 30; //数字が大きくなるとより明るくなる
+  test: "hoge"
 
-for (i=0; i < data.length; i++) {
-    data[i] += diff;
-}
-context.putImageData(imageData, 0, 0);
-""","""
-var imageData = context.getImageData(0, 0, resultWidth, resultHeight);
-var data = imageData.data;
-var temp = 1.3; //1より大きくなると赤っぽく、小さくなると青っぽくなる
+  run: ->
+    $video = $("#video")
+    $backVideo = $("<video>")
+    gifjsWorkerDist = "js/lib/gif.js/dist/gif.worker.js"
 
-for (i=0; i < data.length; i+=4) {
-    data[i] *= temp;    // red
-    data[i+2] /= temp;  // blue
-}
-context.putImageData(imageData, 0, 0);
-""","""
-var text = "ちくわ大明神";
-var x = 0;
-var y = resultHeight / 2;
+    preset = ["""
+    var imageData = context.getImageData(0, 0, resultWidth, resultHeight);
+    var data = imageData.data;
 
-context.font = "bold 48px sans-serif";
-context.fillStyle = "rgba(255, 131, 0, 0.7)";
-context.fillText(text, x, y);
-"""]
+    for (i=0; i < data.length; i+=4) {
+        var black = 0.34*data[i] + 0.5*data[i+1] + 0.16*data[i+2];
+        data[i] = black;
+        data[i+1] = black;
+        data[i+2] = black;
+    }
+    context.putImageData(imageData, 0, 0);
+    ""","""
+    var imageData = context.getImageData(0, 0, resultWidth, resultHeight);
+    var data = imageData.data;
+    var gain = 5; //数字が大きくなるとコントラストが強くなる
 
-$ ->
-  rendering = false
-  fileHandler = new FileHandler
-    $container: $("#drop_here")
-    $file_input: $("#form_video")
-  settings = new Settings
+    for (i=0; i < data.length; i++) {
+        data[i] = 255 / (1 + Math.exp((128 - data[i]) / 128.0 * gain));
+    }
+    context.putImageData(imageData, 0, 0);
+    ""","""
+    var imageData = context.getImageData(0, 0, resultWidth, resultHeight);
+    var data = imageData.data;
+    var diff = 30; //数字が大きくなるとより明るくなる
 
-  $(fileHandler)
-  .on 'enter', ->
-    $('#drop_here').addClass 'active'
-  .on 'leave', ->
-    $('#drop_here').removeClass 'active'
-  .on 'data_url_prepared', ->
-    $('#drop_here').removeClass 'active'
-    $('#drop_here').remove()
+    for (i=0; i < data.length; i++) {
+        data[i] += diff;
+    }
+    context.putImageData(imageData, 0, 0);
+    ""","""
+    var imageData = context.getImageData(0, 0, resultWidth, resultHeight);
+    var data = imageData.data;
+    var temp = 1.3; //1より大きくなると赤っぽく、小さくなると青っぽくなる
 
-  loadVideo = (url) ->
-    deferred = $.Deferred()
-    $video.attr "src", url
-    $backVideo.attr "src", url
-    $video.one 'canplay', ->
-      $video.removeClass "hidden"
-      deferred.resolve $video
-    $video.one 'error', (error) ->
-      deferred.fail error
+    for (i=0; i < data.length; i+=4) {
+        data[i] *= temp;    // red
+        data[i+2] /= temp;  // blue
+    }
+    context.putImageData(imageData, 0, 0);
+    ""","""
+    var text = "ちくわ大明神";
+    var x = 0;
+    var y = resultHeight / 2;
 
-    deferred.promise()
+    context.font = "bold 48px sans-serif";
+    context.fillStyle = "rgba(255, 131, 0, 0.7)";
+    context.fillText(text, x, y);
+    """]
 
-  timelines = new Timelines
+    $ ->
+      rendering = false
+      fileHandler = new Giraf.FileHandler
+        $container: $("#drop_here")
+        $file_input: $("#form_video")
+      settings = new Giraf.Settings $video
 
-  $("#timeline_holder").sortable
-    axis: "x"
-    update: ->
-      timelines.updateOrder()
+      $(fileHandler)
+      .on 'enter', ->
+        $('#drop_here').addClass 'active'
+      .on 'leave', ->
+        $('#drop_here').removeClass 'active'
+      .on 'data_url_prepared', ->
+        $('#drop_here').removeClass 'active'
+        $('#drop_here').remove()
 
-  $(fileHandler).bind "data_url_prepared", (event, urls) ->
-    (loadVideo urls[0]).done (image_url) ->
-      # --- video loaded ---
-      thumbnails = new Thumbnails
-      settings.disable false
-      $("#capture").removeClass "disabled"
-
-      #$(".thumbnail").each ->
-        #c = $(this).get(0)
-        #c.width = video.videoWidth
-        #c.height = video.videoHeight
-
-      #thumbnails.push(new Thumbnail urls[0], i) for i in [1..5]
-
-      renderThumbnail = ->
-        if not rendering
-          thumbnails.update settings
-        #for i in [0...5]
-        #time = video.currentTime + (i - 2) * (1.0 / settings.getCaptureFrame())
-        #thumbnails[i].update(time)
-        #video.pause()
-
-      toggleVideoPlay = ->
-        video = $video.get(0)
-        if video.paused
-          video.play()
-        else
-          video.pause()
-      renderThumbnail()
-
-      $video.bind "pause", =>
-        renderThumbnail()
-
-      $video.bind "seeked", =>
-        renderThumbnail()
-
-      settings.bind "change", =>
-        renderThumbnail()
-
-      $video.bind "click", ->
-        #toggleVideoPlay()
-
-      $("#start").click ->
-        time = $video.get(0).currentTime
-        timelines.setStartTime time
-        timelines.updateMakeButton()
-
-      $("#stop").click ->
-        time = $video.get(0).currentTime
-        timelines.setStopTime time
-        timelines.updateMakeButton()
-
-      $("#refresh").click ->
-        renderThumbnail()
-
-      finalize = =>
-        $video.get(0).controls = true
-        rendering = false
-        settings.disable false
-        timelines.updateMakeButton()
-        $("#capture").removeClass "disabled"
-
-      $("#make").click ->
-        video = $video.get(0)
-        cropCoord = settings.getCropCoord()
-        sourceWidth = if settings.isCrop() then cropCoord.w else video.videoWidth
-        sourceHeight = if settings.isCrop() then cropCoord.h else video.videoHeight
-        ratio = (settings.getGifSize sourceWidth) / sourceWidth
-        resultWidth = settings.getGifSize sourceWidth
-        resultHeight = sourceHeight * ratio
-
-        gif = new GIF
-          workers: 4
-          workerScript: gifjsWorkerDist
-          quality: 10
-          width: resultWidth
-          height: resultHeight
-          dither: false
-          pattern: true
-          globalPalette: true
-
-        gif.on "progress", (p) ->
-          $("#progress_2").css "width", p*100 + "%"
-          $("#progress_1").css "width", (1-p)*100 + "%"
-
-        gif.on "finished", (blob) ->
-          img = $("#result_image").get(0)
-          img.src = URL.createObjectURL blob
-          $("#result_status").text "Rendering finished : Filesize " +
-          if (blob.size >= 1000000) then "#{ (blob.size / 1000000).toFixed 2 }MB"
-          else "#{ (blob.size / 1000).toFixed 2 }KB"
-          finalize()
-
-        video.controls = false
-        video.pause()
-        $("#make").addClass "disabled"
-        $("#capture").addClass "disabled"
-
-        canvas = $("<canvas>").get(0)
-        context = canvas.getContext("2d")
-
-        canvas.width = resultWidth
-        canvas.height = resultHeight
-
-        rendering = true
-        settings.disable true
-
-        arr = timelines.getFrameList settings
-        frameNumber = arr.length
-        firstTime = arr[0]
-        $("#progress_1").css "width", "0"
-        $("#progress_2").css "width", "0"
-
-        if frameNumber < 2
-          finalize()
-          return
-
+      loadVideo = (url) ->
         deferred = $.Deferred()
-        deferred
-        .then ->
-          # timeupdate trigger
-          if video.currentTime is arr[0]
-            _deferred = $.Deferred()
-            $video.on "timeupdate", =>
-              $video.off "timeupdate"
-              _deferred.resolve()
-            video.currentTime = arr[1]
-            _deferred
-        .then ->
-          $video.on "timeupdate", =>
-            drawDeferred = $.Deferred()
-            if arr.length is 0
-              $video.off "timeupdate"
-              gif.render()
+        $video.attr "src", url
+        $backVideo.attr "src", url
+        $video.one 'canplay', ->
+          $video.removeClass "hidden"
+          deferred.resolve $video
+        $video.one 'error', (error) ->
+          deferred.fail error
+
+        deferred.promise()
+
+      timelines = new Giraf.Timelines $video
+
+      $("#timeline_holder").sortable
+        axis: "x"
+        update: ->
+          timelines.updateOrder()
+
+      $(fileHandler).bind "data_url_prepared", (event, urls) ->
+        (loadVideo urls[0]).done (image_url) ->
+          # --- video loaded ---
+          thumbnails = new Giraf.Thumbnails @, $video, $backVideo
+          settings.disable false
+          $("#capture").removeClass "disabled"
+
+          #$(".thumbnail").each ->
+            #c = $(this).get(0)
+            #c.width = video.videoWidth
+            #c.height = video.videoHeight
+
+          #thumbnails.push(new Thumbnail urls[0], i) for i in [1..5]
+
+          renderThumbnail = ->
+            if not rendering
+              thumbnails.update settings
+            #for i in [0...5]
+            #time = video.currentTime + (i - 2) * (1.0 / settings.getCaptureFrame())
+            #thumbnails[i].update(time)
+            #video.pause()
+
+          toggleVideoPlay = ->
+            video = $video.get(0)
+            if video.paused
+              video.play()
+            else
+              video.pause()
+          renderThumbnail()
+
+          $video.bind "pause", =>
+            renderThumbnail()
+
+          $video.bind "seeked", =>
+            renderThumbnail()
+
+          settings.bind "change", =>
+            renderThumbnail()
+
+          $video.bind "click", ->
+            #toggleVideoPlay()
+
+          $("#start").click ->
+            time = $video.get(0).currentTime
+            timelines.setStartTime time
+            timelines.updateMakeButton()
+
+          $("#stop").click ->
+            time = $video.get(0).currentTime
+            timelines.setStopTime time
+            timelines.updateMakeButton()
+
+          $("#refresh").click ->
+            renderThumbnail()
+
+          finalize = =>
+            $video.get(0).controls = true
+            rendering = false
+            settings.disable false
+            timelines.updateMakeButton()
+            $("#capture").removeClass "disabled"
+
+          $("#make").click ->
+            video = $video.get(0)
+            cropCoord = settings.getCropCoord()
+            sourceWidth = if settings.isCrop() then cropCoord.w else video.videoWidth
+            sourceHeight = if settings.isCrop() then cropCoord.h else video.videoHeight
+            ratio = (settings.getGifSize sourceWidth) / sourceWidth
+            resultWidth = settings.getGifSize sourceWidth
+            resultHeight = sourceHeight * ratio
+
+            gif = new GIF
+              workers: 4
+              workerScript: gifjsWorkerDist
+              quality: 10
+              width: resultWidth
+              height: resultHeight
+              dither: false
+              pattern: true
+              globalPalette: true
+
+            gif.on "progress", (p) ->
+              $("#progress_2").css "width", p*100 + "%"
+              $("#progress_1").css "width", (1-p)*100 + "%"
+
+            gif.on "finished", (blob) ->
+              img = $("#result_image").get(0)
+              img.src = URL.createObjectURL blob
+              $("#result_status").text "Rendering finished : Filesize " +
+              if (blob.size >= 1000000) then "#{ (blob.size / 1000000).toFixed 2 }MB"
+              else "#{ (blob.size / 1000).toFixed 2 }KB"
+              finalize()
+
+            video.controls = false
+            video.pause()
+            $("#make").addClass "disabled"
+            $("#capture").addClass "disabled"
+
+            canvas = $("<canvas>").get(0)
+            context = canvas.getContext("2d")
+
+            canvas.width = resultWidth
+            canvas.height = resultHeight
+
+            rendering = true
+            settings.disable true
+
+            arr = timelines.getFrameList settings
+            frameNumber = arr.length
+            firstTime = arr[0]
+            $("#progress_1").css "width", "0"
+            $("#progress_2").css "width", "0"
+
+            if frameNumber < 2
+              finalize()
               return
-            $("#progress_1").css "width", (frameNumber - arr.length)/frameNumber*100 + "%"
+
+            deferred = $.Deferred()
+            deferred
+            .then ->
+              # timeupdate trigger
+              if video.currentTime is arr[0]
+                _deferred = $.Deferred()
+                $video.on "timeupdate", =>
+                  $video.off "timeupdate"
+                  _deferred.resolve()
+                video.currentTime = arr[1]
+                _deferred
+            .then ->
+              $video.on "timeupdate", =>
+                drawDeferred = $.Deferred()
+                if arr.length is 0
+                  $video.off "timeupdate"
+                  gif.render()
+                  return
+                $("#progress_1").css "width", (frameNumber - arr.length)/frameNumber*100 + "%"
+                if settings.isCrop() then context.drawImage video,
+                  cropCoord.x, cropCoord.y, cropCoord.w, cropCoord.h, # source
+                  0, 0, resultWidth, resultHeight                     # dest
+                else context.drawImage video,
+                  0, 0, resultWidth, resultHeight
+                if settings.getEffectScript() isnt ""
+                  eval settings.getEffectScript()
+                gif.addFrame canvas,
+                    copy: true
+                    delay: 1000.0 / settings.getCaptureFrame() / settings.getGifSpeed()
+                if arr.length is 1
+                  arr.shift()
+                  video.currentTime = firstTime
+                else
+                  arr.shift()
+                  video.currentTime = arr[0]
+              video.currentTime = arr[0]
+
+            deferred.resolve()
+
+          $("#capture").click ->
+            video = $video.get(0)
+            cropCoord = settings.getCropCoord()
+            sourceWidth = if settings.isCrop() then cropCoord.w else video.videoWidth
+            sourceHeight = if settings.isCrop() then cropCoord.h else video.videoHeight
+            ratio = (settings.getGifSize sourceWidth) / sourceWidth
+            resultWidth = settings.getGifSize sourceWidth
+            resultHeight = sourceHeight * ratio
+
+            canvas = $("<canvas>").get(0)
+            context = canvas.getContext("2d")
+            canvas.width = resultWidth
+            canvas.height = resultHeight
+
             if settings.isCrop() then context.drawImage video,
               cropCoord.x, cropCoord.y, cropCoord.w, cropCoord.h, # source
               0, 0, resultWidth, resultHeight                     # dest
@@ -235,221 +288,86 @@ $ ->
               0, 0, resultWidth, resultHeight
             if settings.getEffectScript() isnt ""
               eval settings.getEffectScript()
-            gif.addFrame canvas,
-                copy: true
-                delay: 1000.0 / settings.getCaptureFrame() / settings.getGifSpeed()
-            if arr.length is 1
-              arr.shift()
-              video.currentTime = firstTime
-            else
-              arr.shift()
-              video.currentTime = arr[0]
-          video.currentTime = arr[0]
-
-        deferred.resolve()
-
-      $("#capture").click ->
-        video = $video.get(0)
-        cropCoord = settings.getCropCoord()
-        sourceWidth = if settings.isCrop() then cropCoord.w else video.videoWidth
-        sourceHeight = if settings.isCrop() then cropCoord.h else video.videoHeight
-        ratio = (settings.getGifSize sourceWidth) / sourceWidth
-        resultWidth = settings.getGifSize sourceWidth
-        resultHeight = sourceHeight * ratio
-
-        canvas = $("<canvas>").get(0)
-        context = canvas.getContext("2d")
-        canvas.width = resultWidth
-        canvas.height = resultHeight
-
-        if settings.isCrop() then context.drawImage video,
-          cropCoord.x, cropCoord.y, cropCoord.w, cropCoord.h, # source
-          0, 0, resultWidth, resultHeight                     # dest
-        else context.drawImage video,
-          0, 0, resultWidth, resultHeight
-        if settings.getEffectScript() isnt ""
-          eval settings.getEffectScript()
-        $("#result_image").attr "src", canvas.toDataURL()
+            $("#result_image").attr "src", canvas.toDataURL()
 
 
-class Thumbnails
-  constructor: () ->
-    @thumbs = []
-    @thumbs.push(new Thumbnail i, $("#thumbnail_#{i}")) for i in [1..5]
+# js/giraf/fileHandler.coffee
 
-  update: (settings) ->
-    for i in [0...5]
-      time = $video.get(0).currentTime + (i - 2) * (1.0 / settings.getCaptureFrame())
-      @thumbs[i].update(time)
+# hitode909/rokuga
+# https://github.com/hitode909/rokuga
+class Giraf.FileHandler
+  constructor: (args) ->
+    @$container = args.$container
+    throw "$container required" unless @$container
+    @$file_input = args.$file_input
+    @bindEvents()
 
+  bindEvents: ->
+    @$container
+    .on 'dragstart', =>
+        true
+    .on 'dragover', =>
+        false
+    .on 'dragenter', (event) =>
+        if @$container.is event.target
+          ($ this).trigger 'enter'
+        false
+    .on 'dragleave', (event) =>
+        if @$container.is event.target
+          ($ this).trigger 'leave'
+    .on 'drop', (jquery_event) =>
+        event = jquery_event.originalEvent
+        files = event.dataTransfer.files
+        if files.length > 0
+          ($ this).trigger 'drop', [files]
+
+          (@readFiles files).done (contents) =>
+            ($ this).trigger 'data_url_prepared', [contents]
+
+        false
+
+    @$file_input.on 'change', (jquery_event) =>
+      (@readFiles (@$file_input.get 0 ).files).done (contents) =>
+        ($ this).trigger 'data_url_prepared', [contents]
+
+  readFiles: (files) ->
+    read_all = do $.Deferred
+    contents = []
     i = 0
-    $backVideo.on "timeupdate", =>
-      if i >= 5
-        $backVideo.off "timeupdate"
+
+    role = =>
+      if files.length <= i
+        read_all.resolve contents
       else
-        @thumbs[i].draw()
-        i++
-        $backVideo.get(0).currentTime = $video.get(0).currentTime + (i - 2) * (1.0 / settings.getCaptureFrame())
-    $backVideo.get(0).currentTime = $video.get(0).currentTime - 2 * (1.0 / settings.getCaptureFrame())
+        file = files[i++]
+        (@readFile file).done (content) ->
+          contents.push content
+        .always ->
+            do role
 
+    do role
 
-class Thumbnail
-  constructor: (@id, @$canvas) ->
-   # @$video = $backVideo #$("<video>")
-    @canvas = $canvas.get(0)
-    @context = @canvas.getContext("2d")
+    do read_all.promise
 
-    #@$video.attr "src", url
-    #@canvas.width = 100
-    #@canvas.height = 100
+  readFile: (file) ->
+    read = do $.Deferred
+    reader = new FileReader
+    reader.onload = ->
+      read.resolve reader.result
+    reader.onerror = (error) ->
+      read.reject error
+    reader.readAsDataURL file
 
-    #$backVideo.bind "timeupdate", =>
-    #  $("#thumbnail_" + @id).removeClass "loading"
-    #  @context.drawImage $backVideo.get(0), 0, 0, 320, 160
+    do read.promise
 
-    @canvas.addEventListener "click", =>
-      #$video.get(0).pause()
-      $video.get(0).currentTime = @time
+# js/giraf/settings.coffee
 
-  update: (@time) ->
-    if time >= 0 or time <= video.duration
-      $("#thumbnail_" + @id).addClass "loading"
-      #$backVideo.get(0).currentTime = time
-
-  draw: ->
-    $("#thumbnail_" + @id).removeClass "loading"
-    @context.drawImage $backVideo.get(0), 0, 0, 320, 160
-
-
-class Timelines
-  constructor: ->
-    @tls = []
-    @number = 1
-
-    $("#add_timeline").bind "click", =>
-      @tls.push new Timeline @, @number
-      @number++
-      @.updateMakeButton()
-    .trigger "click"
-    @tls[0].setSelected true
-
-  setStartTime: (time) ->
-    tl = @.getSelected()
-    if tl? then tl.setStartTime time
-
-  setStopTime: (time) ->
-    tl = @.getSelected()
-    if tl? then tl.setStopTime time
-
-  setSelected: (tl) ->
-    for i in @tls
-      i.setSelected false
-    tl.setSelected true
-
-  getSelected: ->
-    for i in @tls
-      if i.getSelected()
-        return i
-
-  getFrameList: (settings) ->
-    arr = []
-    for tl in @tls
-      arr.push(i) for i in tl.getFrameList settings
-    return arr
-
-  removeTimeline: (tl) ->
-    for k, v of @tls
-      if v is tl
-        @tls.splice(k, 1)
-    @updateMakeButton()
-
-  updateOrder: ->
-    arr = []
-    num = $("#timeline_holder").sortable("toArray")
-    for i in num
-      for tl in @tls
-        if tl.getNumber() is i then arr.push tl
-    @tls = arr
-
-  updateMakeButton: ->
-    a = true
-    for tl in @tls
-      a = a and tl.isValidTime()
-    if a and @tls.length > 0 then $("#make").removeClass "disabled" else $("#make").addClass "disabled"
-
-
-class Timeline
-  constructor: (@timelines, @number) ->
-    @start = null
-    @stop = null
-    @selected = false
-
-    @$timeline = $("#timeline_skeleton").clone()
-    @$timeline.attr "id", number
-    @$timeline.appendTo $("#timeline_holder")
-
-    @startCanvas = @$timeline.find(".timeline-start").get(0)
-    @stopCanvas = @$timeline.find(".timeline-stop").get(0)
-
-    @$timeline.bind "click", =>
-      timelines.setSelected @
-
-    @$timeline.find(".close").bind "click", =>
-      @.remove()
-
-  setStartTime: (time) ->
-    @start = time
-    ctx = @startCanvas.getContext("2d")
-    ctx.drawImage $video.get(0), 0, 0, 320, 160
-
-  setStopTime: (time) ->
-    @stop = time
-    ctx = @stopCanvas.getContext("2d")
-    ctx.drawImage $video.get(0), 0, 0, 320, 160
-
-  isValidTime: ->
-    if @start? and @stop? then true else false
-
-  setSelected: (bool) ->
-    @selected = bool
-    if bool
-      @$timeline.css "border-color", "red"
-    else
-      @$timeline.css "border-color", ""
-
-  getNumber: ->
-    return @$timeline.attr "id"
-
-  getSelected: ->
-    return @selected
-
-  getFrameList: (settings) ->
-    if not @.isValidTime()
-      throw "start and stop time must fill"
-    arr = []
-    i = 0
-    time = @start
-
-    while (@start <= @stop and time <= @stop)or(@start > @stop and time >= @stop)
-      arr.push(time)
-      i++
-      diff = i / settings.getCaptureFrame()
-      if @start <= @stop then time = @start + diff
-      else time = @start - diff
-
-    return arr
-
-  remove: ->
-    @timelines.removeTimeline @
-    @$timeline.remove()
-
-
-class Settings
+class Giraf.Settings
   captureFrameValues = [1, 2, 3, 4, 6, 8, 12, 15, 24, 30]
   gifSpeedValues = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 5]
   gifSizeValues = [40, 80, 120, 240, 320, 480, 640, 720]
 
-  constructor: ->
+  constructor: (@$video) ->
     @$captureFrame = $("#form_capture_frame")
     @$gifSpeed = $("#form_gif_speed")
     @$gifSize = $("#form_gif_size")
@@ -521,7 +439,7 @@ class Settings
     $("#modal_crop").on "shown.bs.modal", =>
       canvas = $("<canvas>").get(0)
       ctx = canvas.getContext("2d")
-      video = $video.get(0)
+      video = @$video.get(0)
       canvas.width = video.videoWidth
       canvas.height = video.videoHeight
       ctx.drawImage video, 0, 0, video.videoWidth, video.videoHeight
@@ -598,70 +516,186 @@ class Settings
   disable: (bool) ->
     if bool then $("#config").addClass "disabled" else $("#config").removeClass "disabled"
 
+# js/giraf/thumbnail.coffee
 
-# hitode909/rokuga
-# https://github.com/hitode909/rokuga
-class FileHandler
-  constructor: (args) ->
-    @$container = args.$container
-    throw "$container required" unless @$container
-    @$file_input = args.$file_input
-    @bindEvents()
+class Giraf.Thumbnail
+  constructor: (@app, @id, @$canvas, @$video, @$backVideo) ->
+    # @$video = $backVideo #$("<video>")
+    @canvas = $canvas.get(0)
+    @context = @canvas.getContext("2d")
 
-  bindEvents: ->
-    @$container
-    .on 'dragstart', =>
-        true
-    .on 'dragover', =>
-        false
-    .on 'dragenter', (event) =>
-        if @$container.is event.target
-          ($ this).trigger 'enter'
-        false
-    .on 'dragleave', (event) =>
-        if @$container.is event.target
-          ($ this).trigger 'leave'
-    .on 'drop', (jquery_event) =>
-        event = jquery_event.originalEvent
-        files = event.dataTransfer.files
-        if files.length > 0
-          ($ this).trigger 'drop', [files]
+    #@$video.attr "src", url
+    #@canvas.width = 100
+    #@canvas.height = 100
 
-          (@readFiles files).done (contents) =>
-            ($ this).trigger 'data_url_prepared', [contents]
+    #$backVideo.bind "timeupdate", =>
+    #  $("#thumbnail_" + @id).removeClass "loading"
+    #  @context.drawImage $backVideo.get(0), 0, 0, 320, 160
 
-        false
+    @canvas.addEventListener "click", =>
+      #$video.get(0).pause()
+      @$video.get(0).currentTime = @time
 
-    @$file_input.on 'change', (jquery_event) =>
-      (@readFiles (@$file_input.get 0 ).files).done (contents) =>
-        ($ this).trigger 'data_url_prepared', [contents]
+  update: (@time) ->
+    if time >= 0 or time <= @$video.duration
+      $("#thumbnail_" + @id).addClass "loading"
+      #$backVideo.get(0).currentTime = time
 
-  readFiles: (files) ->
-    read_all = do $.Deferred
-    contents = []
+  draw: ->
+    $("#thumbnail_" + @id).removeClass "loading"
+    @context.drawImage @$backVideo.get(0), 0, 0, 320, 160
+
+# js/giraf/thumbnails.coffee
+
+class Giraf.Thumbnails
+  constructor: (@app, @$video, @$backVideo) ->
+    @thumbs = []
+    @thumbs.push new Giraf.Thumbnail(@app, i, $("#thumbnail_#{i}"), @$video, @$backVideo) for i in [1..5]
+
+  update: (settings) ->
+    for i in [0...5]
+      time = @$video.get(0).currentTime + (i - 2) * (1.0 / settings.getCaptureFrame())
+      @thumbs[i].update(time)
+
     i = 0
-
-    role = =>
-      if files.length <= i
-        read_all.resolve contents
+    @$backVideo.on "timeupdate", =>
+      if i >= 5
+        @$backVideo.off "timeupdate"
       else
-        file = files[i++]
-        (@readFile file).done (content) ->
-          contents.push content
-        .always ->
-            do role
+        @thumbs[i].draw()
+        i++
+        @$backVideo.get(0).currentTime = @$video.get(0).currentTime + (i - 2) * (1.0 / settings.getCaptureFrame())
+    @$backVideo.get(0).currentTime = @$video.get(0).currentTime - 2 * (1.0 / settings.getCaptureFrame())
 
-    do role
+# js/giraf/timeline.coffee
 
-    do read_all.promise
+class Giraf.Timeline
+  constructor: (@timelines, @number, @$video) ->
+    @start = null
+    @stop = null
+    @selected = false
 
-  readFile: (file) ->
-    read = do $.Deferred
-    reader = new FileReader
-    reader.onload = ->
-      read.resolve reader.result
-    reader.onerror = (error) ->
-      read.reject error
-    reader.readAsDataURL file
+    @$timeline = $("#timeline_skeleton").clone()
+    @$timeline.attr "id", number
+    @$timeline.appendTo $("#timeline_holder")
 
-    do read.promise
+    @startCanvas = @$timeline.find(".timeline-start").get(0)
+    @stopCanvas = @$timeline.find(".timeline-stop").get(0)
+
+    @$timeline.bind "click", =>
+      timelines.setSelected @
+
+    @$timeline.find(".close").bind "click", =>
+      @.remove()
+
+  setStartTime: (time) ->
+    @start = time
+    ctx = @startCanvas.getContext("2d")
+    ctx.drawImage @$video.get(0), 0, 0, 320, 160
+
+  setStopTime: (time) ->
+    @stop = time
+    ctx = @stopCanvas.getContext("2d")
+    ctx.drawImage @$video.get(0), 0, 0, 320, 160
+
+  isValidTime: ->
+    if @start? and @stop? then true else false
+
+  setSelected: (bool) ->
+    @selected = bool
+    if bool
+      @$timeline.css "border-color", "red"
+    else
+      @$timeline.css "border-color", ""
+
+  getNumber: ->
+    return @$timeline.attr "id"
+
+  getSelected: ->
+    return @selected
+
+  getFrameList: (settings) ->
+    if not @.isValidTime()
+      throw "start and stop time must fill"
+    arr = []
+    i = 0
+    time = @start
+
+    while (@start <= @stop and time <= @stop)or(@start > @stop and time >= @stop)
+      arr.push(time)
+      i++
+      diff = i / settings.getCaptureFrame()
+      if @start <= @stop then time = @start + diff
+      else time = @start - diff
+
+    return arr
+
+  remove: ->
+    @timelines.removeTimeline @
+    @$timeline.remove()
+
+# js/giraf/timelines.coffee
+
+class Giraf.Timelines
+  constructor: (@$video) ->
+    @tls = []
+    @number = 1
+
+    $("#add_timeline").bind "click", =>
+      @tls.push new Giraf.Timeline @, @number, @$video
+      @number++
+      @.updateMakeButton()
+    .trigger "click"
+    @tls[0].setSelected true
+
+  setStartTime: (time) ->
+    tl = @.getSelected()
+    if tl? then tl.setStartTime time
+
+  setStopTime: (time) ->
+    tl = @.getSelected()
+    if tl? then tl.setStopTime time
+
+  setSelected: (tl) ->
+    for i in @tls
+      i.setSelected false
+    tl.setSelected true
+
+  getSelected: ->
+    for i in @tls
+      if i.getSelected()
+        return i
+
+  getFrameList: (settings) ->
+    arr = []
+    for tl in @tls
+      arr.push(i) for i in tl.getFrameList settings
+    return arr
+
+  removeTimeline: (tl) ->
+    for k, v of @tls
+      if v is tl
+        @tls.splice(k, 1)
+    @updateMakeButton()
+
+  updateOrder: ->
+    arr = []
+    num = $("#timeline_holder").sortable("toArray")
+    for i in num
+      for tl in @tls
+        if tl.getNumber() is i then arr.push tl
+    @tls = arr
+
+  updateMakeButton: ->
+    a = true
+    for tl in @tls
+      a = a and tl.isValidTime()
+    if a and @tls.length > 0 then $("#make").removeClass "disabled" else $("#make").addClass "disabled"
+
+# js/giraf/view/_base.coffee
+
+class Giraf.View._base extends Giraf._base
+  # Giraf.View._base
+
+app = new Giraf.App
+app.run()

@@ -1,0 +1,74 @@
+nav {
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 32px;
+    margin-bottom: 0;
+    background-color: #222;
+    z-index: 500;
+}
+
+nav >.header {
+    display: block;
+    float: left;
+    width: 32px;
+    height: 32px;
+}
+
+nav > ul {
+    display: block;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+    -webkit-padding-start: 0;
+    list-style: none;
+    float: left;
+}
+
+nav > ul > li {
+    position: relative;
+    display: block;
+    float: left;
+    height: 32px;
+}
+
+nav > ul > li > a {
+    color: #999;
+    position: relative;
+    display: block;
+    padding: 8px 15px;
+    line-height: 16px;
+    height: 32px;
+}
+
+nav > ul > li > a:hover {
+    color: #ddd;
+    text-decoration: none;
+}
+
+nav > ul > li.open > a {
+    text-decoration: none;
+    color: #ddd;
+    background-color: #3f7dce;
+}
+
+nav > ul > li.brand {
+    display: block;
+    float: left;
+    background: url(../static/logo.png) no-repeat left center;
+    background-size: 32px;
+    width: 32px;
+    height: 32px;
+}
+
+nav > ul > li.brand.open > a {
+    background-color: transparent;
+}
+
+
+nav .brand > a {
+    content: " ";
+}
+
+nav .dropdown-menu {
+    margin: -1px 0 0;
+}

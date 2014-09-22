@@ -1,0 +1,64 @@
+#expert {
+    position: absolute;
+    margin: 0;
+    padding: 32px 0 0;
+    width: 100%;
+    height: 100%;
+    background-color: #333;
+}
+
+#expert_container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#expert_container > * {
+    padding: 2px;
+    background-color: #333;
+    color: #bbb;
+    position: absolute;
+}
+
+#expert_container .panel-container {
+    width: 100%;
+    height: 100%;
+    border: solid 1px #4d4d4d;
+    background-color: #404040;
+    overflow: scroll;
+}
+
+#expert_project {
+    top: 0%;
+    left: 0%;
+    width: 20%;
+    height: 100%;
+}
+
+#expert_composition {
+    top: 0%;
+    left: 50%;
+    width: 50%;
+    height: 55%;
+}
+
+#expert_effect {
+    top: 0%;
+    left: 20%;
+    width: 30%;
+    height: 50%;
+}
+
+#expert_tool {
+    top: 50%;
+    left: 20%;
+    width: 30%;
+    height: 5%;
+}
+
+#expert_node {
+    top: 55%;
+    left: 20%;
+    width: 80%;
+    height: 45%;
+}

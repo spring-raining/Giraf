@@ -1,8 +1,13 @@
 class Giraf.App extends Giraf._base
 
-  test: "hoge"
+  constructor: ->
+    @self = @
 
-  run: ->
+  run: =>
+    $ ->
+      view = new Giraf.View @self
+
+  _run: ->
     $video = $("#video")
     $backVideo = $("<video>")
     gifjsWorkerDist = "js/lib/gif.js/dist/gif.worker.js"

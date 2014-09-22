@@ -1,6 +1,32 @@
-body {
+html, body {
     min-width: 900px;
     max-width: none !important;
+    font-size: 14px;
+    height: 100%;
+    overflow: hidden;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+a {
+    color: #428bca;
+    text-decoration: none;
+}
+
+a:active, a:hover {
+    outline: 0;
+}
+
+a:hover, a:focus {
+    color: #2a6496;
+    text-decoration: underline;
+}
+
+ol ul, ul ol, ul ul, ol ol {
+-webkit-margin-before: 0px;
+-webkit-margin-after: 0px;
 }
 
 .hidden {
@@ -11,12 +37,8 @@ span.glyphicon-cog {
     /*font-size: 1.1em;*/
 }
 
-.navbar {
-    border-width: 0;
-}
-
 #logo {
-    background: url(logo.png) no-repeat left center;
+    background: url(../static/logo.png) no-repeat left center;
     background-size: 50px;
     width: 50px;
     height: 50px;

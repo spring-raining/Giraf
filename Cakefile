@@ -81,7 +81,7 @@ coffeeInDir = (dir) ->
         return path.join jsDir, e
       continue if joinf is "#{destFile}.coffee"
       match = f.match coffeeRe
-      rtn[match[1]] = null if match?
+      rtn[match[1]] = null if match? and not rtn[match[1]]?
   return rtn
 
 enumerateClasses = (obj, prefix) ->
@@ -120,11 +120,11 @@ enumerateClasses = (obj, prefix) ->
 enumerateFiles = (obj, dir) ->
   rtn = []
   for k, v of obj
+    filename = path.join(dir, k) + '.coffee'
+    rtn.push filename if fs.existsSync filename
     if v? and typeof v is 'object'
       arr = enumerateFiles v, path.join(dir, k)
       rtn = rtn.concat arr
-    else if v is null
-      rtn.push path.join(dir, k) + '.coffee'
   return rtn
 
 build = (watch, callback, {useMapping} = {}) ->

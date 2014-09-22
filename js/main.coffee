@@ -2,13 +2,21 @@ Giraf = {} unless Giraf?
 Giraf._base = {} unless Giraf._base?
 Giraf.App = {} unless Giraf.App?
 Giraf.FileHandler = {} unless Giraf.FileHandler?
+Giraf.History = {} unless Giraf.History?
 Giraf.Settings = {} unless Giraf.Settings?
+Giraf.Task = {} unless Giraf.Task?
+Giraf.Task._base = {} unless Giraf.Task._base?
 Giraf.Thumbnail = {} unless Giraf.Thumbnail?
 Giraf.Thumbnails = {} unless Giraf.Thumbnails?
 Giraf.Timeline = {} unless Giraf.Timeline?
 Giraf.Timelines = {} unless Giraf.Timelines?
 Giraf.View = {} unless Giraf.View?
 Giraf.View._base = {} unless Giraf.View._base?
+Giraf.View.Expert = {} unless Giraf.View.Expert?
+Giraf.View.Expert._base = {} unless Giraf.View.Expert._base?
+Giraf.View.Nav = {} unless Giraf.View.Nav?
+Giraf.View.Quick = {} unless Giraf.View.Quick?
+Giraf.View.Quick._base = {} unless Giraf.View.Quick._base?
 
 
 # js/giraf/_base.coffee
@@ -20,9 +28,14 @@ class Giraf._base
 
 class Giraf.App extends Giraf._base
 
-  test: "hoge"
+  constructor: ->
+    @self = @
 
-  run: ->
+  run: =>
+    $ ->
+      view = new Giraf.View @self
+
+  _run: ->
     $video = $("#video")
     $backVideo = $("<video>")
     gifjsWorkerDist = "js/lib/gif.js/dist/gif.worker.js"
@@ -360,6 +373,11 @@ class Giraf.FileHandler
 
     do read.promise
 
+# js/giraf/history.coffee
+
+class Giraf.History extends Giraf._base
+
+
 # js/giraf/settings.coffee
 
 class Giraf.Settings
@@ -515,6 +533,11 @@ class Giraf.Settings
 
   disable: (bool) ->
     if bool then $("#config").addClass "disabled" else $("#config").removeClass "disabled"
+
+# js/giraf/task/_base.coffee
+
+class Giraf.Task._base extends Giraf._base
+  # Giraf.Task._base
 
 # js/giraf/thumbnail.coffee
 
@@ -692,10 +715,82 @@ class Giraf.Timelines
       a = a and tl.isValidTime()
     if a and @tls.length > 0 then $("#make").removeClass "disabled" else $("#make").addClass "disabled"
 
+# js/giraf/view.coffee
+
+class Giraf.View extends Giraf._base
+  _selector_nav = "nav"
+  _selector_quick = "#quick"
+  _selector_expert = "#expert"
+
+  constructor: (@app) ->
+    @nav = new Giraf.View.Nav $(_selector_nav)
+    @quick = new Giraf.View.Quick $(_selector_quick)
+    @expert = new Giraf.View.Expert $(_selector_expert)
+
 # js/giraf/view/_base.coffee
 
 class Giraf.View._base extends Giraf._base
   # Giraf.View._base
+
+# js/giraf/view/expert.coffee
+
+class Giraf.View.Expert extends Giraf.View._base
+  _selector_container = "#expert_container"
+  _selector_project = "#expert_project > .panel-container"
+  _selector_composition = "#expert_composition > .panel-container"
+  _selector_effect = "#expert_effect > .panel-container"
+  _selector_tool = "#expert_tool > .panel-container"
+  _selector_node = "#expert_node > .panel-container"
+
+  constructor: (@$expert) ->
+
+# js/giraf/view/expert/_base.coffee
+
+class Giraf.View.Expert._base extends Giraf.View._base
+  # Giraf.View.Expert._base
+
+# js/giraf/view/nav.coffee
+
+class Giraf.View.Nav extends Giraf.View._base
+  _selector_dropdown = "li.dropdown"
+
+  $dropdowns = null
+  active = false
+
+  constructor: (@$nav) ->
+    $dropdowns = @$nav.find(_selector_dropdown)
+
+    $dropdowns.on
+      mouseenter: ->
+        $(@).trigger "click" if active
+
+      click: ->
+        active = true
+        $dropdowns.each (index, element) ->
+          $(element).removeClass "open"
+        $(@).addClass "open"
+
+    $(document).on
+      click: (event) ->
+        if not $.contains $nav.get(0), event.target
+          active = false
+          $dropdowns.each (index, element) ->
+            $(element).removeClass "open"
+
+# js/giraf/view/quick.coffee
+
+class Giraf.View.Quick extends Giraf.View._base
+  selector_preview = "#quick_preview"
+  selector_thumbnail = "#quick_thumbnail"
+  selector_timeline = "#quick_timeline"
+  selector_result = "#quick_result"
+
+  constructor: (@$quick) ->
+
+# js/giraf/view/quick/_base.coffee
+
+class Giraf.View.Quick._base extends Giraf.View._base
+  # Giraf.View.Quick._base
 
 app = new Giraf.App
 app.run()

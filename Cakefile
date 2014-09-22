@@ -44,7 +44,7 @@ task 'build', 'compile source', (options) ->
 task 'watch', 'compile and watch', (options) ->
   watchAndBuild (-> log ":-)", green), useMapping: useMapping = options.map
 
-task 'test', 'run tests', -> build -> mocha -> log ":)", green
+task 'test', 'run tests', -> build -> test -> log "Compile and Test successful :)", green
 
 #
 # Internal Functions
@@ -162,13 +162,9 @@ watchAndBuild = (callback, {useMapping} = {}) ->
     log "File changed", bold, path.join(jsDir, filename)
     build false, (-> log "Compile successful :-)", green), useMapping: useMapping
 
-mocha = (options, callback) ->
-  #if moduleExists('mocha')
-  if typeof options is 'function'
-    callback = options
-    options = []
-  # add coffee directive
-  options.push '--compilers'
-  options.push 'coffee:coffee-script'
+test = (callback) ->
+  options = []
+  options.push 'test/lib/mocha-phantomjs.coffee'
+  options.push 'test.html'
 
-  launch 'mocha', options, callback
+  launch 'phantomjs', options, callback

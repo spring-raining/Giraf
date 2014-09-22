@@ -6,6 +6,7 @@ class Giraf.App extends Giraf._base
   run: =>
     $ ->
       view = new Giraf.View @self
+      settings = new Giraf.Settings @self
 
   _run: ->
     $video = $("#video")

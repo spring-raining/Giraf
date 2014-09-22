@@ -12,6 +12,10 @@ if (Giraf._base == null) {
   Giraf._base = {};
 }
 
+if (Giraf._settings == null) {
+  Giraf._settings = {};
+}
+
 if (Giraf.App == null) {
   Giraf.App = {};
 }
@@ -26,6 +30,14 @@ if (Giraf.History == null) {
 
 if (Giraf.Settings == null) {
   Giraf.Settings = {};
+}
+
+if (Giraf.Settings._base == null) {
+  Giraf.Settings._base = {};
+}
+
+if (Giraf.Settings.CookieBinder == null) {
+  Giraf.Settings.CookieBinder = {};
 }
 
 if (Giraf.Task == null) {
@@ -87,6 +99,240 @@ Giraf._base = (function() {
 
 })();
 
+Giraf._settings = (function() {
+  var captureFrameValues, gifSizeValues, gifSpeedValues;
+
+  captureFrameValues = [1, 2, 3, 4, 6, 8, 12, 15, 24, 30];
+
+  gifSpeedValues = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 5];
+
+  gifSizeValues = [40, 80, 120, 240, 320, 480, 640, 720];
+
+  function _settings($video) {
+    var i, _, _i, _j, _k, _len, _len1, _len2;
+    this.$video = $video;
+    this.$captureFrame = $("#form_capture_frame");
+    this.$gifSpeed = $("#form_gif_speed");
+    this.$gifSize = $("#form_gif_size");
+    this.event = {};
+    for (_i = 0, _len = captureFrameValues.length; _i < _len; _i++) {
+      i = captureFrameValues[_i];
+      this.$captureFrame.append("<option value=" + i + ">" + i + "fps</option>");
+    }
+    for (_j = 0, _len1 = gifSpeedValues.length; _j < _len1; _j++) {
+      i = gifSpeedValues[_j];
+      this.$gifSpeed.append("<option value=" + i + ">x" + i + "</option>");
+    }
+    this.$gifSize.append("<option value=-1>元サイズに合わせる</option>");
+    for (_k = 0, _len2 = gifSizeValues.length; _k < _len2; _k++) {
+      i = gifSizeValues[_k];
+      this.$gifSize.append("<option value=" + i + ">" + i + "px</option>");
+    }
+    this.captureFrameVal = 12;
+    this.gifSpeedVal = 1;
+    this.gifSizeVal = -1;
+    this.effectScript = "";
+    this.crop = false;
+    this.$captureFrame.val(this.captureFrameVal);
+    this.$gifSpeed.val(this.gifSpeedVal);
+    this.$gifSize.val(this.gifSizeVal);
+    this.initJcrop();
+    this.initCodeMirror();
+
+    /*@$captureFrame.bind "change", =>
+      if "change" in @event then @event["change"]()
+    @$gifSpeed.bind "change", =>
+      if "change" in @event then @event["change"]()
+    @$gifSize.bind "change", =>
+      if "change" in @event then @event["change"]()
+     */
+    $("#modal_capture_frame").on("hidden.bs.modal", (function(_this) {
+      return function() {
+        return _this.$captureFrame.val(_this.captureFrameVal);
+      };
+    })(this));
+    $("#modal_capture_frame_save").bind("click", (function(_this) {
+      return function() {
+        var fn, type, _ref, _results;
+        _this.captureFrameVal = _this.$captureFrame.val();
+        $("#modal_capture_frame").modal("hide");
+        _ref = _this.event;
+        _results = [];
+        for (type in _ref) {
+          fn = _ref[type];
+          if (type === "change") {
+            _results.push(fn());
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      };
+    })(this));
+    $("#modal_gif_size").on("hidden.bs.modal", (function(_this) {
+      return function() {
+        return _this.$gifSize.val(_this.gifSizeVal);
+      };
+    })(this));
+    $("#modal_gif_size_save").bind("click", (function(_this) {
+      return function() {
+        _this.gifSizeVal = _this.$gifSize.val();
+        return $("#modal_gif_size").modal("hide");
+      };
+    })(this));
+    $("#modal_gif_speed").on("hidden.bs.modal", (function(_this) {
+      return function() {
+        return _this.$gifSpeed.val(_this.gifSpeedVal);
+      };
+    })(this));
+    $("#modal_gif_speed_save").bind("click", (function(_this) {
+      return function() {
+        _this.gifSpeedVal = _this.$gifSpeed.val();
+        return $("#modal_gif_speed").modal("hide");
+      };
+    })(this));
+    $("#modal_effect").on("hide.bs.modal", (function(_this) {
+      return function() {
+        return _this.codeMirrorApi.setValue(_this.effectScript);
+      };
+    })(this));
+    $("#modal_effect_save").bind("click", (function(_this) {
+      return function() {
+        _this.effectScript = _this.codeMirrorApi.getValue();
+        return $("#modal_effect").modal("hide");
+      };
+    })(this));
+    $(".modal-effect-preset").bind("click", {
+      self: this
+    }, function(event) {
+      return event.data.self.codeMirrorApi.setValue(preset[parseInt($(this).attr("data-value"), 10)]);
+    });
+    $("#modal_crop").on("shown.bs.modal", (function(_this) {
+      return function() {
+        var canvas, ctx, video;
+        canvas = $("<canvas>").get(0);
+        ctx = canvas.getContext("2d");
+        video = _this.$video.get(0);
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+        $("#modal_crop_img").get(0).onload = function() {
+          return _this.initJcrop();
+        };
+        return $("#modal_crop_img").attr("src", canvas.toDataURL());
+      };
+    })(this));
+    $("#modal_crop").on("hidden.bs.modal", (function(_this) {
+      return function() {
+        $("#form_crop").prop("checked", _this.crop);
+        _this.jcropApi.destroy();
+        return $("#modal_crop_img").attr("src", "");
+      };
+    })(this));
+    $("#modal_crop_save").bind("click", (function(_this) {
+      return function() {
+        _this.crop = $("#form_crop").prop("checked");
+        return $("#modal_crop").modal("hide");
+      };
+    })(this));
+    $("#form_crop").bind("change", (function(_this) {
+      return function() {
+        if ($("#form_crop").prop("checked")) {
+          _this.jcropApi.enable();
+          return _this.jcropApi.setSelect([0, 0, 50, 50]);
+        } else {
+          _this.jcropApi.release();
+          return _this.jcropApi.disable();
+        }
+      };
+    })(this));
+    _ = this;
+    $(".modal-crop-aspect").bind("click", function() {
+      var aspect;
+      aspect = [0, 1, 4 / 3, 8 / 5, 3 / 4, 5 / 8];
+      return _.jcropApi.setOptions({
+        aspectRatio: aspect[parseInt($(this).attr("data-value"), 10)]
+      });
+    });
+  }
+
+  _settings.prototype.initJcrop = function() {
+    this.jcropApi = $.Jcrop("#modal_crop_img");
+    $("#modal_crop_img").Jcrop({
+      onChange: (function(_this) {
+        return function(c) {
+          return _this.cropCoords = c;
+        };
+      })(this),
+      onSelect: (function(_this) {
+        return function(c) {
+          return _this.cropCoords = c;
+        };
+      })(this)
+    });
+    if (this.crop) {
+      return this.jcropApi.setSelect([this.cropCoords.x, this.cropCoords.y, this.cropCoords.x2, this.cropCoords.y2]);
+    } else {
+      this.jcropApi.release();
+      return this.jcropApi.disable();
+    }
+  };
+
+  _settings.prototype.initCodeMirror = function() {
+    return this.codeMirrorApi = CodeMirror($("#form_effect_holder").get(0), {
+      mode: "javascript",
+      indentUnit: 4,
+      lineNumbers: true,
+      styleActiveLine: true,
+      matchBrackets: true,
+      autoCloseBrackets: true
+    });
+  };
+
+  _settings.prototype.bind = function(type, fn) {
+    return this.event[type] = fn;
+  };
+
+  _settings.prototype.getCaptureFrame = function() {
+    return this.captureFrameVal;
+  };
+
+  _settings.prototype.getGifSpeed = function() {
+    return this.gifSpeedVal;
+  };
+
+  _settings.prototype.getGifSize = function(size) {
+    if (parseInt(this.$gifSize.val(), 10) === -1) {
+      return size;
+    } else {
+      return this.$gifSize.val();
+    }
+  };
+
+  _settings.prototype.getEffectScript = function() {
+    return this.effectScript;
+  };
+
+  _settings.prototype.isCrop = function() {
+    return this.crop;
+  };
+
+  _settings.prototype.getCropCoord = function() {
+    return this.cropCoords;
+  };
+
+  _settings.prototype.disable = function(bool) {
+    if (bool) {
+      return $("#config").addClass("disabled");
+    } else {
+      return $("#config").removeClass("disabled");
+    }
+  };
+
+  return _settings;
+
+})();
+
 Giraf.App = (function(_super) {
   __extends(App, _super);
 
@@ -97,8 +343,9 @@ Giraf.App = (function(_super) {
 
   App.prototype.run = function() {
     return $(function() {
-      var view;
-      return view = new Giraf.View(this.self);
+      var settings, view;
+      view = new Giraf.View(this.self);
+      return settings = new Giraf.Settings(this.self);
     });
   };
 
@@ -445,239 +692,55 @@ Giraf.History = (function(_super) {
 
 })(Giraf._base);
 
-Giraf.Settings = (function() {
-  var captureFrameValues, gifSizeValues, gifSpeedValues;
+Giraf.Settings = (function(_super) {
+  __extends(Settings, _super);
 
-  captureFrameValues = [1, 2, 3, 4, 6, 8, 12, 15, 24, 30];
-
-  gifSpeedValues = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 5];
-
-  gifSizeValues = [40, 80, 120, 240, 320, 480, 640, 720];
-
-  function Settings($video) {
-    var i, _, _i, _j, _k, _len, _len1, _len2;
-    this.$video = $video;
-    this.$captureFrame = $("#form_capture_frame");
-    this.$gifSpeed = $("#form_gif_speed");
-    this.$gifSize = $("#form_gif_size");
-    this.event = {};
-    for (_i = 0, _len = captureFrameValues.length; _i < _len; _i++) {
-      i = captureFrameValues[_i];
-      this.$captureFrame.append("<option value=" + i + ">" + i + "fps</option>");
-    }
-    for (_j = 0, _len1 = gifSpeedValues.length; _j < _len1; _j++) {
-      i = gifSpeedValues[_j];
-      this.$gifSpeed.append("<option value=" + i + ">x" + i + "</option>");
-    }
-    this.$gifSize.append("<option value=-1>元サイズに合わせる</option>");
-    for (_k = 0, _len2 = gifSizeValues.length; _k < _len2; _k++) {
-      i = gifSizeValues[_k];
-      this.$gifSize.append("<option value=" + i + ">" + i + "px</option>");
-    }
-    this.captureFrameVal = 12;
-    this.gifSpeedVal = 1;
-    this.gifSizeVal = -1;
-    this.effectScript = "";
-    this.crop = false;
-    this.$captureFrame.val(this.captureFrameVal);
-    this.$gifSpeed.val(this.gifSpeedVal);
-    this.$gifSize.val(this.gifSizeVal);
-    this.initJcrop();
-    this.initCodeMirror();
-
-    /*@$captureFrame.bind "change", =>
-      if "change" in @event then @event["change"]()
-    @$gifSpeed.bind "change", =>
-      if "change" in @event then @event["change"]()
-    @$gifSize.bind "change", =>
-      if "change" in @event then @event["change"]()
-     */
-    $("#modal_capture_frame").on("hidden.bs.modal", (function(_this) {
-      return function() {
-        return _this.$captureFrame.val(_this.captureFrameVal);
-      };
-    })(this));
-    $("#modal_capture_frame_save").bind("click", (function(_this) {
-      return function() {
-        var fn, type, _ref, _results;
-        _this.captureFrameVal = _this.$captureFrame.val();
-        $("#modal_capture_frame").modal("hide");
-        _ref = _this.event;
-        _results = [];
-        for (type in _ref) {
-          fn = _ref[type];
-          if (type === "change") {
-            _results.push(fn());
-          } else {
-            _results.push(void 0);
-          }
-        }
-        return _results;
-      };
-    })(this));
-    $("#modal_gif_size").on("hidden.bs.modal", (function(_this) {
-      return function() {
-        return _this.$gifSize.val(_this.gifSizeVal);
-      };
-    })(this));
-    $("#modal_gif_size_save").bind("click", (function(_this) {
-      return function() {
-        _this.gifSizeVal = _this.$gifSize.val();
-        return $("#modal_gif_size").modal("hide");
-      };
-    })(this));
-    $("#modal_gif_speed").on("hidden.bs.modal", (function(_this) {
-      return function() {
-        return _this.$gifSpeed.val(_this.gifSpeedVal);
-      };
-    })(this));
-    $("#modal_gif_speed_save").bind("click", (function(_this) {
-      return function() {
-        _this.gifSpeedVal = _this.$gifSpeed.val();
-        return $("#modal_gif_speed").modal("hide");
-      };
-    })(this));
-    $("#modal_effect").on("hide.bs.modal", (function(_this) {
-      return function() {
-        return _this.codeMirrorApi.setValue(_this.effectScript);
-      };
-    })(this));
-    $("#modal_effect_save").bind("click", (function(_this) {
-      return function() {
-        _this.effectScript = _this.codeMirrorApi.getValue();
-        return $("#modal_effect").modal("hide");
-      };
-    })(this));
-    $(".modal-effect-preset").bind("click", {
-      self: this
-    }, function(event) {
-      return event.data.self.codeMirrorApi.setValue(preset[parseInt($(this).attr("data-value"), 10)]);
-    });
-    $("#modal_crop").on("shown.bs.modal", (function(_this) {
-      return function() {
-        var canvas, ctx, video;
-        canvas = $("<canvas>").get(0);
-        ctx = canvas.getContext("2d");
-        video = _this.$video.get(0);
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-        $("#modal_crop_img").get(0).onload = function() {
-          return _this.initJcrop();
-        };
-        return $("#modal_crop_img").attr("src", canvas.toDataURL());
-      };
-    })(this));
-    $("#modal_crop").on("hidden.bs.modal", (function(_this) {
-      return function() {
-        $("#form_crop").prop("checked", _this.crop);
-        _this.jcropApi.destroy();
-        return $("#modal_crop_img").attr("src", "");
-      };
-    })(this));
-    $("#modal_crop_save").bind("click", (function(_this) {
-      return function() {
-        _this.crop = $("#form_crop").prop("checked");
-        return $("#modal_crop").modal("hide");
-      };
-    })(this));
-    $("#form_crop").bind("change", (function(_this) {
-      return function() {
-        if ($("#form_crop").prop("checked")) {
-          _this.jcropApi.enable();
-          return _this.jcropApi.setSelect([0, 0, 50, 50]);
-        } else {
-          _this.jcropApi.release();
-          return _this.jcropApi.disable();
-        }
-      };
-    })(this));
-    _ = this;
-    $(".modal-crop-aspect").bind("click", function() {
-      var aspect;
-      aspect = [0, 1, 4 / 3, 8 / 5, 3 / 4, 5 / 8];
-      return _.jcropApi.setOptions({
-        aspectRatio: aspect[parseInt($(this).attr("data-value"), 10)]
-      });
-    });
+  function Settings(app) {
+    var cookieBinder;
+    this.app = app;
+    cookieBinder = new Giraf.Settings.CookieBinder();
   }
-
-  Settings.prototype.initJcrop = function() {
-    this.jcropApi = $.Jcrop("#modal_crop_img");
-    $("#modal_crop_img").Jcrop({
-      onChange: (function(_this) {
-        return function(c) {
-          return _this.cropCoords = c;
-        };
-      })(this),
-      onSelect: (function(_this) {
-        return function(c) {
-          return _this.cropCoords = c;
-        };
-      })(this)
-    });
-    if (this.crop) {
-      return this.jcropApi.setSelect([this.cropCoords.x, this.cropCoords.y, this.cropCoords.x2, this.cropCoords.y2]);
-    } else {
-      this.jcropApi.release();
-      return this.jcropApi.disable();
-    }
-  };
-
-  Settings.prototype.initCodeMirror = function() {
-    return this.codeMirrorApi = CodeMirror($("#form_effect_holder").get(0), {
-      mode: "javascript",
-      indentUnit: 4,
-      lineNumbers: true,
-      styleActiveLine: true,
-      matchBrackets: true,
-      autoCloseBrackets: true
-    });
-  };
-
-  Settings.prototype.bind = function(type, fn) {
-    return this.event[type] = fn;
-  };
-
-  Settings.prototype.getCaptureFrame = function() {
-    return this.captureFrameVal;
-  };
-
-  Settings.prototype.getGifSpeed = function() {
-    return this.gifSpeedVal;
-  };
-
-  Settings.prototype.getGifSize = function(size) {
-    if (parseInt(this.$gifSize.val(), 10) === -1) {
-      return size;
-    } else {
-      return this.$gifSize.val();
-    }
-  };
-
-  Settings.prototype.getEffectScript = function() {
-    return this.effectScript;
-  };
-
-  Settings.prototype.isCrop = function() {
-    return this.crop;
-  };
-
-  Settings.prototype.getCropCoord = function() {
-    return this.cropCoords;
-  };
-
-  Settings.prototype.disable = function(bool) {
-    if (bool) {
-      return $("#config").addClass("disabled");
-    } else {
-      return $("#config").removeClass("disabled");
-    }
-  };
 
   return Settings;
 
-})();
+})(Giraf._base);
+
+Giraf.Settings._base = (function(_super) {
+  __extends(_base, _super);
+
+  function _base() {
+    return _base.__super__.constructor.apply(this, arguments);
+  }
+
+  return _base;
+
+})(Giraf._base);
+
+Giraf.Settings.CookieBinder = (function(_super) {
+  __extends(CookieBinder, _super);
+
+  function CookieBinder() {
+    $.cookie.json = true;
+  }
+
+  CookieBinder.prototype.set = function(data) {
+    return $.cookie('giraf', {
+      version: 100,
+      data: data
+    });
+  };
+
+  CookieBinder.prototype.get = function() {
+    return $.cookie('giraf');
+  };
+
+  CookieBinder.prototype.clear = function() {
+    return $.removeCookie('giraf');
+  };
+
+  return CookieBinder;
+
+})(Giraf.Settings._base);
 
 Giraf.Task._base = (function(_super) {
   __extends(_base, _super);

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="ブラウザ上で動画からgifアニメを作ります。">
+  <meta name="keywords" content="gif,gifアニメ,動画,giraf,anime,animation">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Giraf</title>
+
+  <link rel="stylesheet" href="css/normalize.css"/>
+  <link rel="stylesheet" href="css/jquery.Jcrop.min.css"/>
+  <link rel="stylesheet" href="css/codemirror.css"/>
+  <link rel="icon" type="image/vnd.microsoft.icon" href="favicon.ico"/>
+
+  <link rel="stylesheet" href="test/lib/mocha.css"/>
+
+</head>
+<body>
+
+<div id="mocha"></div>
+
+<div style="display: none !important;">
+
+<nav id="#nav">
+  <ul class="nav">
+    <li class="dropdown brand">
+      <a class="dropdown-toggle" href="#"></a>
+      <ul class="dropdown-menu">
+        <li class="dropdown-header">Giraf v2.0</li>
+      </ul>
+    </li>
+    <li class="dropdown">
+      <a class="dropdown-toggle" href="#">ファイル</a>
+      <ul class="dropdown-menu">
+        <li><a href="">あああ</a></li>
+        <li><a href="">あ</a></li>
+        <li class="divider"></li>
+        <li class="disabled"><a href="">hoge</a></li>
+        <li><a href="">fuga</a></li>
+        <li><a href="">piyo</a></li>
+      </ul>
+    </li>
+    <li class="dropdown">
+      <a class="dropdown-toggle" href="#">編集</a>
+      <ul class="dropdown-menu">
+      </ul>
+    </li>
+    <li class="dropdown">
+      <a class="dropdown-toggle" href="#">コンポジション</a>
+      <ul class="dropdown-menu">
+      </ul>
+    </li>
+    <li class="dropdown">
+      <a class="dropdown-toggle" href="#">レイヤー</a>
+      <ul class="dropdown-menu">
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<div id="quick" class="hidden">
+  <div id="quick_container">
+    <div id="quick_preview">preview</div>
+    <div id="quick_thumbnail">thumbnail</div>
+    <div id="quick_timeline">timeline</div>
+    <div id="quick_result">result</div>
+  </div>
+</div>
+
+<div id="expert" class="">
+  <div id="expert_container">
+    <div id="expert_project">
+      <div class="panel-container"></div>
+    </div>
+    <div id="expert_composition">
+      <div class="panel-container"></div>
+    </div>
+    <div id="expert_effect">
+      <div class="panel-container"></div>
+    </div>
+    <div id="expert_tool">
+      <div class="panel-container"></div>
+    </div>
+    <div id="expert_node">
+      <div class="panel-container"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script src="js/lib/jquery-2.1.1.min.js"></script>
+<script src="js/lib/jquery.Jcrop.min.js"></script>
+<script src="js/lib/codemirror.min.js"></script>
+<script src="js/lib/mode/javascript/javascript.js"></script>
+<script src="js/lib/addon/edit/closebrackets.js"></script>
+<script src="js/lib/addon/edit/matchbrackets.js"></script>
+<script src="js/lib/addon/selection/active-line.js"></script>
+<script src="js/lib/jquery.cookie.min.js"></script>
+<script src="js/lib/gif.js/dist/gif.js"></script>
+<script src="js/main.js"></script>
+
+<script src="test/lib/mocha.min.js"></script>
+<script src="test/lib/chai.min.js"></script>
+<script>
+  mocha.ui("bdd");
+  mocha.reporter("html");
+  expect = chai.expect;
+</script>
+<script src="test/main.js"></script>
+<script>
+  if (window.mochaPhantomJS) { mochaPhantomJS.run(); }
+  else { mocha.run(); }
+</script>
+
+</body>
+</html>

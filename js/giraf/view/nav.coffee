@@ -2,24 +2,37 @@ class Giraf.View.Nav extends Giraf.View._base
   _selector_dropdown = "li.dropdown"
 
   $dropdowns = null
-  active = false
+  isActive = false
+
 
   constructor: (@$nav) ->
-    $dropdowns = @$nav.find(_selector_dropdown)
+    $dropdowns = @$nav.find _selector_dropdown
 
+    self = @
     $dropdowns.on
       mouseenter: ->
-        $(@).trigger "click" if active
+        self.active @ if isActive
 
       click: ->
-        active = true
-        $dropdowns.each (index, element) ->
-          $(element).removeClass "open"
-        $(@).addClass "open"
+        if not $(@).hasClass "open"
+          self.active @
 
-    $(document).on
-      click: (event) ->
-        if not $.contains $nav.get(0), event.target
-          active = false
-          $dropdowns.each (index, element) ->
-            $(element).removeClass "open"
+    $(document).on "click", (event) ->
+      if not $.contains $nav.get(0), event.target
+        do self.inactive
+
+
+  active: (target) ->
+    isActive = true
+    $dropdowns.each (index, element) ->
+      $(element).removeClass "open"
+    $(target).addClass "open"
+
+
+  inactive: ->
+    isActive = false
+    $dropdowns.each (index, element) ->
+      $(element).removeClass "open"
+
+  isActive: ->
+    return isActive

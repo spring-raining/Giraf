@@ -80,6 +80,10 @@ if (Giraf.View.Expert._base == null) {
   Giraf.View.Expert._base = {};
 }
 
+if (Giraf.View.Modal == null) {
+  Giraf.View.Modal = {};
+}
+
 if (Giraf.View.Nav == null) {
   Giraf.View.Nav = {};
 }
@@ -1047,6 +1051,30 @@ Giraf.View = (function(_super) {
     this.nav = new Giraf.View.Nav($(_selector_nav));
     this.quick = new Giraf.View.Quick($(_selector_quick));
     this.expert = new Giraf.View.Expert($(_selector_expert));
+    $(document).on("click", (function(_this) {
+      return function(event) {
+        var modal;
+        if ($(event.target).attr("data-action") != null) {
+          if ($(event.target).attr("data-action") === "nav_hoge") {
+            _this.nav.inactive();
+            modal = new Giraf.View.Modal;
+            return modal.show({
+              title: "たいとる",
+              content: "<b>ああああ</b>いいいい",
+              action: {
+                yes: {
+                  text: "はい",
+                  primary: true
+                },
+                no: {
+                  text: "いいえ"
+                }
+              }
+            });
+          }
+        }
+      };
+    })(this));
   }
 
   return View;
@@ -1100,8 +1128,65 @@ Giraf.View.Expert._base = (function(_super) {
 
 })(Giraf.View._base);
 
+Giraf.View.Modal = (function(_super) {
+  var createButtonDOM;
+
+  __extends(Modal, _super);
+
+  function Modal() {}
+
+  Modal.prototype.show = function(args) {
+    var action, template;
+    template = _.template("<div class=\"modal\">\n  <div class=\"modal-dialog\">\n    <div class=\"modal-title\"><h3><%- title %></h3></div>\n    <div class=\"modal-content\"><%= content %></div>\n    <div class=\"modal-action\"><%= action %></div>\n  </div>\n</div>");
+    if (args.title == null) {
+      args.title = "";
+    }
+    if (args.content == null) {
+      args.content = "";
+    }
+    action = createButtonDOM.call(this, args.action);
+    $("body").append(template({
+      title: args.title,
+      content: args.content,
+      action: action
+    }));
+    $(".modal").on({
+      click: function(event) {
+        var onEnd;
+        if ($(event.target).hasClass("modal")) {
+          onEnd = function() {
+            return $(".modal").remove();
+          };
+          $(".modal-dialog").bind("transitionend", onEnd);
+          return $(".modal").removeClass("show");
+        }
+      }
+    });
+    return setTimeout(function() {
+      return $(".modal").addClass("show");
+    }, 0);
+  };
+
+  createButtonDOM = function(data) {
+    var arr, button, key, value;
+    arr = [];
+    for (key in data) {
+      value = data[key];
+      button = _.template("<button\n  <% if (primary === true) { print('class=\"button-primary\"'); } %>\n>\n  <%- text %>\n</button>");
+      arr.push(button({
+        primary: value.primary === true,
+        text: value.text
+      }));
+    }
+    return arr.join("");
+  };
+
+  return Modal;
+
+})(Giraf.View._base);
+
 Giraf.View.Nav = (function(_super) {
-  var $dropdowns, active, _selector_dropdown;
+  var $dropdowns, isActive, _selector_dropdown;
 
   __extends(Nav, _super);
 
@@ -1109,36 +1194,50 @@ Giraf.View.Nav = (function(_super) {
 
   $dropdowns = null;
 
-  active = false;
+  isActive = false;
 
   function Nav($nav) {
+    var self;
     this.$nav = $nav;
     $dropdowns = this.$nav.find(_selector_dropdown);
+    self = this;
     $dropdowns.on({
       mouseenter: function() {
-        if (active) {
-          return $(this).trigger("click");
+        if (isActive) {
+          return self.active(this);
         }
       },
       click: function() {
-        active = true;
-        $dropdowns.each(function(index, element) {
-          return $(element).removeClass("open");
-        });
-        return $(this).addClass("open");
-      }
-    });
-    $(document).on({
-      click: function(event) {
-        if (!$.contains($nav.get(0), event.target)) {
-          active = false;
-          return $dropdowns.each(function(index, element) {
-            return $(element).removeClass("open");
-          });
+        if (!$(this).hasClass("open")) {
+          return self.active(this);
         }
       }
     });
+    $(document).on("click", function(event) {
+      if (!$.contains($nav.get(0), event.target)) {
+        return self.inactive();
+      }
+    });
   }
+
+  Nav.prototype.active = function(target) {
+    isActive = true;
+    $dropdowns.each(function(index, element) {
+      return $(element).removeClass("open");
+    });
+    return $(target).addClass("open");
+  };
+
+  Nav.prototype.inactive = function() {
+    isActive = false;
+    return $dropdowns.each(function(index, element) {
+      return $(element).removeClass("open");
+    });
+  };
+
+  Nav.prototype.isActive = function() {
+    return isActive;
+  };
 
   return Nav;
 

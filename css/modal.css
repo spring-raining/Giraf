@@ -1,0 +1,60 @@
+.modal {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, .3);
+    position: fixed;
+    z-index: 1000;
+    opacity: 0;
+    -webkit-transition: opacity 0.3s;
+    transition: opacity 0.3s;
+}
+
+.modal-dialog {
+    max-width: 600px;
+    max-height: 80vh;
+    margin: 10vh auto;
+    padding: 16px;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.4) 0 20px 30px 0;
+    overflow: auto;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+    -webkit-transition: transform 0.3s;
+    transition: transform 0.3s;
+}
+
+.modal.show {
+    opacity: 1;
+}
+
+.modal.show .modal-dialog {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+}
+
+.modal-title {
+    margin: 8px 8px 0 8px;
+}
+
+.modal-content {
+    margin: 0 8px 24px 8px;
+}
+
+.modal-action {
+    height: 36px;
+    text-align: right;
+}
+
+.modal-action button {
+    height: 36px;
+    margin: 0;
+    box-shadow: none;
+    color: #666;
+}
+
+.modal-action button.button-primary {
+    color: #428bca;
+    background-color: transparent;
+}

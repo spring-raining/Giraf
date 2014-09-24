@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="stylesheet" href="css/dropdown.css"/>
   <link rel="stylesheet" href="css/nav.css"/>
+  <link rel="stylesheet" href="css/modal.css"/>
   <link rel="stylesheet" href="css/quick.css"/>
   <link rel="stylesheet" href="css/expert.css"/>
   <link rel="icon" type="image/vnd.microsoft.icon" href="favicon.ico"/>
@@ -27,17 +28,20 @@
       <a class="dropdown-toggle" href="#"></a>
       <ul class="dropdown-menu">
         <li class="dropdown-header">Giraf v2.0</li>
+        <li class="divider"></li>
+        <li><a href="http://github.com/spring-raining/Giraf" target="_blank">Github</a></li>
+        <li><a href="http://harusamex.com" target="_blank">harusamex.com</a></li>
       </ul>
     </li>
     <li class="dropdown">
       <a class="dropdown-toggle" href="#">ファイル</a>
       <ul class="dropdown-menu">
-        <li><a href="">あああ</a></li>
-        <li><a href="">あ</a></li>
+        <li><a data-action="nav_hoge">あああ</a></li>
+        <li><a>あ</a></li>
         <li class="divider"></li>
-        <li class="disabled"><a href="">hoge</a></li>
-        <li><a href="">fuga</a></li>
-        <li><a href="">piyo</a></li>
+        <li class="disabled"><a>hoge</a></li>
+        <li><a>fuga</a></li>
+        <li><a>piyo</a></li>
       </ul>
     </li>
     <li class="dropdown">
@@ -88,6 +92,7 @@
 </div>
 
 <script src="js/lib/jquery-2.1.1.min.js"></script>
+<script src="js/lib/underscore-min.js"></script>
 <script src="js/lib/jquery.Jcrop.min.js"></script>
 <script src="js/lib/codemirror.min.js"></script>
 <script src="js/lib/mode/javascript/javascript.js"></script>

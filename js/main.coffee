@@ -17,6 +17,7 @@ Giraf.View = {} unless Giraf.View?
 Giraf.View._base = {} unless Giraf.View._base?
 Giraf.View.Expert = {} unless Giraf.View.Expert?
 Giraf.View.Expert._base = {} unless Giraf.View.Expert._base?
+Giraf.View.Modal = {} unless Giraf.View.Modal?
 Giraf.View.Nav = {} unless Giraf.View.Nav?
 Giraf.View.Quick = {} unless Giraf.View.Quick?
 Giraf.View.Quick._base = {} unless Giraf.View.Quick._base?
@@ -760,6 +761,24 @@ class Giraf.View extends Giraf._base
     @nav = new Giraf.View.Nav $(_selector_nav)
     @quick = new Giraf.View.Quick $(_selector_quick)
     @expert = new Giraf.View.Expert $(_selector_expert)
+    #@modal = new Giraf.View.Modal
+
+    $(document).on "click", (event) =>
+      if $(event.target).attr("data-action")?
+        if $(event.target).attr("data-action") is "nav_hoge"
+          do @nav.inactive
+          modal = new Giraf.View.Modal
+          modal.show
+            title: "たいとる"
+            content: """
+                     <b>ああああ</b>いいいい
+                     """
+            action:
+              yes:
+                text: "はい"
+                primary: true
+              no:
+                text: "いいえ"
 
 # js/giraf/view/_base.coffee
 
@@ -783,33 +802,100 @@ class Giraf.View.Expert extends Giraf.View._base
 class Giraf.View.Expert._base extends Giraf.View._base
   # Giraf.View.Expert._base
 
+# js/giraf/view/modal.coffee
+
+class Giraf.View.Modal extends Giraf.View._base
+
+  constructor: ->
+
+  show: (args) ->
+    template =  _.template """
+                <div class="modal">
+                  <div class="modal-dialog">
+                    <div class="modal-title"><h3><%- title %></h3></div>
+                    <div class="modal-content"><%= content %></div>
+                    <div class="modal-action"><%= action %></div>
+                  </div>
+                </div>
+                """
+    args.title ?= ""
+    args.content ?= ""
+    action = createButtonDOM.call @, args.action
+    $("body").append template
+      title: args.title
+      content: args.content
+      action: action
+
+    $(".modal").on
+      click: (event) ->
+        if $(event.target).hasClass("modal")
+          onEnd = ->
+            do $(".modal").remove
+
+          $(".modal-dialog").bind "transitionend", onEnd
+          $(".modal").removeClass "show"
+
+    setTimeout ->
+      $(".modal").addClass "show"
+    , 0
+
+
+  createButtonDOM = (data) ->
+    arr = []
+    for key, value of data
+      button = _.template """
+                          <button
+                            <% if (primary === true) { print('class="button-primary"'); } %>
+                          >
+                            <%- text %>
+                          </button>
+                          """
+      arr.push button
+        primary: value.primary is true
+        text: value.text
+    return arr.join ""
+
+
 # js/giraf/view/nav.coffee
 
 class Giraf.View.Nav extends Giraf.View._base
   _selector_dropdown = "li.dropdown"
 
   $dropdowns = null
-  active = false
+  isActive = false
+
 
   constructor: (@$nav) ->
-    $dropdowns = @$nav.find(_selector_dropdown)
+    $dropdowns = @$nav.find _selector_dropdown
 
+    self = @
     $dropdowns.on
       mouseenter: ->
-        $(@).trigger "click" if active
+        self.active @ if isActive
 
       click: ->
-        active = true
-        $dropdowns.each (index, element) ->
-          $(element).removeClass "open"
-        $(@).addClass "open"
+        if not $(@).hasClass "open"
+          self.active @
 
-    $(document).on
-      click: (event) ->
-        if not $.contains $nav.get(0), event.target
-          active = false
-          $dropdowns.each (index, element) ->
-            $(element).removeClass "open"
+    $(document).on "click", (event) ->
+      if not $.contains $nav.get(0), event.target
+        do self.inactive
+
+
+  active: (target) ->
+    isActive = true
+    $dropdowns.each (index, element) ->
+      $(element).removeClass "open"
+    $(target).addClass "open"
+
+
+  inactive: ->
+    isActive = false
+    $dropdowns.each (index, element) ->
+      $(element).removeClass "open"
+
+  isActive: ->
+    return isActive
 
 # js/giraf/view/quick.coffee
 

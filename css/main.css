@@ -4,6 +4,7 @@ html, body {
     font-size: 14px;
     height: 100%;
     overflow: hidden;
+    color: #333;
 }
 
 * {
@@ -29,20 +30,33 @@ ol ul, ul ol, ul ul, ol ol {
 -webkit-margin-after: 0px;
 }
 
+button {
+    color: #333;
+    background-color: #fff;
+    border: 0;
+    border-radius:2px;
+    box-shadow:rgba(0, 0, 0, .3) 0 1px 2px 1px;
+    text-align: center;
+    font-size: 14px;
+    padding: 9px 18px;
+    vertical-align: middle;
+}
+
+button.button-default {
+
+}
+
+button.button-primary {
+    color: #fff;
+    background-color: #428bca;
+}
+
 .hidden {
     display: none !important;
 }
 
 span.glyphicon-cog {
     /*font-size: 1.1em;*/
-}
-
-#logo {
-    background: url(../static/logo.png) no-repeat left center;
-    background-size: 50px;
-    width: 50px;
-    height: 50px;
-    padding-left: 60px;
 }
 
 .jumbotron {

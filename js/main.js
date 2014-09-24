@@ -20,6 +20,18 @@ if (Giraf.App == null) {
   Giraf.App = {};
 }
 
+if (Giraf.Controller == null) {
+  Giraf.Controller = {};
+}
+
+if (Giraf.Controller._base == null) {
+  Giraf.Controller._base = {};
+}
+
+if (Giraf.Controller.Action == null) {
+  Giraf.Controller.Action = {};
+}
+
 if (Giraf.FileHandler == null) {
   Giraf.FileHandler = {};
 }
@@ -342,15 +354,16 @@ Giraf.App = (function(_super) {
 
   function App() {
     this.run = __bind(this.run, this);
-    this.self = this;
+    return App.__super__.constructor.apply(this, arguments);
   }
 
   App.prototype.run = function() {
-    return $(function() {
-      var settings, view;
-      view = new Giraf.View(this.self);
-      return settings = new Giraf.Settings(this.self);
-    });
+    return $((function(_this) {
+      return function() {
+        _this.view = new Giraf.View(_this);
+        return _this.settings = new Giraf.Settings(_this);
+      };
+    })(this));
   };
 
   App.prototype._run = function() {
@@ -587,6 +600,49 @@ Giraf.App = (function(_super) {
   return App;
 
 })(Giraf._base);
+
+Giraf.Controller._base = (function(_super) {
+  __extends(_base, _super);
+
+  function _base() {
+    return _base.__super__.constructor.apply(this, arguments);
+  }
+
+  return _base;
+
+})(Giraf._base);
+
+Giraf.Controller.Action = (function(_super) {
+  __extends(Action, _super);
+
+  function Action(action, app) {
+    var modal;
+    switch (action) {
+      case "nav_hoge":
+        app.view.nav.inactive();
+        modal = new Giraf.View.Modal;
+        modal.show({
+          title: "たいとる",
+          content: "<b>ああああ</b>いいいい",
+          action: {
+            yes: {
+              text: "はい",
+              primary: true
+            },
+            no: {
+              text: "いいえ"
+            }
+          }
+        });
+        break;
+      default:
+        console.log("Action '" + action + "' is not defined.");
+    }
+  }
+
+  return Action;
+
+})(Giraf.Controller._base);
 
 Giraf.FileHandler = (function() {
   function FileHandler(args) {
@@ -1053,25 +1109,8 @@ Giraf.View = (function(_super) {
     this.expert = new Giraf.View.Expert($(_selector_expert));
     $(document).on("click", (function(_this) {
       return function(event) {
-        var modal;
         if ($(event.target).attr("data-action") != null) {
-          if ($(event.target).attr("data-action") === "nav_hoge") {
-            _this.nav.inactive();
-            modal = new Giraf.View.Modal;
-            return modal.show({
-              title: "たいとる",
-              content: "<b>ああああ</b>いいいい",
-              action: {
-                yes: {
-                  text: "はい",
-                  primary: true
-                },
-                no: {
-                  text: "いいえ"
-                }
-              }
-            });
-          }
+          return Giraf.Controller.Action($(event.target).attr("data-action"), app);
         }
       };
     })(this));

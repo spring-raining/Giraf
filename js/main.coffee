@@ -2,6 +2,9 @@ Giraf = {} unless Giraf?
 Giraf._base = {} unless Giraf._base?
 Giraf._settings = {} unless Giraf._settings?
 Giraf.App = {} unless Giraf.App?
+Giraf.Controller = {} unless Giraf.Controller?
+Giraf.Controller._base = {} unless Giraf.Controller._base?
+Giraf.Controller.Action = {} unless Giraf.Controller.Action?
 Giraf.FileHandler = {} unless Giraf.FileHandler?
 Giraf.History = {} unless Giraf.History?
 Giraf.Settings = {} unless Giraf.Settings?
@@ -188,13 +191,10 @@ class Giraf._settings
 
 class Giraf.App extends Giraf._base
 
-  constructor: ->
-    @self = @
-
   run: =>
-    $ ->
-      view = new Giraf.View @self
-      settings = new Giraf.Settings @self
+    $ =>
+      @view = new Giraf.View @
+      @settings = new Giraf.Settings @
 
   _run: ->
     $video = $("#video")
@@ -464,6 +464,34 @@ class Giraf.App extends Giraf._base
               eval settings.getEffectScript()
             $("#result_image").attr "src", canvas.toDataURL()
 
+
+# js/giraf/controller/_base.coffee
+
+class Giraf.Controller._base extends Giraf._base
+  # Giraf.Controller._base 
+
+# js/giraf/controller/action.coffee
+
+class Giraf.Controller.Action extends Giraf.Controller._base
+  constructor: (action, app) ->
+    switch action
+      when "nav_hoge"
+          do app.view.nav.inactive
+          modal = new Giraf.View.Modal
+          modal.show
+            title: "たいとる"
+            content: """
+                     <b>ああああ</b>いいいい
+                     """
+            action:
+              yes:
+                text: "はい"
+                primary: true
+              no:
+                text: "いいえ"
+
+      else
+          console.log "Action '#{action}' is not defined."
 
 # js/giraf/fileHandler.coffee
 
@@ -761,24 +789,10 @@ class Giraf.View extends Giraf._base
     @nav = new Giraf.View.Nav $(_selector_nav)
     @quick = new Giraf.View.Quick $(_selector_quick)
     @expert = new Giraf.View.Expert $(_selector_expert)
-    #@modal = new Giraf.View.Modal
 
     $(document).on "click", (event) =>
       if $(event.target).attr("data-action")?
-        if $(event.target).attr("data-action") is "nav_hoge"
-          do @nav.inactive
-          modal = new Giraf.View.Modal
-          modal.show
-            title: "たいとる"
-            content: """
-                     <b>ああああ</b>いいいい
-                     """
-            action:
-              yes:
-                text: "はい"
-                primary: true
-              no:
-                text: "いいえ"
+        Giraf.Controller.Action $(event.target).attr("data-action"), app
 
 # js/giraf/view/_base.coffee
 

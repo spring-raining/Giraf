@@ -1,12 +1,9 @@
 class Giraf.App extends Giraf._base
 
-  constructor: ->
-    @self = @
-
   run: =>
-    $ ->
-      view = new Giraf.View @self
-      settings = new Giraf.Settings @self
+    $ =>
+      @view = new Giraf.View @
+      @settings = new Giraf.Settings @
 
   _run: ->
     $video = $("#video")

@@ -6,4 +6,7 @@ class Giraf.View.Expert extends Giraf.View._base
   _selector_tool = "#expert_tool > .panel-container"
   _selector_node = "#expert_node > .panel-container"
 
-  constructor: (@$expert) ->
+  constructor: (@app, @$expert) ->
+    @project = new Giraf.View.Expert.Project app, $expert.find _selector_project
+    @droparea = new Giraf.View.Expert.Droparea app, $expert
+

@@ -40,6 +40,18 @@ if (Giraf.History == null) {
   Giraf.History = {};
 }
 
+if (Giraf.Model == null) {
+  Giraf.Model = {};
+}
+
+if (Giraf.Model._base == null) {
+  Giraf.Model._base = {};
+}
+
+if (Giraf.Model.Files == null) {
+  Giraf.Model.Files = {};
+}
+
 if (Giraf.Settings == null) {
   Giraf.Settings = {};
 }
@@ -58,6 +70,14 @@ if (Giraf.Task == null) {
 
 if (Giraf.Task._base == null) {
   Giraf.Task._base = {};
+}
+
+if (Giraf.Task.FileLoader == null) {
+  Giraf.Task.FileLoader = {};
+}
+
+if (Giraf.Task.SelectFile == null) {
+  Giraf.Task.SelectFile = {};
 }
 
 if (Giraf.Thumbnail == null) {
@@ -90,6 +110,14 @@ if (Giraf.View.Expert == null) {
 
 if (Giraf.View.Expert._base == null) {
   Giraf.View.Expert._base = {};
+}
+
+if (Giraf.View.Expert.Droparea == null) {
+  Giraf.View.Expert.Droparea = {};
+}
+
+if (Giraf.View.Expert.Project == null) {
+  Giraf.View.Expert.Project = {};
 }
 
 if (Giraf.View.Modal == null) {
@@ -360,6 +388,8 @@ Giraf.App = (function(_super) {
   App.prototype.run = function() {
     return $((function(_this) {
       return function() {
+        _this.model = {};
+        _this.model.files = new Giraf.Model.Files(_this);
         _this.view = new Giraf.View(_this);
         return _this.settings = new Giraf.Settings(_this);
       };
@@ -615,24 +645,48 @@ Giraf.Controller._base = (function(_super) {
 Giraf.Controller.Action = (function(_super) {
   __extends(Action, _super);
 
-  function Action(action, app) {
-    var modal;
+  function Action(app, action, args) {
+    var fileList, task;
     switch (action) {
-      case "nav_hoge":
-        app.view.nav.inactive();
-        modal = new Giraf.View.Modal;
-        modal.show({
-          title: "たいとる",
-          content: "<b>ああああ</b>いいいい",
-          action: {
-            yes: {
-              text: "はい",
-              primary: true
-            },
-            no: {
-              text: "いいえ"
+      case "drop__import_file":
+        fileList = args.fileList;
+        task = new Giraf.Task.FileLoader;
+        task.run(app, fileList).then(function() {
+          return console.log("done");
+        }, function() {
+          return console.log("failed");
+        });
+        break;
+      case "nav__import_file":
+        app.view.nav.inactive().then(function() {
+          task = new Giraf.Task.SelectFile;
+          return task.run(app);
+        }).then(function(fileList) {
+          task = new Giraf.Task.FileLoader;
+          return task.run(app, fileList);
+        }).then(function() {
+          return console.log("done");
+        }, function() {
+          return console.log("failed");
+        });
+        break;
+      case "nav__hoge":
+        app.view.nav.inactive().then(function() {
+          var modal;
+          modal = new Giraf.View.Modal;
+          return modal.show({
+            title: "たいとる",
+            content: "<b>ああああ</b>いいいい",
+            action: {
+              yes: {
+                text: "はい",
+                primary: true
+              },
+              no: {
+                text: "いいえ"
+              }
             }
-          }
+          });
         });
         break;
       default:
@@ -752,6 +806,45 @@ Giraf.History = (function(_super) {
 
 })(Giraf._base);
 
+Giraf.Model._base = (function(_super) {
+  __extends(_base, _super);
+
+  function _base() {
+    return _base.__super__.constructor.apply(this, arguments);
+  }
+
+  return _base;
+
+})(Giraf._base);
+
+Giraf.Model.Files = (function(_super) {
+  __extends(Files, _super);
+
+  function Files(app) {
+    this.app = app;
+    this.files = [];
+  }
+
+  Files.prototype.append = function(file, content) {
+    return this.files.push(new Giraf.Model.Files.File(file, content));
+  };
+
+  return Files;
+
+})(Giraf.Model._base);
+
+Giraf.Model.Files.File = (function(_super) {
+  __extends(File, _super);
+
+  function File(file, content) {
+    this.file = file;
+    this.content = content;
+  }
+
+  return File;
+
+})(Giraf.Model._base);
+
 Giraf.Settings = (function(_super) {
   __extends(Settings, _super);
 
@@ -779,7 +872,8 @@ Giraf.Settings._base = (function(_super) {
 Giraf.Settings.CookieBinder = (function(_super) {
   __extends(CookieBinder, _super);
 
-  function CookieBinder() {
+  function CookieBinder(app) {
+    this.app = app;
     $.cookie.json = true;
   }
 
@@ -812,6 +906,89 @@ Giraf.Task._base = (function(_super) {
   return _base;
 
 })(Giraf._base);
+
+Giraf.Task.FileLoader = (function(_super) {
+  var readFile;
+
+  __extends(FileLoader, _super);
+
+  function FileLoader() {
+    return FileLoader.__super__.constructor.apply(this, arguments);
+  }
+
+  FileLoader.prototype.run = function(app, files) {
+    var d, file, tasks, _i, _len;
+    d = $.Deferred();
+    tasks = [];
+    for (_i = 0, _len = files.length; _i < _len; _i++) {
+      file = files[_i];
+      tasks.push((function() {
+        var d_;
+        d_ = $.Deferred();
+        readFile.call(this, file).then(function(file, content) {
+          app.model.files.append(file, content);
+          return d_.resolve();
+        }, function() {
+          return d_.reject();
+        });
+        return d_.promise();
+      })());
+    }
+    $.when.apply($, tasks).then(function() {
+      return d.resolve();
+    }, function() {
+      return d.reject();
+    });
+    return d.promise();
+  };
+
+  readFile = function(file) {
+    var d, reader;
+    d = $.Deferred();
+    reader = new FileReader;
+    reader.onload = function() {
+      return d.resolve(file, reader.result);
+    };
+    reader.onerror = function(error) {
+      return d.reject(error);
+    };
+    reader.readAsDataURL(file);
+    return d.promise();
+  };
+
+  return FileLoader;
+
+})(Giraf.Task._base);
+
+Giraf.Task.SelectFile = (function(_super) {
+  __extends(SelectFile, _super);
+
+  function SelectFile() {
+    return SelectFile.__super__.constructor.apply(this, arguments);
+  }
+
+  SelectFile.prototype.run = function(app) {
+    var $input, d, inputId;
+    d = new $.Deferred;
+    inputId = "SelectFile";
+    $input = $("#" + inputId);
+    if ($input.get(0) == null) {
+      $("body").append("<input type=\"file\" name=\"file\" id=\"" + inputId + "\" class=\"hidden\" value=\"\" multiple=\"multiple\"/>");
+      $input = $("#" + inputId);
+    }
+    $input.on("change", function() {
+      var fileList;
+      fileList = $input.get(0).files;
+      $input.remove();
+      return d.resolve(fileList);
+    });
+    $input.trigger("click");
+    return d.promise();
+  };
+
+  return SelectFile;
+
+})(Giraf.Task._base);
 
 Giraf.Thumbnail = (function() {
   function Thumbnail(app, id, $canvas, $video, $backVideo) {
@@ -1104,13 +1281,12 @@ Giraf.View = (function(_super) {
 
   function View(app) {
     this.app = app;
-    this.nav = new Giraf.View.Nav($(_selector_nav));
-    this.quick = new Giraf.View.Quick($(_selector_quick));
-    this.expert = new Giraf.View.Expert($(_selector_expert));
+    this.nav = new Giraf.View.Nav(app, $(_selector_nav));
+    this.expert = new Giraf.View.Expert(app, $(_selector_expert));
     $(document).on("click", (function(_this) {
       return function(event) {
         if ($(event.target).attr("data-action") != null) {
-          return Giraf.Controller.Action($(event.target).attr("data-action"), app);
+          return Giraf.Controller.Action(app, $(event.target).attr("data-action"));
         }
       };
     })(this));
@@ -1148,8 +1324,11 @@ Giraf.View.Expert = (function(_super) {
 
   _selector_node = "#expert_node > .panel-container";
 
-  function Expert($expert) {
+  function Expert(app, $expert) {
+    this.app = app;
     this.$expert = $expert;
+    this.project = new Giraf.View.Expert.Project(app, $expert.find(_selector_project));
+    this.droparea = new Giraf.View.Expert.Droparea(app, $expert);
   }
 
   return Expert;
@@ -1166,6 +1345,87 @@ Giraf.View.Expert._base = (function(_super) {
   return _base;
 
 })(Giraf.View._base);
+
+Giraf.View.Expert.Droparea = (function(_super) {
+  var innerAcitve, isActive;
+
+  __extends(Droparea, _super);
+
+  isActive = false;
+
+  innerAcitve = 0;
+
+  function Droparea(app, $droparea) {
+    this.app = app;
+    this.$droparea = $droparea;
+    $droparea.on("dragstart", (function(_this) {
+      return function() {
+        return true;
+      };
+    })(this)).on("dragover", (function(_this) {
+      return function() {
+        return false;
+      };
+    })(this)).on("dragenter", (function(_this) {
+      return function() {
+        if (isActive) {
+          innerAcitve++;
+        } else {
+          _this.show();
+        }
+        return false;
+      };
+    })(this)).on("dragleave", (function(_this) {
+      return function() {
+        if (innerAcitve > 0) {
+          return innerAcitve--;
+        } else {
+          return _this.hide();
+        }
+      };
+    })(this)).on("drop", (function(_this) {
+      return function(event) {
+        var files;
+        innerAcitve = false;
+        _this.hide();
+        files = event.originalEvent.dataTransfer.files;
+        if (files.length > 0) {
+          Giraf.Controller.Action(app, "drop__import_file", {
+            fileList: files
+          });
+        }
+        return false;
+      };
+    })(this));
+  }
+
+  Droparea.prototype.show = function() {
+    var template;
+    isActive = true;
+    template = _.template("<div class=\"droparea\">\n  <div class=\"droparea-label\">\n    <h3>ドロップでファイル読み込み</h3>\n  </div>\n</div>");
+    return this.$droparea.append(template());
+  };
+
+  Droparea.prototype.hide = function() {
+    isActive = false;
+    return $(".droparea").remove();
+  };
+
+  return Droparea;
+
+})(Giraf.View.Expert._base);
+
+Giraf.View.Expert.Project = (function(_super) {
+  __extends(Project, _super);
+
+  function Project(app, $project) {
+    this.app = app;
+    this.$project = $project;
+  }
+
+  return Project;
+
+})(Giraf.View.Expert._base);
 
 Giraf.View.Modal = (function(_super) {
   var createButtonDOM;
@@ -1235,43 +1495,51 @@ Giraf.View.Nav = (function(_super) {
 
   isActive = false;
 
-  function Nav($nav) {
+  function Nav(app, $nav) {
     var self;
+    this.app = app;
     this.$nav = $nav;
     $dropdowns = this.$nav.find(_selector_dropdown);
     self = this;
-    $dropdowns.on({
-      mouseenter: function() {
-        if (isActive) {
-          return self.active(this);
-        }
-      },
-      click: function() {
-        if (!$(this).hasClass("open")) {
-          return self.active(this);
-        }
+    $dropdowns.on("mouseenter", function() {
+      if (isActive) {
+        return self.active(this);
       }
     });
     $(document).on("click", function(event) {
       if (!$.contains($nav.get(0), event.target)) {
         return self.inactive();
+      } else if ($(event.target).hasClass("dropdown-toggle")) {
+        return self.active($(event.target).parent(".dropdown"));
       }
     });
   }
 
   Nav.prototype.active = function(target) {
+    var d;
+    d = new $.Deferred;
     isActive = true;
     $dropdowns.each(function(index, element) {
       return $(element).removeClass("open");
     });
-    return $(target).addClass("open");
+    $(target).addClass("open");
+    setTimeout(function() {
+      return d.resolve();
+    }, 30);
+    return d.promise();
   };
 
   Nav.prototype.inactive = function() {
+    var d;
+    d = new $.Deferred;
     isActive = false;
-    return $dropdowns.each(function(index, element) {
+    $dropdowns.each(function(index, element) {
       return $(element).removeClass("open");
     });
+    setTimeout(function() {
+      return d.resolve();
+    }, 30);
+    return d.promise();
   };
 
   Nav.prototype.isActive = function() {

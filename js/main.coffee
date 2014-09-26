@@ -7,11 +7,16 @@ Giraf.Controller._base = {} unless Giraf.Controller._base?
 Giraf.Controller.Action = {} unless Giraf.Controller.Action?
 Giraf.FileHandler = {} unless Giraf.FileHandler?
 Giraf.History = {} unless Giraf.History?
+Giraf.Model = {} unless Giraf.Model?
+Giraf.Model._base = {} unless Giraf.Model._base?
+Giraf.Model.Files = {} unless Giraf.Model.Files?
 Giraf.Settings = {} unless Giraf.Settings?
 Giraf.Settings._base = {} unless Giraf.Settings._base?
 Giraf.Settings.CookieBinder = {} unless Giraf.Settings.CookieBinder?
 Giraf.Task = {} unless Giraf.Task?
 Giraf.Task._base = {} unless Giraf.Task._base?
+Giraf.Task.FileLoader = {} unless Giraf.Task.FileLoader?
+Giraf.Task.SelectFile = {} unless Giraf.Task.SelectFile?
 Giraf.Thumbnail = {} unless Giraf.Thumbnail?
 Giraf.Thumbnails = {} unless Giraf.Thumbnails?
 Giraf.Timeline = {} unless Giraf.Timeline?
@@ -20,6 +25,8 @@ Giraf.View = {} unless Giraf.View?
 Giraf.View._base = {} unless Giraf.View._base?
 Giraf.View.Expert = {} unless Giraf.View.Expert?
 Giraf.View.Expert._base = {} unless Giraf.View.Expert._base?
+Giraf.View.Expert.Droparea = {} unless Giraf.View.Expert.Droparea?
+Giraf.View.Expert.Project = {} unless Giraf.View.Expert.Project?
 Giraf.View.Modal = {} unless Giraf.View.Modal?
 Giraf.View.Nav = {} unless Giraf.View.Nav?
 Giraf.View.Quick = {} unless Giraf.View.Quick?
@@ -193,6 +200,8 @@ class Giraf.App extends Giraf._base
 
   run: =>
     $ =>
+      @model = {}
+      @model.files = new Giraf.Model.Files @
       @view = new Giraf.View @
       @settings = new Giraf.Settings @
 
@@ -473,22 +482,43 @@ class Giraf.Controller._base extends Giraf._base
 # js/giraf/controller/action.coffee
 
 class Giraf.Controller.Action extends Giraf.Controller._base
-  constructor: (action, app) ->
+  constructor: (app, action, args) ->
     switch action
-      when "nav_hoge"
-          do app.view.nav.inactive
-          modal = new Giraf.View.Modal
-          modal.show
-            title: "たいとる"
-            content: """
-                     <b>ああああ</b>いいいい
-                     """
-            action:
-              yes:
-                text: "はい"
-                primary: true
-              no:
-                text: "いいえ"
+      when "drop__import_file"
+          fileList = args.fileList
+          task = new Giraf.Task.FileLoader
+          task.run app, fileList
+          .then ->
+            console.log "done"
+          , ->
+            console.log "failed"
+      when "nav__import_file"
+          app.view.nav.inactive()
+          .then ->
+            task = new Giraf.Task.SelectFile
+            task.run app
+          .then (fileList) ->
+            task = new Giraf.Task.FileLoader
+            task.run app, fileList
+          .then ->
+            console.log "done"
+          , ->
+            console.log "failed"
+      when "nav__hoge"
+          app.view.nav.inactive()
+          .then ->
+            modal = new Giraf.View.Modal
+            modal.show
+              title: "たいとる"
+              content: """
+                       <b>ああああ</b>いいいい
+                       """
+              action:
+                yes:
+                  text: "はい"
+                  primary: true
+                no:
+                  text: "いいえ"
 
       else
           console.log "Action '#{action}' is not defined."
@@ -567,6 +597,24 @@ class Giraf.FileHandler
 class Giraf.History extends Giraf._base
 
 
+# js/giraf/model/_base.coffee
+
+class Giraf.Model._base extends Giraf._base
+  # Giraf.Model._base
+
+# js/giraf/model/files.coffee
+
+class Giraf.Model.Files extends Giraf.Model._base
+  constructor: (@app) ->
+    @files = []
+
+  append: (file, content)->
+    @files.push new Giraf.Model.Files.File file, content
+
+
+class Giraf.Model.Files.File extends Giraf.Model._base
+  constructor: (@file, @content) ->
+
 # js/giraf/settings.coffee
 
 class Giraf.Settings extends Giraf._base
@@ -583,7 +631,7 @@ class Giraf.Settings._base extends Giraf._base
 
 class Giraf.Settings.CookieBinder extends Giraf.Settings._base
 
-  constructor: ->
+  constructor: (@app) ->
     $.cookie.json = true
 
   set: (data) ->
@@ -601,6 +649,64 @@ class Giraf.Settings.CookieBinder extends Giraf.Settings._base
 
 class Giraf.Task._base extends Giraf._base
   # Giraf.Task._base
+
+# js/giraf/task/fileLoader.coffee
+
+class Giraf.Task.FileLoader extends Giraf.Task._base
+  run: (app, files) ->
+    d = do $.Deferred
+    tasks = []
+
+    for file in files
+      tasks.push do ->
+        d_ = do $.Deferred
+        readFile.call @, file
+          .then (file, content) ->
+            app.model.files.append file, content
+            do d_.resolve
+          , ->
+            do d_.reject
+        do d_.promise
+
+    $.when.apply $, tasks
+      .then ->
+        do d.resolve
+      , ->
+        do d.reject
+
+    do d.promise
+
+  readFile = (file) ->
+    d = do $.Deferred
+    reader = new FileReader
+    reader.onload = ->
+      d.resolve file, reader.result
+    reader.onerror = (error) ->
+      d.reject error
+    reader.readAsDataURL file
+
+    do d.promise
+
+# js/giraf/task/selectFile.coffee
+
+class Giraf.Task.SelectFile extends Giraf.Task._base
+  run: (app) ->
+    d = new $.Deferred
+    inputId = "SelectFile"
+    $input = $("##{inputId}")
+    unless $input.get(0)?
+      $("body").append """
+                       <input type="file" name="file" id="#{inputId}" class="hidden" value="" multiple="multiple"/>
+                       """
+      $input = $("##{inputId}")
+
+    $input.on "change", ->
+      fileList = $input.get(0).files
+      do $input.remove
+      d.resolve fileList
+
+    $input.trigger "click"
+    do d.promise
 
 # js/giraf/thumbnail.coffee
 
@@ -786,13 +892,12 @@ class Giraf.View extends Giraf._base
   _selector_expert = "#expert"
 
   constructor: (@app) ->
-    @nav = new Giraf.View.Nav $(_selector_nav)
-    @quick = new Giraf.View.Quick $(_selector_quick)
-    @expert = new Giraf.View.Expert $(_selector_expert)
+    @nav = new Giraf.View.Nav app, $(_selector_nav)
+    @expert = new Giraf.View.Expert app, $(_selector_expert)
 
     $(document).on "click", (event) =>
       if $(event.target).attr("data-action")?
-        Giraf.Controller.Action $(event.target).attr("data-action"), app
+        Giraf.Controller.Action app, $(event.target).attr("data-action")
 
 # js/giraf/view/_base.coffee
 
@@ -809,12 +914,73 @@ class Giraf.View.Expert extends Giraf.View._base
   _selector_tool = "#expert_tool > .panel-container"
   _selector_node = "#expert_node > .panel-container"
 
-  constructor: (@$expert) ->
+  constructor: (@app, @$expert) ->
+    @project = new Giraf.View.Expert.Project app, $expert.find _selector_project
+    @droparea = new Giraf.View.Expert.Droparea app, $expert
+
+
 
 # js/giraf/view/expert/_base.coffee
 
 class Giraf.View.Expert._base extends Giraf.View._base
   # Giraf.View.Expert._base
+
+# js/giraf/view/expert/droparea.coffee
+
+class Giraf.View.Expert.Droparea extends Giraf.View.Expert._base
+  isActive = false
+  innerAcitve = 0
+
+  constructor: (@app, @$droparea) ->
+    $droparea
+      .on "dragstart", =>
+        true
+      .on "dragover", =>
+        false
+      .on "dragenter", =>
+        if isActive
+          innerAcitve++
+        else
+          do @show
+        false
+      .on "dragleave", =>
+        if innerAcitve > 0
+          innerAcitve--
+        else
+          do @hide
+      .on "drop", (event) =>
+        innerAcitve = false
+        do @hide
+        files = event
+          .originalEvent
+          .dataTransfer
+          .files
+        if files.length > 0
+          Giraf.Controller.Action app, "drop__import_file",
+            fileList: files
+        false
+
+  show: ->
+    isActive = true
+    template = _.template """
+                          <div class="droparea">
+                            <div class="droparea-label">
+                              <h3>ドロップでファイル読み込み</h3>
+                            </div>
+                          </div>
+                          """
+    @$droparea.append template()
+
+  hide: ->
+    isActive = false
+    do $(".droparea").remove
+
+# js/giraf/view/expert/project.coffee
+
+class Giraf.View.Expert.Project extends Giraf.View.Expert._base
+
+  constructor: (@app, @$project)->
+
 
 # js/giraf/view/modal.coffee
 
@@ -879,34 +1045,41 @@ class Giraf.View.Nav extends Giraf.View._base
   isActive = false
 
 
-  constructor: (@$nav) ->
+  constructor: (@app, @$nav) ->
     $dropdowns = @$nav.find _selector_dropdown
 
     self = @
-    $dropdowns.on
-      mouseenter: ->
+    $dropdowns
+      .on "mouseenter", ->
         self.active @ if isActive
-
-      click: ->
-        if not $(@).hasClass "open"
-          self.active @
 
     $(document).on "click", (event) ->
       if not $.contains $nav.get(0), event.target
         do self.inactive
+      else if $(event.target).hasClass "dropdown-toggle"
+        self.active $(event.target).parent(".dropdown")
 
 
   active: (target) ->
+    d = new $.Deferred
     isActive = true
     $dropdowns.each (index, element) ->
       $(element).removeClass "open"
     $(target).addClass "open"
-
+    setTimeout ->
+      do d.resolve
+    , 30
+    do d.promise
 
   inactive: ->
+    d = new $.Deferred
     isActive = false
     $dropdowns.each (index, element) ->
       $(element).removeClass "open"
+    setTimeout ->
+      do d.resolve
+    , 30
+    do d.promise
 
   isActive: ->
     return isActive

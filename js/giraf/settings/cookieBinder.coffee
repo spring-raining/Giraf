@@ -1,6 +1,6 @@
 class Giraf.Settings.CookieBinder extends Giraf.Settings._base
 
-  constructor: ->
+  constructor: (@app) ->
     $.cookie.json = true
 
   set: (data) ->

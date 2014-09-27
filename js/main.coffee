@@ -21,6 +21,7 @@ Giraf.Thumbnail = {} unless Giraf.Thumbnail?
 Giraf.Thumbnails = {} unless Giraf.Thumbnails?
 Giraf.Timeline = {} unless Giraf.Timeline?
 Giraf.Timelines = {} unless Giraf.Timelines?
+Giraf.Tools = {} unless Giraf.Tools?
 Giraf.View = {} unless Giraf.View?
 Giraf.View._base = {} unless Giraf.View._base?
 Giraf.View.Expert = {} unless Giraf.View.Expert?
@@ -606,14 +607,34 @@ class Giraf.Model._base extends Giraf._base
 
 class Giraf.Model.Files extends Giraf.Model._base
   constructor: (@app) ->
-    @files = []
+    @files = {}
 
   append: (file, content)->
-    @files.push new Giraf.Model.Files.File file, content
+    uuid = do Giraf.Tools.uuid
+    @files[uuid] = new Giraf.Model.Files.File @app, uuid, file, (content ? undefined)
+    return uuid
+
+  setContent: (uuid, content) ->
+    @files[uuid]?.setContent content
 
 
 class Giraf.Model.Files.File extends Giraf.Model._base
-  constructor: (@file, @content) ->
+  ###
+    statusが変更されるときにstatusChangedが発火される
+    null
+    loading   ロード中（@contentがセットされていない）
+    normal    ロード完了・通常状態（@contentがセットされている）
+    dying     削除されるときに発火
+  ###
+
+  constructor: (@app, @uuid, @file, @content) ->
+    @status = if @content? then "normal" else "loading"
+    @project = @app.view.expert.project.append @
+
+  setContent: (content) ->
+    @content = content
+    @status = "normal"
+    $(@).triggerHandler "statusChanged", @status
 
 # js/giraf/settings.coffee
 
@@ -660,9 +681,10 @@ class Giraf.Task.FileLoader extends Giraf.Task._base
     for file in files
       tasks.push do ->
         d_ = do $.Deferred
+        uuid = app.model.files.append file
         readFile.call @, file
           .then (file, content) ->
-            app.model.files.append file, content
+            app.model.files.setContent uuid, content
             do d_.resolve
           , ->
             do d_.reject
@@ -702,7 +724,6 @@ class Giraf.Task.SelectFile extends Giraf.Task._base
 
     $input.on "change", ->
       fileList = $input.get(0).files
-      do $input.remove
       d.resolve fileList
 
     $input.trigger "click"
@@ -884,6 +905,15 @@ class Giraf.Timelines
       a = a and tl.isValidTime()
     if a and @tls.length > 0 then $("#make").removeClass "disabled" else $("#make").addClass "disabled"
 
+# js/giraf/tools.coffee
+
+class Giraf.Tools extends Giraf._base
+  @uuid: ->
+    # http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+    s4 = ->
+      return `(((1+Math.random())*0x10000)|0).toString(16).substring(1)`
+    return `s4()+s4()+'-'+s4()+'-'+s4()+'-'+s4()+'-'+ s4()+s4()+s4()`
+
 # js/giraf/view.coffee
 
 class Giraf.View extends Giraf._base
@@ -979,8 +1009,63 @@ class Giraf.View.Expert.Droparea extends Giraf.View.Expert._base
 
 class Giraf.View.Expert.Project extends Giraf.View.Expert._base
 
-  constructor: (@app, @$project)->
+  constructor: (@app, @$project) ->
+    @pieces = {}
 
+  append: (referer) ->
+    piece = null
+    if referer instanceof Giraf.Model.Files.File
+      piece = new Giraf.View.Expert.Project.Piece.File(referer)
+
+    if piece?
+      @pieces[piece.uuid] = piece
+      @$project.append do piece.html
+      return piece
+
+###
+  File    referer     Giraf.Model.Files.File
+          type        "file"
+          uuid        referer.uuid
+          title       referer.file.name
+###
+
+class Giraf.View.Expert.Project.Piece
+  constructor: (@referer, @type, @uuid, @title) ->
+    $(referer).on "statusChanged", (event, status) ->
+      $target = $ ".project-piece[data-referer-uuid=#{uuid}]"
+      switch status
+        when "loading"
+          $target.addClass "loading"
+        when "normal"
+          $target.removeClass "loading"
+        when "dying"
+          do $target.remove
+        else
+
+  html: ->
+    template = _.template """
+                          <div class="project-piece" data-referer-type="<%- type %>" data-referer-uuid="<%- uuid %>">
+                            <div class="project-piece-tag"></div>
+                            <div class="project-piece-content">
+                              <img class="project-piece-thumbnail"/>
+                              <div class="project-piece-title"><%- title %></div>
+                            </div>
+                          </div>
+                          """
+    return template
+      type: @type ? ""
+      uuid: @uuid ? ""
+      title: @title ? ""
+
+class Giraf.View.Expert.Project.Piece.File extends Giraf.View.Expert.Project.Piece
+  constructor: (@referer) ->
+    super referer, "file", referer.uuid, referer.file.name
+
+  html: ->
+    $rtn = $ super()
+    if @referer.status is "loading"
+      $rtn.addClass "loading"
+    return $rtn.get(0)
 
 # js/giraf/view/modal.coffee
 

@@ -96,6 +96,10 @@ if (Giraf.Timelines == null) {
   Giraf.Timelines = {};
 }
 
+if (Giraf.Tools == null) {
+  Giraf.Tools = {};
+}
+
 if (Giraf.View == null) {
   Giraf.View = {};
 }
@@ -822,11 +826,19 @@ Giraf.Model.Files = (function(_super) {
 
   function Files(app) {
     this.app = app;
-    this.files = [];
+    this.files = {};
   }
 
   Files.prototype.append = function(file, content) {
-    return this.files.push(new Giraf.Model.Files.File(file, content));
+    var uuid;
+    uuid = Giraf.Tools.uuid();
+    this.files[uuid] = new Giraf.Model.Files.File(this.app, uuid, file, content != null ? content : void 0);
+    return uuid;
+  };
+
+  Files.prototype.setContent = function(uuid, content) {
+    var _ref;
+    return (_ref = this.files[uuid]) != null ? _ref.setContent(content) : void 0;
   };
 
   return Files;
@@ -836,10 +848,29 @@ Giraf.Model.Files = (function(_super) {
 Giraf.Model.Files.File = (function(_super) {
   __extends(File, _super);
 
-  function File(file, content) {
+
+  /*
+    statusが変更されるときにstatusChangedが発火される
+    null
+    loading   ロード中（@contentがセットされていない）
+    normal    ロード完了・通常状態（@contentがセットされている）
+    dying     削除されるときに発火
+   */
+
+  function File(app, uuid, file, content) {
+    this.app = app;
+    this.uuid = uuid;
     this.file = file;
     this.content = content;
+    this.status = this.content != null ? "normal" : "loading";
+    this.project = this.app.view.expert.project.append(this);
   }
+
+  File.prototype.setContent = function(content) {
+    this.content = content;
+    this.status = "normal";
+    return $(this).triggerHandler("statusChanged", this.status);
+  };
 
   return File;
 
@@ -923,10 +954,11 @@ Giraf.Task.FileLoader = (function(_super) {
     for (_i = 0, _len = files.length; _i < _len; _i++) {
       file = files[_i];
       tasks.push((function() {
-        var d_;
+        var d_, uuid;
         d_ = $.Deferred();
+        uuid = app.model.files.append(file);
         readFile.call(this, file).then(function(file, content) {
-          app.model.files.append(file, content);
+          app.model.files.setContent(uuid, content);
           return d_.resolve();
         }, function() {
           return d_.reject();
@@ -979,7 +1011,6 @@ Giraf.Task.SelectFile = (function(_super) {
     $input.on("change", function() {
       var fileList;
       fileList = $input.get(0).files;
-      $input.remove();
       return d.resolve(fileList);
     });
     $input.trigger("click");
@@ -1268,6 +1299,25 @@ Giraf.Timelines = (function() {
 
 })();
 
+Giraf.Tools = (function(_super) {
+  __extends(Tools, _super);
+
+  function Tools() {
+    return Tools.__super__.constructor.apply(this, arguments);
+  }
+
+  Tools.uuid = function() {
+    var s4;
+    s4 = function() {
+      return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return s4()+s4()+'-'+s4()+'-'+s4()+'-'+s4()+'-'+ s4()+s4()+s4();
+  };
+
+  return Tools;
+
+})(Giraf._base);
+
 Giraf.View = (function(_super) {
   var _selector_expert, _selector_nav, _selector_quick;
 
@@ -1421,11 +1471,88 @@ Giraf.View.Expert.Project = (function(_super) {
   function Project(app, $project) {
     this.app = app;
     this.$project = $project;
+    this.pieces = {};
   }
+
+  Project.prototype.append = function(referer) {
+    var piece;
+    piece = null;
+    if (referer instanceof Giraf.Model.Files.File) {
+      piece = new Giraf.View.Expert.Project.Piece.File(referer);
+    }
+    if (piece != null) {
+      this.pieces[piece.uuid] = piece;
+      this.$project.append(piece.html());
+      return piece;
+    }
+  };
 
   return Project;
 
 })(Giraf.View.Expert._base);
+
+
+/*
+  File    referer     Giraf.Model.Files.File
+          type        "file"
+          uuid        referer.uuid
+          title       referer.file.name
+ */
+
+Giraf.View.Expert.Project.Piece = (function() {
+  function Piece(referer, type, uuid, title) {
+    this.referer = referer;
+    this.type = type;
+    this.uuid = uuid;
+    this.title = title;
+    $(referer).on("statusChanged", function(event, status) {
+      var $target;
+      $target = $(".project-piece[data-referer-uuid=" + uuid + "]");
+      switch (status) {
+        case "loading":
+          return $target.addClass("loading");
+        case "normal":
+          return $target.removeClass("loading");
+        case "dying":
+          return $target.remove();
+      }
+    });
+  }
+
+  Piece.prototype.html = function() {
+    var template, _ref, _ref1, _ref2;
+    template = _.template("<div class=\"project-piece\" data-referer-type=\"<%- type %>\" data-referer-uuid=\"<%- uuid %>\">\n  <div class=\"project-piece-tag\"></div>\n  <div class=\"project-piece-content\">\n    <img class=\"project-piece-thumbnail\"/>\n    <div class=\"project-piece-title\"><%- title %></div>\n  </div>\n</div>");
+    return template({
+      type: (_ref = this.type) != null ? _ref : "",
+      uuid: (_ref1 = this.uuid) != null ? _ref1 : "",
+      title: (_ref2 = this.title) != null ? _ref2 : ""
+    });
+  };
+
+  return Piece;
+
+})();
+
+Giraf.View.Expert.Project.Piece.File = (function(_super) {
+  __extends(File, _super);
+
+  function File(referer) {
+    this.referer = referer;
+    File.__super__.constructor.call(this, referer, "file", referer.uuid, referer.file.name);
+  }
+
+  File.prototype.html = function() {
+    var $rtn;
+    $rtn = $(File.__super__.html.call(this));
+    if (this.referer.status === "loading") {
+      $rtn.addClass("loading");
+    }
+    return $rtn.get(0);
+  };
+
+  return File;
+
+})(Giraf.View.Expert.Project.Piece);
 
 Giraf.View.Modal = (function(_super) {
   var createButtonDOM;

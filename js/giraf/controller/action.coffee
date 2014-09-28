@@ -9,6 +9,15 @@ class Giraf.Controller.Action extends Giraf.Controller._base
             console.log "done"
           , ->
             console.log "failed"
+      when "expert__project__change_target"
+          console.log args
+      when "expert__project__refresh_composition"
+          task = new Giraf.Task.RefreshComposition
+          task.run app, $(args.element).attr "data-referer-uuid"
+          .then ->
+            console.log "done"
+          , ->
+            console.log "failed"
       when "nav__import_file"
           app.view.nav.inactive()
           .then ->

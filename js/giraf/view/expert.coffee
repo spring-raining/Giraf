@@ -8,5 +8,6 @@ class Giraf.View.Expert extends Giraf.View._base
 
   constructor: (@app, @$expert) ->
     @project = new Giraf.View.Expert.Project app, $expert.find _selector_project
+    @composition = new Giraf.View.Expert.Composition app, $expert.find _selector_composition
     @droparea = new Giraf.View.Expert.Droparea app, $expert
 

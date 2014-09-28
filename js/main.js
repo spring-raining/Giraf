@@ -76,6 +76,10 @@ if (Giraf.Task.FileLoader == null) {
   Giraf.Task.FileLoader = {};
 }
 
+if (Giraf.Task.RefreshComposition == null) {
+  Giraf.Task.RefreshComposition = {};
+}
+
 if (Giraf.Task.SelectFile == null) {
   Giraf.Task.SelectFile = {};
 }
@@ -114,6 +118,10 @@ if (Giraf.View.Expert == null) {
 
 if (Giraf.View.Expert._base == null) {
   Giraf.View.Expert._base = {};
+}
+
+if (Giraf.View.Expert.Composition == null) {
+  Giraf.View.Expert.Composition = {};
 }
 
 if (Giraf.View.Expert.Droparea == null) {
@@ -661,6 +669,17 @@ Giraf.Controller.Action = (function(_super) {
           return console.log("failed");
         });
         break;
+      case "expert__project__change_target":
+        console.log(args);
+        break;
+      case "expert__project__refresh_composition":
+        task = new Giraf.Task.RefreshComposition;
+        task.run(app, $(args.element).attr("data-referer-uuid")).then(function() {
+          return console.log("done");
+        }, function() {
+          return console.log("failed");
+        });
+        break;
       case "nav__import_file":
         app.view.nav.inactive().then(function() {
           task = new Giraf.Task.SelectFile;
@@ -841,6 +860,11 @@ Giraf.Model.Files = (function(_super) {
     return (_ref = this.files[uuid]) != null ? _ref.setContent(content) : void 0;
   };
 
+  Files.prototype.getContentByUUID = function(uuid) {
+    var _ref;
+    return (_ref = this.files[uuid]) != null ? _ref.getContent() : void 0;
+  };
+
   return Files;
 
 })(Giraf.Model._base);
@@ -870,6 +894,10 @@ Giraf.Model.Files.File = (function(_super) {
     this.content = content;
     this.status = "normal";
     return $(this).triggerHandler("statusChanged", this.status);
+  };
+
+  File.prototype.getContent = function() {
+    return this.content;
   };
 
   return File;
@@ -991,6 +1019,26 @@ Giraf.Task.FileLoader = (function(_super) {
   return FileLoader;
 
 })(Giraf.Task._base);
+
+Giraf.Task.RefreshComposition = (function() {
+  function RefreshComposition() {}
+
+  RefreshComposition.prototype.run = function(app, uuid) {
+    var content, d;
+    d = $.Deferred();
+    console.log(app.view.expert.composition);
+    content = app.model.files.getContentByUUID(uuid);
+    app.view.expert.composition.refresh("video", content).then(function() {
+      return d.resolve();
+    }, function() {
+      return d.reject();
+    });
+    return d.promise();
+  };
+
+  return RefreshComposition;
+
+})();
 
 Giraf.Task.SelectFile = (function(_super) {
   __extends(SelectFile, _super);
@@ -1335,9 +1383,58 @@ Giraf.View = (function(_super) {
     this.expert = new Giraf.View.Expert(app, $(_selector_expert));
     $(document).on("click", (function(_this) {
       return function(event) {
-        if ($(event.target).attr("data-action") != null) {
-          return Giraf.Controller.Action(app, $(event.target).attr("data-action"));
+        var $t;
+        $t = $(event.target);
+        if ($t.attr("data-action") != null) {
+          Giraf.Controller.Action(app, $t.attr("data-action"), {
+            element: event.target
+          });
         }
+        if ($t.attr("data-action-weak") != null) {
+          Giraf.Controller.Action(app, $t.attr("data-action-weak"), {
+            element: event.target
+          });
+        }
+        if ($t.attr("data-action-click") != null) {
+          Giraf.Controller.Action(app, $t.attr("data-action-click"), {
+            element: event.target
+          });
+        }
+        if ($t.attr("data-action-click-weak") != null) {
+          Giraf.Controller.Action(app, $t.attr("data-action-click-weak"), {
+            element: event.target
+          });
+        }
+        $t.parents("[data-action]").each(function() {
+          return Giraf.Controller.Action(app, $(this).attr("data-action"), {
+            element: this
+          });
+        });
+        return $t.parents("[data-action-click]").each(function() {
+          return Giraf.Controller.Action(app, $(this).attr("data-action-click"), {
+            element: this
+          });
+        });
+      };
+    })(this)).on("dblclick", (function(_this) {
+      return function(event) {
+        var $t;
+        $t = $(event.target);
+        if ($t.attr("data-action-dblclick") != null) {
+          Giraf.Controller.Action(app, $t.attr("data-action-dblclick"), {
+            element: event.target
+          });
+        }
+        if ($t.attr("data-action-dblclick-weak") != null) {
+          Giraf.Controller.Action(app, $t.attr("data-action-dblclick-weak"), {
+            element: event.target
+          });
+        }
+        return $t.parents("[data-action-dblclick]").each(function() {
+          return Giraf.Controller.Action(app, $(this).attr("data-action-dblclick"), {
+            element: this
+          });
+        });
       };
     })(this));
   }
@@ -1378,6 +1475,7 @@ Giraf.View.Expert = (function(_super) {
     this.app = app;
     this.$expert = $expert;
     this.project = new Giraf.View.Expert.Project(app, $expert.find(_selector_project));
+    this.composition = new Giraf.View.Expert.Composition(app, $expert.find(_selector_composition));
     this.droparea = new Giraf.View.Expert.Droparea(app, $expert);
   }
 
@@ -1395,6 +1493,46 @@ Giraf.View.Expert._base = (function(_super) {
   return _base;
 
 })(Giraf.View._base);
+
+Giraf.View.Expert.Composition = (function(_super) {
+  __extends(Composition, _super);
+
+  function Composition(app, $composition) {
+    var template;
+    this.app = app;
+    this.$composition = $composition;
+    template = _.template("<div class=\"composition-window\">\n  <div class=\"composition-window-placeholder\">\n    <span>Composition</span>\n    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores corporis delectus, doloremque eligendi explicabo fugit harum iusto magnam minus natus non odit officia perspiciatis possimus provident quo similique, suscipit tempora!</p><p>Aut ea eveniet facere officia placeat qui quod soluta! A autem commodi culpa cum, dignissimos dolorum eveniet, explicabo minima nesciunt nisi, officia omnis optio quae quas quia reiciendis rem unde?</p><p>Assumenda consectetur corporis et magnam voluptate. Ab aut beatae corporis cum dolorem dolores eius est expedita fuga hic, ipsum nobis quasi quibusdam quo recusandae soluta temporibus ut veniam vitae voluptatem?</p><p>Cupiditate dignissimos dolore dolorum ducimus enim, et explicabo fugit illo ipsa ipsam itaque laborum maiores nemo obcaecati quas quia quis similique! Autem consectetur dignissimos laudantium magni odit tenetur veniam vero.</p><p>Ab amet debitis dolorem est eveniet explicabo illum incidunt libero, magni minima, natus numquam omnis placeat porro quisquam saepe tempora voluptate! Aliquam eius error facere, maiores numquam vel veniam voluptatum.</p><p>Aliquid, assumenda consectetur cum cumque deserunt distinctio expedita fugit harum impedit magnam nemo nihil nobis perspiciatis ratione repellat sed, suscipit. At atque eos in molestias, nesciunt quas reiciendis. Consequuntur, ipsum.</p>\n  </div>\n  <img class=\"composition-img hidden\"/>\n  <video class=\"composition-video hidden\"></video>\n</div>\n<div class=\"composition-progress\"></div>");
+    this.$composition.append(template({}));
+  }
+
+  Composition.prototype.refresh = function(type, content_url) {
+    var $video, d;
+    d = $.Deferred();
+    switch (type) {
+      case "video":
+        $video = $("video.composition-video");
+        if ($video.get(0) == null) {
+          d.reject();
+        }
+        $(".composition-window").children().each(function() {
+          return $(this).addClass("hidden");
+        });
+        $video.removeClass("hidden");
+        $video.attr("src", content_url);
+        $video.one("canplay", function() {
+          return d.resolve();
+        });
+        break;
+      default:
+        console.log("Type '" + type + "' is not defined.");
+        d.resolve();
+    }
+    return d.promise();
+  };
+
+  return Composition;
+
+})(Giraf.View.Expert._base);
 
 Giraf.View.Expert.Droparea = (function(_super) {
   var innerAcitve, isActive;
@@ -1521,7 +1659,7 @@ Giraf.View.Expert.Project.Piece = (function() {
 
   Piece.prototype.html = function() {
     var template, _ref, _ref1, _ref2;
-    template = _.template("<div class=\"project-piece\" data-referer-type=\"<%- type %>\" data-referer-uuid=\"<%- uuid %>\">\n  <div class=\"project-piece-tag\"></div>\n  <div class=\"project-piece-content\">\n    <img class=\"project-piece-thumbnail\"/>\n    <div class=\"project-piece-title\"><%- title %></div>\n  </div>\n</div>");
+    template = _.template("<div class=\"project-piece\" data-referer-type=\"<%- type %>\" data-referer-uuid=\"<%- uuid %>\"\n data-action-click=\"expert__project__change_target\" data-action-dblclick=\"expert__project__refresh_composition\">\n  <div class=\"project-piece-tag\"></div>\n  <div class=\"project-piece-content\">\n    <img class=\"project-piece-thumbnail\"/>\n    <div class=\"project-piece-title\"><%- title %></div>\n  </div>\n</div>");
     return template({
       type: (_ref = this.type) != null ? _ref : "",
       uuid: (_ref1 = this.uuid) != null ? _ref1 : "",

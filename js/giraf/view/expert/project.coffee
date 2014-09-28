@@ -11,6 +11,7 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
     if piece?
       @pieces[piece.uuid] = piece
       @$project.append do piece.html
+
       return piece
 
 ###
@@ -35,7 +36,8 @@ class Giraf.View.Expert.Project.Piece
 
   html: ->
     template = _.template """
-                          <div class="project-piece" data-referer-type="<%- type %>" data-referer-uuid="<%- uuid %>">
+                          <div class="project-piece" data-referer-type="<%- type %>" data-referer-uuid="<%- uuid %>"
+                           data-action-click="expert__project__change_target" data-action-dblclick="expert__project__refresh_composition">
                             <div class="project-piece-tag"></div>
                             <div class="project-piece-content">
                               <img class="project-piece-thumbnail"/>

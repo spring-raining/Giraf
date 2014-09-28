@@ -10,6 +10,9 @@ class Giraf.Model.Files extends Giraf.Model._base
   setContent: (uuid, content) ->
     @files[uuid]?.setContent content
 
+  getContentByUUID: (uuid) ->
+    return do @files[uuid]?.getContent
+
 
 class Giraf.Model.Files.File extends Giraf.Model._base
   ###
@@ -28,3 +31,6 @@ class Giraf.Model.Files.File extends Giraf.Model._base
     @content = content
     @status = "normal"
     $(@).triggerHandler "statusChanged", @status
+
+  getContent: ->
+    return @content

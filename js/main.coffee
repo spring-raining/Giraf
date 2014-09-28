@@ -16,6 +16,7 @@ Giraf.Settings.CookieBinder = {} unless Giraf.Settings.CookieBinder?
 Giraf.Task = {} unless Giraf.Task?
 Giraf.Task._base = {} unless Giraf.Task._base?
 Giraf.Task.FileLoader = {} unless Giraf.Task.FileLoader?
+Giraf.Task.RefreshComposition = {} unless Giraf.Task.RefreshComposition?
 Giraf.Task.SelectFile = {} unless Giraf.Task.SelectFile?
 Giraf.Thumbnail = {} unless Giraf.Thumbnail?
 Giraf.Thumbnails = {} unless Giraf.Thumbnails?
@@ -26,6 +27,7 @@ Giraf.View = {} unless Giraf.View?
 Giraf.View._base = {} unless Giraf.View._base?
 Giraf.View.Expert = {} unless Giraf.View.Expert?
 Giraf.View.Expert._base = {} unless Giraf.View.Expert._base?
+Giraf.View.Expert.Composition = {} unless Giraf.View.Expert.Composition?
 Giraf.View.Expert.Droparea = {} unless Giraf.View.Expert.Droparea?
 Giraf.View.Expert.Project = {} unless Giraf.View.Expert.Project?
 Giraf.View.Modal = {} unless Giraf.View.Modal?
@@ -493,6 +495,15 @@ class Giraf.Controller.Action extends Giraf.Controller._base
             console.log "done"
           , ->
             console.log "failed"
+      when "expert__project__change_target"
+          console.log args
+      when "expert__project__refresh_composition"
+          task = new Giraf.Task.RefreshComposition
+          task.run app, $(args.element).attr "data-referer-uuid"
+          .then ->
+            console.log "done"
+          , ->
+            console.log "failed"
       when "nav__import_file"
           app.view.nav.inactive()
           .then ->
@@ -617,6 +628,9 @@ class Giraf.Model.Files extends Giraf.Model._base
   setContent: (uuid, content) ->
     @files[uuid]?.setContent content
 
+  getContentByUUID: (uuid) ->
+    return do @files[uuid]?.getContent
+
 
 class Giraf.Model.Files.File extends Giraf.Model._base
   ###
@@ -635,6 +649,9 @@ class Giraf.Model.Files.File extends Giraf.Model._base
     @content = content
     @status = "normal"
     $(@).triggerHandler "statusChanged", @status
+
+  getContent: ->
+    return @content
 
 # js/giraf/settings.coffee
 
@@ -706,6 +723,21 @@ class Giraf.Task.FileLoader extends Giraf.Task._base
     reader.onerror = (error) ->
       d.reject error
     reader.readAsDataURL file
+
+    do d.promise
+
+# js/giraf/task/refreshComposition.coffee
+
+class Giraf.Task.RefreshComposition
+  run: (app, uuid) ->
+    d = do $.Deferred
+    console.log app.view.expert.composition
+    content = app.model.files.getContentByUUID uuid
+    app.view.expert.composition.refresh "video", content
+    .then ->
+      do d.resolve
+    , ->
+      do d.reject
 
     do d.promise
 
@@ -926,8 +958,38 @@ class Giraf.View extends Giraf._base
     @expert = new Giraf.View.Expert app, $(_selector_expert)
 
     $(document).on "click", (event) =>
-      if $(event.target).attr("data-action")?
-        Giraf.Controller.Action app, $(event.target).attr("data-action")
+      $t = $ event.target
+      if $t.attr("data-action")?
+        Giraf.Controller.Action app, $t.attr("data-action"),
+          element: event.target
+      if $t.attr("data-action-weak")?
+        Giraf.Controller.Action app, $t.attr("data-action-weak"),
+          element: event.target
+      if $t.attr("data-action-click")?
+        Giraf.Controller.Action app, $t.attr("data-action-click"),
+          element: event.target
+      if $t.attr("data-action-click-weak")?
+        Giraf.Controller.Action app, $t.attr("data-action-click-weak"),
+          element: event.target
+
+      $t.parents("[data-action]").each ->
+        Giraf.Controller.Action app, $(@).attr("data-action"),
+          element: @
+      $t.parents("[data-action-click]").each ->
+        Giraf.Controller.Action app, $(@).attr("data-action-click"),
+          element: @
+    .on "dblclick", (event) =>
+      $t = $ event.target
+      if $t.attr("data-action-dblclick")?
+        Giraf.Controller.Action app, $t.attr("data-action-dblclick"),
+          element: event.target
+      if $t.attr("data-action-dblclick-weak")?
+        Giraf.Controller.Action app, $t.attr("data-action-dblclick-weak"),
+          element: event.target
+
+      $t.parents("[data-action-dblclick]").each ->
+        Giraf.Controller.Action app, $(@).attr("data-action-dblclick"),
+          element: @
 
 # js/giraf/view/_base.coffee
 
@@ -946,6 +1008,7 @@ class Giraf.View.Expert extends Giraf.View._base
 
   constructor: (@app, @$expert) ->
     @project = new Giraf.View.Expert.Project app, $expert.find _selector_project
+    @composition = new Giraf.View.Expert.Composition app, $expert.find _selector_composition
     @droparea = new Giraf.View.Expert.Droparea app, $expert
 
 
@@ -954,6 +1017,42 @@ class Giraf.View.Expert extends Giraf.View._base
 
 class Giraf.View.Expert._base extends Giraf.View._base
   # Giraf.View.Expert._base
+
+# js/giraf/view/expert/composition.coffee
+
+class Giraf.View.Expert.Composition extends Giraf.View.Expert._base
+  constructor: (@app, @$composition) ->
+    template = _.template """
+                          <div class="composition-window">
+                            <div class="composition-window-placeholder">
+                              <span>Composition</span>
+                              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores corporis delectus, doloremque eligendi explicabo fugit harum iusto magnam minus natus non odit officia perspiciatis possimus provident quo similique, suscipit tempora!</p><p>Aut ea eveniet facere officia placeat qui quod soluta! A autem commodi culpa cum, dignissimos dolorum eveniet, explicabo minima nesciunt nisi, officia omnis optio quae quas quia reiciendis rem unde?</p><p>Assumenda consectetur corporis et magnam voluptate. Ab aut beatae corporis cum dolorem dolores eius est expedita fuga hic, ipsum nobis quasi quibusdam quo recusandae soluta temporibus ut veniam vitae voluptatem?</p><p>Cupiditate dignissimos dolore dolorum ducimus enim, et explicabo fugit illo ipsa ipsam itaque laborum maiores nemo obcaecati quas quia quis similique! Autem consectetur dignissimos laudantium magni odit tenetur veniam vero.</p><p>Ab amet debitis dolorem est eveniet explicabo illum incidunt libero, magni minima, natus numquam omnis placeat porro quisquam saepe tempora voluptate! Aliquam eius error facere, maiores numquam vel veniam voluptatum.</p><p>Aliquid, assumenda consectetur cum cumque deserunt distinctio expedita fugit harum impedit magnam nemo nihil nobis perspiciatis ratione repellat sed, suscipit. At atque eos in molestias, nesciunt quas reiciendis. Consequuntur, ipsum.</p>
+                            </div>
+                            <img class="composition-img hidden"/>
+                            <video class="composition-video hidden"></video>
+                          </div>
+                          <div class="composition-progress"></div>
+                          """
+    @$composition.append template {}
+
+  refresh: (type, content_url) ->
+    d = do $.Deferred
+    switch type
+      when "video"
+        $video = $ "video.composition-video"
+        do d.reject unless $video.get(0)?
+        $(".composition-window").children().each ->
+          $(@).addClass "hidden"
+        $video.removeClass "hidden"
+        $video.attr "src", content_url
+        $video.one "canplay", ->
+          do d.resolve
+
+      else
+        console.log "Type '#{type}' is not defined."
+        do d.resolve
+
+    do d.promise
 
 # js/giraf/view/expert/droparea.coffee
 
@@ -1020,6 +1119,7 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
     if piece?
       @pieces[piece.uuid] = piece
       @$project.append do piece.html
+
       return piece
 
 ###
@@ -1044,7 +1144,8 @@ class Giraf.View.Expert.Project.Piece
 
   html: ->
     template = _.template """
-                          <div class="project-piece" data-referer-type="<%- type %>" data-referer-uuid="<%- uuid %>">
+                          <div class="project-piece" data-referer-type="<%- type %>" data-referer-uuid="<%- uuid %>"
+                           data-action-click="expert__project__change_target" data-action-dblclick="expert__project__refresh_composition">
                             <div class="project-piece-tag"></div>
                             <div class="project-piece-content">
                               <img class="project-piece-thumbnail"/>

@@ -22,10 +22,17 @@ class Giraf.View.Expert.Composition extends Giraf.View.Expert._base
         $(".composition-window").children().each ->
           $(@).addClass "hidden"
         $video.removeClass "hidden"
-        $video.attr "src", content_url
-        $video.one "canplay", ->
-          do d.resolve
-
+          .attr "src", content_url
+          .one "canplay", ->
+            do d.resolve
+      when "img"
+        $img = $ "img.composition-img"
+        do d.reject unless $img.get(0)?
+        $(".composition-window").children().each ->
+          $(@).addClass "hidden"
+        $img.removeClass "hidden"
+          .attr "src", content_url
+        do d.resolve
       else
         console.log "Type '#{type}' is not defined."
         do d.resolve

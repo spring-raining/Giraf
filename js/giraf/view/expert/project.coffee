@@ -5,26 +5,28 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
 
   append: (referer) ->
     piece = null
-    if referer instanceof Giraf.Model.Files.File
-      piece = new Giraf.View.Expert.Project.Piece.File(referer)
+    uuid = do Giraf.Tools.uuid
+    if referer instanceof Giraf.Model.File
+      piece = new Giraf.View.Expert.Project.Piece.File @app, uuid, referer
 
     if piece?
-      @pieces[piece.uuid] = piece
+      @pieces[uuid] = piece
       @$project.append do piece.html
 
-      return piece
+      return uuid
 
 ###
-  File    referer     Giraf.Model.Files.File
-          type        "file"
-          uuid        referer.uuid
-          title       referer.file.name
+            File
+  referer   Model.File
+  type      "file"
+  title     referer.file.name
 ###
 
 class Giraf.View.Expert.Project.Piece
-  constructor: (@referer, @type, @uuid, @title) ->
+  constructor: (@app, @uuid, referer, @type, @title) ->
+    @referer_uuid = referer.uuid
     $(referer).on "statusChanged", (event, status) ->
-      $target = $ ".project-piece[data-referer-uuid=#{uuid}]"
+      $target = $ ".project-piece[data-uuid=#{uuid}]"
       switch status
         when "loading"
           $target.addClass "loading"
@@ -36,7 +38,7 @@ class Giraf.View.Expert.Project.Piece
 
   html: ->
     template = _.template """
-                          <div class="project-piece" data-referer-type="<%- type %>" data-referer-uuid="<%- uuid %>"
+                          <div class="project-piece" data-referer-type="<%- type %>" data-uuid="<%- uuid %>"
                            data-action-click="expert__project__change_target" data-action-dblclick="expert__project__refresh_composition">
                             <div class="project-piece-tag"></div>
                             <div class="project-piece-content">
@@ -51,11 +53,14 @@ class Giraf.View.Expert.Project.Piece
       title: @title ? ""
 
 class Giraf.View.Expert.Project.Piece.File extends Giraf.View.Expert.Project.Piece
-  constructor: (@referer) ->
-    super referer, "file", referer.uuid, referer.file.name
+  constructor: (@app, @uuid, referer) ->
+    super app, uuid, referer, "file", referer.file.name
 
   html: ->
     $rtn = $ super()
-    if @referer.status is "loading"
+    if @app.model.get(@referer_uuid).status is "loading"
       $rtn.addClass "loading"
     return $rtn.get(0)
+
+class Giraf.View.Expert.Project.Piece.Composition extends Giraf.View.Expert.Project.Piece
+  constructor: ->

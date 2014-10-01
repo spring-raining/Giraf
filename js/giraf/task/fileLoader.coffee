@@ -6,13 +6,22 @@ class Giraf.Task.FileLoader extends Giraf.Task._base
     for file in files
       tasks.push do ->
         d_ = do $.Deferred
-        uuid = app.model.files.append file
-        readFile.call @, file
+        uuid = null
+        Giraf.Model.Files.append app, file
+        .then (uuid_) ->
+          d__= do $.Deferred
+          uuid = uuid_
+          app.view.expert.project.append app.model.get uuid
+          readFile.call @, file
           .then (file, content) ->
-            app.model.files.setContent uuid, content
-            do d_.resolve
-          , ->
-            do d_.reject
+            d__.resolve file, content
+          do d__.promise
+        .then (file, content) ->
+          app.model.get(uuid).setContent content
+        .then ->
+          do d_.resolve
+        , ->
+          do d_.reject
         do d_.promise
 
     $.when.apply $, tasks

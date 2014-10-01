@@ -48,8 +48,12 @@ if (Giraf.Model._base == null) {
   Giraf.Model._base = {};
 }
 
-if (Giraf.Model.Files == null) {
-  Giraf.Model.Files = {};
+if (Giraf.Model.Composition == null) {
+  Giraf.Model.Composition = {};
+}
+
+if (Giraf.Model.File == null) {
+  Giraf.Model.File = {};
 }
 
 if (Giraf.Settings == null) {
@@ -400,8 +404,7 @@ Giraf.App = (function(_super) {
   App.prototype.run = function() {
     return $((function(_this) {
       return function() {
-        _this.model = {};
-        _this.model.files = new Giraf.Model.Files(_this);
+        _this.model = new Giraf.Model;
         _this.view = new Giraf.View(_this);
         return _this.settings = new Giraf.Settings(_this);
       };
@@ -663,9 +666,7 @@ Giraf.Controller.Action = (function(_super) {
       case "drop__import_file":
         fileList = args.fileList;
         task = new Giraf.Task.FileLoader;
-        task.run(app, fileList).then(function() {
-          return console.log("done");
-        }, function() {
+        task.run(app, fileList).fail(function() {
           return console.log("failed");
         });
         break;
@@ -674,9 +675,7 @@ Giraf.Controller.Action = (function(_super) {
         break;
       case "expert__project__refresh_composition":
         task = new Giraf.Task.RefreshComposition;
-        task.run(app, $(args.element).attr("data-referer-uuid")).then(function() {
-          return console.log("done");
-        }, function() {
+        task.run(app, $(args.element).attr("data-uuid")).fail(function() {
           return console.log("failed");
         });
         break;
@@ -687,9 +686,7 @@ Giraf.Controller.Action = (function(_super) {
         }).then(function(fileList) {
           task = new Giraf.Task.FileLoader;
           return task.run(app, fileList);
-        }).then(function() {
-          return console.log("done");
-        }, function() {
+        }).fail(function() {
           return console.log("failed");
         });
         break;
@@ -829,6 +826,25 @@ Giraf.History = (function(_super) {
 
 })(Giraf._base);
 
+Giraf.Model = (function(_super) {
+  __extends(Model, _super);
+
+  function Model() {
+    this.models = {};
+  }
+
+  Model.prototype.set = function(uuid, model) {
+    return this.models[uuid] = model;
+  };
+
+  Model.prototype.get = function(uuid) {
+    return this.models[uuid];
+  };
+
+  return Model;
+
+})(Giraf._base);
+
 Giraf.Model._base = (function(_super) {
   __extends(_base, _super);
 
@@ -840,36 +856,71 @@ Giraf.Model._base = (function(_super) {
 
 })(Giraf._base);
 
-Giraf.Model.Files = (function(_super) {
-  __extends(Files, _super);
+Giraf.Model.Compositions = (function(_super) {
+  __extends(Compositions, _super);
 
-  function Files(app) {
-    this.app = app;
-    this.files = {};
+  function Compositions() {
+    return Compositions.__super__.constructor.apply(this, arguments);
   }
 
-  Files.prototype.append = function(file, content) {
+  Compositions.append = function(app) {
     var uuid;
     uuid = Giraf.Tools.uuid();
-    this.files[uuid] = new Giraf.Model.Files.File(this.app, uuid, file, content != null ? content : void 0);
+    app.model.set(uuid, new Giraf.Model.Composition(app, uuid));
     return uuid;
   };
 
-  Files.prototype.setContent = function(uuid, content) {
-    var _ref;
-    return (_ref = this.files[uuid]) != null ? _ref.setContent(content) : void 0;
-  };
+  return Compositions;
 
-  Files.prototype.getContentByUUID = function(uuid) {
-    var _ref;
-    return (_ref = this.files[uuid]) != null ? _ref.getContent() : void 0;
+})(Giraf.Model._base);
+
+Giraf.Model.Composition = (function(_super) {
+  __extends(Composition, _super);
+
+  function Composition(app, uuid) {
+    this.app = app;
+    this.uuid = uuid;
+  }
+
+  return Composition;
+
+})(Giraf.Model._base);
+
+Giraf.Model.Composition.File = (function(_super) {
+  __extends(File, _super);
+
+  function File(app, uuid, file_uuid) {
+    this.app = app;
+    this.uuid = uuid;
+    this.file_uuid = file_uuid;
+    File.__super__.constructor.call(this, app, uuid);
+  }
+
+  return File;
+
+})(Giraf.Model.Composition);
+
+Giraf.Model.Files = (function(_super) {
+  __extends(Files, _super);
+
+  function Files() {
+    return Files.__super__.constructor.apply(this, arguments);
+  }
+
+  Files.append = function(app, file, content) {
+    var d, uuid;
+    d = new $.Deferred;
+    uuid = Giraf.Tools.uuid();
+    app.model.set(uuid, new Giraf.Model.File(app, uuid, file, content));
+    d.resolve(uuid);
+    return d.promise();
   };
 
   return Files;
 
 })(Giraf.Model._base);
 
-Giraf.Model.Files.File = (function(_super) {
+Giraf.Model.File = (function(_super) {
   __extends(File, _super);
 
 
@@ -887,7 +938,6 @@ Giraf.Model.Files.File = (function(_super) {
     this.file = file;
     this.content = content;
     this.status = this.content != null ? "normal" : "loading";
-    this.project = this.app.view.expert.project.append(this);
   }
 
   File.prototype.setContent = function(content) {
@@ -984,9 +1034,19 @@ Giraf.Task.FileLoader = (function(_super) {
       tasks.push((function() {
         var d_, uuid;
         d_ = $.Deferred();
-        uuid = app.model.files.append(file);
-        readFile.call(this, file).then(function(file, content) {
-          app.model.files.setContent(uuid, content);
+        uuid = null;
+        Giraf.Model.Files.append(app, file).then(function(uuid_) {
+          var d__;
+          d__ = $.Deferred();
+          uuid = uuid_;
+          app.view.expert.project.append(app.model.get(uuid));
+          readFile.call(this, file).then(function(file, content) {
+            return d__.resolve(file, content);
+          });
+          return d__.promise();
+        }).then(function(file, content) {
+          return app.model.get(uuid).setContent(content);
+        }).then(function() {
           return d_.resolve();
         }, function() {
           return d_.reject();
@@ -1024,11 +1084,25 @@ Giraf.Task.RefreshComposition = (function() {
   function RefreshComposition() {}
 
   RefreshComposition.prototype.run = function(app, uuid) {
-    var content, d;
+    var d, file, piece, type;
     d = $.Deferred();
-    console.log(app.view.expert.composition);
-    content = app.model.files.getContentByUUID(uuid);
-    app.view.expert.composition.refresh("video", content).then(function() {
+    piece = app.view.expert.project.pieces[uuid];
+    file = app.model.get(piece.referer_uuid);
+    type = null;
+    switch (file.file.type) {
+      case "video/mp4":
+        type = "video";
+        break;
+      case "image/gif":
+      case "image/png":
+      case "image/jpeg":
+        type = "img";
+        break;
+    }
+    if (type == null) {
+      d.reject();
+    }
+    app.view.expert.composition.refresh(type, file.content).then(function() {
       return d.resolve();
     }, function() {
       return d.reject();
@@ -1506,7 +1580,7 @@ Giraf.View.Expert.Composition = (function(_super) {
   }
 
   Composition.prototype.refresh = function(type, content_url) {
-    var $video, d;
+    var $img, $video, d;
     d = $.Deferred();
     switch (type) {
       case "video":
@@ -1517,11 +1591,20 @@ Giraf.View.Expert.Composition = (function(_super) {
         $(".composition-window").children().each(function() {
           return $(this).addClass("hidden");
         });
-        $video.removeClass("hidden");
-        $video.attr("src", content_url);
-        $video.one("canplay", function() {
+        $video.removeClass("hidden").attr("src", content_url).one("canplay", function() {
           return d.resolve();
         });
+        break;
+      case "img":
+        $img = $("img.composition-img");
+        if ($img.get(0) == null) {
+          d.reject();
+        }
+        $(".composition-window").children().each(function() {
+          return $(this).addClass("hidden");
+        });
+        $img.removeClass("hidden").attr("src", content_url);
+        d.resolve();
         break;
       default:
         console.log("Type '" + type + "' is not defined.");
@@ -1613,15 +1696,16 @@ Giraf.View.Expert.Project = (function(_super) {
   }
 
   Project.prototype.append = function(referer) {
-    var piece;
+    var piece, uuid;
     piece = null;
-    if (referer instanceof Giraf.Model.Files.File) {
-      piece = new Giraf.View.Expert.Project.Piece.File(referer);
+    uuid = Giraf.Tools.uuid();
+    if (referer instanceof Giraf.Model.File) {
+      piece = new Giraf.View.Expert.Project.Piece.File(this.app, uuid, referer);
     }
     if (piece != null) {
-      this.pieces[piece.uuid] = piece;
+      this.pieces[uuid] = piece;
       this.$project.append(piece.html());
-      return piece;
+      return uuid;
     }
   };
 
@@ -1631,21 +1715,22 @@ Giraf.View.Expert.Project = (function(_super) {
 
 
 /*
-  File    referer     Giraf.Model.Files.File
-          type        "file"
-          uuid        referer.uuid
-          title       referer.file.name
+            File
+  referer   Model.File
+  type      "file"
+  title     referer.file.name
  */
 
 Giraf.View.Expert.Project.Piece = (function() {
-  function Piece(referer, type, uuid, title) {
-    this.referer = referer;
-    this.type = type;
+  function Piece(app, uuid, referer, type, title) {
+    this.app = app;
     this.uuid = uuid;
+    this.type = type;
     this.title = title;
+    this.referer_uuid = referer.uuid;
     $(referer).on("statusChanged", function(event, status) {
       var $target;
-      $target = $(".project-piece[data-referer-uuid=" + uuid + "]");
+      $target = $(".project-piece[data-uuid=" + uuid + "]");
       switch (status) {
         case "loading":
           return $target.addClass("loading");
@@ -1659,7 +1744,7 @@ Giraf.View.Expert.Project.Piece = (function() {
 
   Piece.prototype.html = function() {
     var template, _ref, _ref1, _ref2;
-    template = _.template("<div class=\"project-piece\" data-referer-type=\"<%- type %>\" data-referer-uuid=\"<%- uuid %>\"\n data-action-click=\"expert__project__change_target\" data-action-dblclick=\"expert__project__refresh_composition\">\n  <div class=\"project-piece-tag\"></div>\n  <div class=\"project-piece-content\">\n    <img class=\"project-piece-thumbnail\"/>\n    <div class=\"project-piece-title\"><%- title %></div>\n  </div>\n</div>");
+    template = _.template("<div class=\"project-piece\" data-referer-type=\"<%- type %>\" data-uuid=\"<%- uuid %>\"\n data-action-click=\"expert__project__change_target\" data-action-dblclick=\"expert__project__refresh_composition\">\n  <div class=\"project-piece-tag\"></div>\n  <div class=\"project-piece-content\">\n    <img class=\"project-piece-thumbnail\"/>\n    <div class=\"project-piece-title\"><%- title %></div>\n  </div>\n</div>");
     return template({
       type: (_ref = this.type) != null ? _ref : "",
       uuid: (_ref1 = this.uuid) != null ? _ref1 : "",
@@ -1674,21 +1759,31 @@ Giraf.View.Expert.Project.Piece = (function() {
 Giraf.View.Expert.Project.Piece.File = (function(_super) {
   __extends(File, _super);
 
-  function File(referer) {
-    this.referer = referer;
-    File.__super__.constructor.call(this, referer, "file", referer.uuid, referer.file.name);
+  function File(app, uuid, referer) {
+    this.app = app;
+    this.uuid = uuid;
+    File.__super__.constructor.call(this, app, uuid, referer, "file", referer.file.name);
   }
 
   File.prototype.html = function() {
     var $rtn;
     $rtn = $(File.__super__.html.call(this));
-    if (this.referer.status === "loading") {
+    if (this.app.model.get(this.referer_uuid).status === "loading") {
       $rtn.addClass("loading");
     }
     return $rtn.get(0);
   };
 
   return File;
+
+})(Giraf.View.Expert.Project.Piece);
+
+Giraf.View.Expert.Project.Piece.Composition = (function(_super) {
+  __extends(Composition, _super);
+
+  function Composition() {}
+
+  return Composition;
 
 })(Giraf.View.Expert.Project.Piece);
 

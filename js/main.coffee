@@ -9,7 +9,8 @@ Giraf.FileHandler = {} unless Giraf.FileHandler?
 Giraf.History = {} unless Giraf.History?
 Giraf.Model = {} unless Giraf.Model?
 Giraf.Model._base = {} unless Giraf.Model._base?
-Giraf.Model.Files = {} unless Giraf.Model.Files?
+Giraf.Model.Composition = {} unless Giraf.Model.Composition?
+Giraf.Model.File = {} unless Giraf.Model.File?
 Giraf.Settings = {} unless Giraf.Settings?
 Giraf.Settings._base = {} unless Giraf.Settings._base?
 Giraf.Settings.CookieBinder = {} unless Giraf.Settings.CookieBinder?
@@ -203,8 +204,8 @@ class Giraf.App extends Giraf._base
 
   run: =>
     $ =>
-      @model = {}
-      @model.files = new Giraf.Model.Files @
+      @model = new Giraf.Model
+      #@model.files = new Giraf.Model.Files @
       @view = new Giraf.View @
       @settings = new Giraf.Settings @
 
@@ -491,18 +492,14 @@ class Giraf.Controller.Action extends Giraf.Controller._base
           fileList = args.fileList
           task = new Giraf.Task.FileLoader
           task.run app, fileList
-          .then ->
-            console.log "done"
-          , ->
+          .fail ->
             console.log "failed"
       when "expert__project__change_target"
           console.log args
       when "expert__project__refresh_composition"
           task = new Giraf.Task.RefreshComposition
-          task.run app, $(args.element).attr "data-referer-uuid"
-          .then ->
-            console.log "done"
-          , ->
+          task.run app, $(args.element).attr "data-uuid"
+          .fail ->
             console.log "failed"
       when "nav__import_file"
           app.view.nav.inactive()
@@ -512,9 +509,7 @@ class Giraf.Controller.Action extends Giraf.Controller._base
           .then (fileList) ->
             task = new Giraf.Task.FileLoader
             task.run app, fileList
-          .then ->
-            console.log "done"
-          , ->
+          .fail ->
             console.log "failed"
       when "nav__hoge"
           app.view.nav.inactive()
@@ -609,30 +604,54 @@ class Giraf.FileHandler
 class Giraf.History extends Giraf._base
 
 
+# js/giraf/model.coffee
+
+class Giraf.Model extends Giraf._base
+  constructor: ->
+    @models = {}
+
+  set: (uuid, model) ->
+    @models[uuid] = model
+
+  get: (uuid) ->
+    return @models[uuid]
+
 # js/giraf/model/_base.coffee
 
 class Giraf.Model._base extends Giraf._base
   # Giraf.Model._base
 
-# js/giraf/model/files.coffee
+# js/giraf/model/composition.coffee
 
-class Giraf.Model.Files extends Giraf.Model._base
-  constructor: (@app) ->
-    @files = {}
+class Giraf.Model.Compositions extends Giraf.Model._base
 
-  append: (file, content)->
+  @append: (app) ->
     uuid = do Giraf.Tools.uuid
-    @files[uuid] = new Giraf.Model.Files.File @app, uuid, file, (content ? undefined)
+    app.model.set uuid,
+      new Giraf.Model.Composition app, uuid
     return uuid
 
-  setContent: (uuid, content) ->
-    @files[uuid]?.setContent content
+class Giraf.Model.Composition extends Giraf.Model._base
+  constructor: (@app, @uuid) ->
 
-  getContentByUUID: (uuid) ->
-    return do @files[uuid]?.getContent
+class Giraf.Model.Composition.File extends Giraf.Model.Composition
+  constructor: (@app, @uuid, @file_uuid) ->
+    super app, uuid
+
+# js/giraf/model/file.coffee
+
+class Giraf.Model.Files extends Giraf.Model._base
+#
+  @append: (app, file, content) ->
+    d = new $.Deferred
+    uuid = do Giraf.Tools.uuid
+    app.model.set uuid,
+      new Giraf.Model.File app, uuid, file, content
+    d.resolve uuid
+    do d.promise
 
 
-class Giraf.Model.Files.File extends Giraf.Model._base
+class Giraf.Model.File extends Giraf.Model._base
   ###
     statusが変更されるときにstatusChangedが発火される
     null
@@ -643,7 +662,6 @@ class Giraf.Model.Files.File extends Giraf.Model._base
 
   constructor: (@app, @uuid, @file, @content) ->
     @status = if @content? then "normal" else "loading"
-    @project = @app.view.expert.project.append @
 
   setContent: (content) ->
     @content = content
@@ -698,13 +716,22 @@ class Giraf.Task.FileLoader extends Giraf.Task._base
     for file in files
       tasks.push do ->
         d_ = do $.Deferred
-        uuid = app.model.files.append file
-        readFile.call @, file
+        uuid = null
+        Giraf.Model.Files.append app, file
+        .then (uuid_) ->
+          d__= do $.Deferred
+          uuid = uuid_
+          app.view.expert.project.append app.model.get uuid
+          readFile.call @, file
           .then (file, content) ->
-            app.model.files.setContent uuid, content
-            do d_.resolve
-          , ->
-            do d_.reject
+            d__.resolve file, content
+          do d__.promise
+        .then (file, content) ->
+          app.model.get(uuid).setContent content
+        .then ->
+          do d_.resolve
+        , ->
+          do d_.reject
         do d_.promise
 
     $.when.apply $, tasks
@@ -731,9 +758,18 @@ class Giraf.Task.FileLoader extends Giraf.Task._base
 class Giraf.Task.RefreshComposition
   run: (app, uuid) ->
     d = do $.Deferred
-    console.log app.view.expert.composition
-    content = app.model.files.getContentByUUID uuid
-    app.view.expert.composition.refresh "video", content
+    piece = app.view.expert.project.pieces[uuid]
+    file = app.model.get piece.referer_uuid
+    type = null
+    switch file.file.type
+      when "video/mp4"
+        type = "video"
+      when "image/gif", "image/png", "image/jpeg"
+        type = "img"
+      else
+
+    do d.reject unless type?
+    app.view.expert.composition.refresh type, file.content
     .then ->
       do d.resolve
     , ->
@@ -1044,10 +1080,17 @@ class Giraf.View.Expert.Composition extends Giraf.View.Expert._base
         $(".composition-window").children().each ->
           $(@).addClass "hidden"
         $video.removeClass "hidden"
-        $video.attr "src", content_url
-        $video.one "canplay", ->
-          do d.resolve
-
+          .attr "src", content_url
+          .one "canplay", ->
+            do d.resolve
+      when "img"
+        $img = $ "img.composition-img"
+        do d.reject unless $img.get(0)?
+        $(".composition-window").children().each ->
+          $(@).addClass "hidden"
+        $img.removeClass "hidden"
+          .attr "src", content_url
+        do d.resolve
       else
         console.log "Type '#{type}' is not defined."
         do d.resolve
@@ -1113,26 +1156,28 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
 
   append: (referer) ->
     piece = null
-    if referer instanceof Giraf.Model.Files.File
-      piece = new Giraf.View.Expert.Project.Piece.File(referer)
+    uuid = do Giraf.Tools.uuid
+    if referer instanceof Giraf.Model.File
+      piece = new Giraf.View.Expert.Project.Piece.File @app, uuid, referer
 
     if piece?
-      @pieces[piece.uuid] = piece
+      @pieces[uuid] = piece
       @$project.append do piece.html
 
-      return piece
+      return uuid
 
 ###
-  File    referer     Giraf.Model.Files.File
-          type        "file"
-          uuid        referer.uuid
-          title       referer.file.name
+            File
+  referer   Model.File
+  type      "file"
+  title     referer.file.name
 ###
 
 class Giraf.View.Expert.Project.Piece
-  constructor: (@referer, @type, @uuid, @title) ->
+  constructor: (@app, @uuid, referer, @type, @title) ->
+    @referer_uuid = referer.uuid
     $(referer).on "statusChanged", (event, status) ->
-      $target = $ ".project-piece[data-referer-uuid=#{uuid}]"
+      $target = $ ".project-piece[data-uuid=#{uuid}]"
       switch status
         when "loading"
           $target.addClass "loading"
@@ -1144,7 +1189,7 @@ class Giraf.View.Expert.Project.Piece
 
   html: ->
     template = _.template """
-                          <div class="project-piece" data-referer-type="<%- type %>" data-referer-uuid="<%- uuid %>"
+                          <div class="project-piece" data-referer-type="<%- type %>" data-uuid="<%- uuid %>"
                            data-action-click="expert__project__change_target" data-action-dblclick="expert__project__refresh_composition">
                             <div class="project-piece-tag"></div>
                             <div class="project-piece-content">
@@ -1159,14 +1204,17 @@ class Giraf.View.Expert.Project.Piece
       title: @title ? ""
 
 class Giraf.View.Expert.Project.Piece.File extends Giraf.View.Expert.Project.Piece
-  constructor: (@referer) ->
-    super referer, "file", referer.uuid, referer.file.name
+  constructor: (@app, @uuid, referer) ->
+    super app, uuid, referer, "file", referer.file.name
 
   html: ->
     $rtn = $ super()
-    if @referer.status is "loading"
+    if @app.model.get(@referer_uuid).status is "loading"
       $rtn.addClass "loading"
     return $rtn.get(0)
+
+class Giraf.View.Expert.Project.Piece.Composition extends Giraf.View.Expert.Project.Piece
+  constructor: ->
 
 # js/giraf/view/modal.coffee
 

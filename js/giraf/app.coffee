@@ -2,8 +2,8 @@ class Giraf.App extends Giraf._base
 
   run: =>
     $ =>
-      @model = {}
-      @model.files = new Giraf.Model.Files @
+      @model = new Giraf.Model
+      #@model.files = new Giraf.Model.Files @
       @view = new Giraf.View @
       @settings = new Giraf.Settings @
 

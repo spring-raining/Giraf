@@ -5,18 +5,14 @@ class Giraf.Controller.Action extends Giraf.Controller._base
           fileList = args.fileList
           task = new Giraf.Task.FileLoader
           task.run app, fileList
-          .then ->
-            console.log "done"
-          , ->
+          .fail ->
             console.log "failed"
       when "expert__project__change_target"
           console.log args
       when "expert__project__refresh_composition"
           task = new Giraf.Task.RefreshComposition
-          task.run app, $(args.element).attr "data-referer-uuid"
-          .then ->
-            console.log "done"
-          , ->
+          task.run app, $(args.element).attr "data-uuid"
+          .fail ->
             console.log "failed"
       when "nav__import_file"
           app.view.nav.inactive()
@@ -26,9 +22,7 @@ class Giraf.Controller.Action extends Giraf.Controller._base
           .then (fileList) ->
             task = new Giraf.Task.FileLoader
             task.run app, fileList
-          .then ->
-            console.log "done"
-          , ->
+          .fail ->
             console.log "failed"
       when "nav__hoge"
           app.view.nav.inactive()

@@ -17,7 +17,10 @@ class Giraf.View.Nav extends Giraf.View._base
       if not $.contains $nav.get(0), event.target
         do self.inactive
       else if $(event.target).hasClass "dropdown-toggle"
-        self.active $(event.target).parent(".dropdown")
+        if not isActive
+          self.active $(event.target).parent(".dropdown")
+        else
+          do self.inactive
 
 
   active: (target) ->

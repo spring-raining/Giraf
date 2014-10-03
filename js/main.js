@@ -1908,7 +1908,11 @@ Giraf.View.Nav = (function(_super) {
       if (!$.contains($nav.get(0), event.target)) {
         return self.inactive();
       } else if ($(event.target).hasClass("dropdown-toggle")) {
-        return self.active($(event.target).parent(".dropdown"));
+        if (!isActive) {
+          return self.active($(event.target).parent(".dropdown"));
+        } else {
+          return self.inactive();
+        }
       }
     });
   }

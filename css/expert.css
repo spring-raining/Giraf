@@ -87,7 +87,11 @@
 }
 
 #expert_project .project-piece[data-referer-type="file"] .project-piece-tag {
-    background-color: #dda9bb;
+    background-color: #a9dbd3;
+}
+
+#expert_project .project-piece[data-referer-type="composition"] .project-piece-tag {
+    background-color: #ccb39f;
 }
 
 #expert_project .project-piece-content {

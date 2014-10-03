@@ -8,7 +8,8 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
     uuid = do Giraf.Tools.uuid
     if referer instanceof Giraf.Model.File
       piece = new Giraf.View.Expert.Project.Piece.File @app, uuid, referer
-
+    if referer instanceof Giraf.Model.Composition
+      piece = new Giraf.View.Expert.Project.Piece.Composition @app, uuid, referer
     if piece?
       @pieces[uuid] = piece
       @$project.append do piece.html
@@ -16,10 +17,10 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
       return uuid
 
 ###
-            File
-  referer   Model.File
-  type      "file"
-  title     referer.file.name
+            File                  Composition
+  referer   Model.File            Model.Composition
+  type      "file"                "composition"
+  title     referer.file.name     referer.name
 ###
 
 class Giraf.View.Expert.Project.Piece
@@ -63,4 +64,5 @@ class Giraf.View.Expert.Project.Piece.File extends Giraf.View.Expert.Project.Pie
     return $rtn.get(0)
 
 class Giraf.View.Expert.Project.Piece.Composition extends Giraf.View.Expert.Project.Piece
-  constructor: ->
+  constructor: (@app, @uuid, referer) ->
+    super app, uuid, referer, "composition", referer.name

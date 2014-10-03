@@ -76,6 +76,10 @@ if (Giraf.Task._base == null) {
   Giraf.Task._base = {};
 }
 
+if (Giraf.Task.CreateNewComposition == null) {
+  Giraf.Task.CreateNewComposition = {};
+}
+
 if (Giraf.Task.FileLoader == null) {
   Giraf.Task.FileLoader = {};
 }
@@ -661,7 +665,7 @@ Giraf.Controller.Action = (function(_super) {
   __extends(Action, _super);
 
   function Action(app, action, args) {
-    var fileList, task;
+    var fileList, piece, task;
     switch (action) {
       case "drop__import_file":
         fileList = args.fileList;
@@ -674,8 +678,9 @@ Giraf.Controller.Action = (function(_super) {
         console.log(args);
         break;
       case "expert__project__refresh_composition":
+        piece = app.view.expert.project.pieces[$(args.element).attr("data-uuid")];
         task = new Giraf.Task.RefreshComposition;
-        task.run(app, $(args.element).attr("data-uuid")).fail(function() {
+        task.run(app, piece.referer_uuid).fail(function() {
           return console.log("failed");
         });
         break;
@@ -686,6 +691,14 @@ Giraf.Controller.Action = (function(_super) {
         }).then(function(fileList) {
           task = new Giraf.Task.FileLoader;
           return task.run(app, fileList);
+        }).fail(function() {
+          return console.log("failed");
+        });
+        break;
+      case "nav__new_composition":
+        app.view.nav.inactive().then(function() {
+          task = new Giraf.Task.CreateNewComposition;
+          return task.run(app);
         }).fail(function() {
           return console.log("failed");
         });
@@ -863,11 +876,13 @@ Giraf.Model.Compositions = (function(_super) {
     return Compositions.__super__.constructor.apply(this, arguments);
   }
 
-  Compositions.append = function(app) {
-    var uuid;
+  Compositions.append = function(app, name) {
+    var d, uuid;
+    d = new $.Deferred;
     uuid = Giraf.Tools.uuid();
-    app.model.set(uuid, new Giraf.Model.Composition(app, uuid));
-    return uuid;
+    app.model.set(uuid, new Giraf.Model.Composition(app, uuid, name != null ? name : "New Composition"));
+    d.resolve(uuid);
+    return d.promise();
   };
 
   return Compositions;
@@ -877,28 +892,15 @@ Giraf.Model.Compositions = (function(_super) {
 Giraf.Model.Composition = (function(_super) {
   __extends(Composition, _super);
 
-  function Composition(app, uuid) {
+  function Composition(app, uuid, name) {
     this.app = app;
     this.uuid = uuid;
+    this.name = name;
   }
 
   return Composition;
 
 })(Giraf.Model._base);
-
-Giraf.Model.Composition.File = (function(_super) {
-  __extends(File, _super);
-
-  function File(app, uuid, file_uuid) {
-    this.app = app;
-    this.uuid = uuid;
-    this.file_uuid = file_uuid;
-    File.__super__.constructor.call(this, app, uuid);
-  }
-
-  return File;
-
-})(Giraf.Model.Composition);
 
 Giraf.Model.Files = (function(_super) {
   __extends(Files, _super);
@@ -1016,6 +1018,27 @@ Giraf.Task._base = (function(_super) {
 
 })(Giraf._base);
 
+Giraf.Task.CreateNewComposition = (function() {
+  function CreateNewComposition() {}
+
+  CreateNewComposition.prototype.run = function(app) {
+    var d, uuid;
+    d = $.Deferred();
+    uuid = null;
+    Giraf.Model.Compositions.append(app).then(function(uuid_) {
+      uuid = uuid_;
+      app.view.expert.project.append(app.model.get(uuid));
+      return d.resolve();
+    }, function() {
+      return d.reject();
+    });
+    return d.promise();
+  };
+
+  return CreateNewComposition;
+
+})();
+
 Giraf.Task.FileLoader = (function(_super) {
   var readFile;
 
@@ -1084,29 +1107,37 @@ Giraf.Task.RefreshComposition = (function() {
   function RefreshComposition() {}
 
   RefreshComposition.prototype.run = function(app, uuid) {
-    var d, file, piece, type;
+    var d, model, type;
     d = $.Deferred();
-    piece = app.view.expert.project.pieces[uuid];
-    file = app.model.get(piece.referer_uuid);
-    type = null;
-    switch (file.file.type) {
-      case "video/mp4":
-        type = "video";
-        break;
-      case "image/gif":
-      case "image/png":
-      case "image/jpeg":
-        type = "img";
-        break;
+    model = app.model.get(uuid);
+    if (model instanceof Giraf.Model.File) {
+      type = null;
+      switch (model.file.type) {
+        case "video/mp4":
+          type = "video";
+          break;
+        case "image/gif":
+        case "image/png":
+        case "image/jpeg":
+          type = "img";
+          break;
+      }
+      if (type == null) {
+        d.reject();
+      }
+      app.view.expert.composition.refresh(type, model.content).then(function() {
+        return d.resolve();
+      }, function() {
+        return d.reject();
+      });
     }
-    if (type == null) {
-      d.reject();
+    if (model instanceof Giraf.Model.Composition) {
+      app.view.expert.composition.refresh("img", null).then(function() {
+        return d.resolve();
+      }, function() {
+        return d.reject();
+      });
     }
-    app.view.expert.composition.refresh(type, file.content).then(function() {
-      return d.resolve();
-    }, function() {
-      return d.reject();
-    });
     return d.promise();
   };
 
@@ -1575,7 +1606,7 @@ Giraf.View.Expert.Composition = (function(_super) {
     var template;
     this.app = app;
     this.$composition = $composition;
-    template = _.template("<div class=\"composition-window\">\n  <div class=\"composition-window-placeholder\">\n    <span>Composition</span>\n    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores corporis delectus, doloremque eligendi explicabo fugit harum iusto magnam minus natus non odit officia perspiciatis possimus provident quo similique, suscipit tempora!</p><p>Aut ea eveniet facere officia placeat qui quod soluta! A autem commodi culpa cum, dignissimos dolorum eveniet, explicabo minima nesciunt nisi, officia omnis optio quae quas quia reiciendis rem unde?</p><p>Assumenda consectetur corporis et magnam voluptate. Ab aut beatae corporis cum dolorem dolores eius est expedita fuga hic, ipsum nobis quasi quibusdam quo recusandae soluta temporibus ut veniam vitae voluptatem?</p><p>Cupiditate dignissimos dolore dolorum ducimus enim, et explicabo fugit illo ipsa ipsam itaque laborum maiores nemo obcaecati quas quia quis similique! Autem consectetur dignissimos laudantium magni odit tenetur veniam vero.</p><p>Ab amet debitis dolorem est eveniet explicabo illum incidunt libero, magni minima, natus numquam omnis placeat porro quisquam saepe tempora voluptate! Aliquam eius error facere, maiores numquam vel veniam voluptatum.</p><p>Aliquid, assumenda consectetur cum cumque deserunt distinctio expedita fugit harum impedit magnam nemo nihil nobis perspiciatis ratione repellat sed, suscipit. At atque eos in molestias, nesciunt quas reiciendis. Consequuntur, ipsum.</p>\n  </div>\n  <img class=\"composition-img hidden\"/>\n  <video class=\"composition-video hidden\"></video>\n</div>\n<div class=\"composition-progress\"></div>");
+    template = _.template("<div class=\"composition-window\">\n  <div class=\"composition-window-placeholder\">\n    <span>Composition</span>\n    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores corporis delectus, doloremque eligendi explicabo fugit harum iusto magnam minus natus non odit officia perspiciatis possimus provident quo similique, suscipit tempora!</p><p>Aut ea eveniet facere officia placeat qui quod soluta! A autem commodi culpa cum, dignissimos dolorum eveniet, explicabo minima nesciunt nisi, officia omnis optio quae quas quia reiciendis rem unde?</p><p>Assumenda consectetur corporis et magnam voluptate. Ab aut beatae corporis cum dolorem dolores eius est expedita fuga hic, ipsum nobis quasi quibusdam quo recusandae soluta temporibus ut veniam vitae voluptatem?</p><p>Cupiditate dignissimos dolore dolorum ducimus enim, et explicabo fugit illo ipsa ipsam itaque laborum maiores nemo obcaecati quas quia quis similique! Autem consectetur dignissimos laudantium magni odit tenetur veniam vero.</p><p>Ab amet debitis dolorem est eveniet explicabo illum incidunt libero, magni minima, natus numquam omnis placeat porro quisquam saepe tempora voluptate! Aliquam eius error facere, maiores numquam vel veniam voluptatum.</p><p>Aliquid, assumenda consectetur cum cumque deserunt distinctio expedita fugit harum impedit magnam nemo nihil nobis perspiciatis ratione repellat sed, suscipit. At atque eos in molestias, nesciunt quas reiciendis. Consequuntur, ipsum.</p>\n  </div>\n  <img class=\"composition-img hidden\"/>\n  <video class=\"composition-video hidden\" controls></video>\n</div>\n<div class=\"composition-progress\"></div>");
     this.$composition.append(template({}));
   }
 
@@ -1702,6 +1733,9 @@ Giraf.View.Expert.Project = (function(_super) {
     if (referer instanceof Giraf.Model.File) {
       piece = new Giraf.View.Expert.Project.Piece.File(this.app, uuid, referer);
     }
+    if (referer instanceof Giraf.Model.Composition) {
+      piece = new Giraf.View.Expert.Project.Piece.Composition(this.app, uuid, referer);
+    }
     if (piece != null) {
       this.pieces[uuid] = piece;
       this.$project.append(piece.html());
@@ -1715,10 +1749,10 @@ Giraf.View.Expert.Project = (function(_super) {
 
 
 /*
-            File
-  referer   Model.File
-  type      "file"
-  title     referer.file.name
+            File                  Composition
+  referer   Model.File            Model.Composition
+  type      "file"                "composition"
+  title     referer.file.name     referer.name
  */
 
 Giraf.View.Expert.Project.Piece = (function() {
@@ -1781,7 +1815,11 @@ Giraf.View.Expert.Project.Piece.File = (function(_super) {
 Giraf.View.Expert.Project.Piece.Composition = (function(_super) {
   __extends(Composition, _super);
 
-  function Composition() {}
+  function Composition(app, uuid, referer) {
+    this.app = app;
+    this.uuid = uuid;
+    Composition.__super__.constructor.call(this, app, uuid, referer, "composition", referer.name);
+  }
 
   return Composition;
 

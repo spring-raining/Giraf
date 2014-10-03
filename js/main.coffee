@@ -16,6 +16,7 @@ Giraf.Settings._base = {} unless Giraf.Settings._base?
 Giraf.Settings.CookieBinder = {} unless Giraf.Settings.CookieBinder?
 Giraf.Task = {} unless Giraf.Task?
 Giraf.Task._base = {} unless Giraf.Task._base?
+Giraf.Task.CreateNewComposition = {} unless Giraf.Task.CreateNewComposition?
 Giraf.Task.FileLoader = {} unless Giraf.Task.FileLoader?
 Giraf.Task.RefreshComposition = {} unless Giraf.Task.RefreshComposition?
 Giraf.Task.SelectFile = {} unless Giraf.Task.SelectFile?
@@ -497,8 +498,9 @@ class Giraf.Controller.Action extends Giraf.Controller._base
       when "expert__project__change_target"
           console.log args
       when "expert__project__refresh_composition"
+          piece = app.view.expert.project.pieces[$(args.element).attr "data-uuid"]
           task = new Giraf.Task.RefreshComposition
-          task.run app, $(args.element).attr "data-uuid"
+          task.run app, piece.referer_uuid
           .fail ->
             console.log "failed"
       when "nav__import_file"
@@ -509,6 +511,13 @@ class Giraf.Controller.Action extends Giraf.Controller._base
           .then (fileList) ->
             task = new Giraf.Task.FileLoader
             task.run app, fileList
+          .fail ->
+            console.log "failed"
+      when "nav__new_composition"
+          app.view.nav.inactive()
+          .then ->
+            task = new Giraf.Task.CreateNewComposition
+            task.run app
           .fail ->
             console.log "failed"
       when "nav__hoge"
@@ -625,18 +634,17 @@ class Giraf.Model._base extends Giraf._base
 
 class Giraf.Model.Compositions extends Giraf.Model._base
 
-  @append: (app) ->
+  @append: (app, name) ->
+    d = new $.Deferred
     uuid = do Giraf.Tools.uuid
     app.model.set uuid,
-      new Giraf.Model.Composition app, uuid
-    return uuid
+      new Giraf.Model.Composition app, uuid, (name ? "New Composition")
+    d.resolve uuid
+    do d.promise
 
 class Giraf.Model.Composition extends Giraf.Model._base
-  constructor: (@app, @uuid) ->
+  constructor: (@app, @uuid, @name) ->
 
-class Giraf.Model.Composition.File extends Giraf.Model.Composition
-  constructor: (@app, @uuid, @file_uuid) ->
-    super app, uuid
 
 # js/giraf/model/file.coffee
 
@@ -706,6 +714,22 @@ class Giraf.Settings.CookieBinder extends Giraf.Settings._base
 class Giraf.Task._base extends Giraf._base
   # Giraf.Task._base
 
+# js/giraf/task/createNewComposition.coffee
+
+class Giraf.Task.CreateNewComposition
+  run: (app) ->
+    d = do $.Deferred
+    uuid = null
+    Giraf.Model.Compositions.append app
+    .then (uuid_) ->
+      uuid = uuid_
+      app.view.expert.project.append app.model.get uuid
+      do d.resolve
+    , ->
+      do d.reject
+
+    do d.promise
+
 # js/giraf/task/fileLoader.coffee
 
 class Giraf.Task.FileLoader extends Giraf.Task._base
@@ -758,22 +782,29 @@ class Giraf.Task.FileLoader extends Giraf.Task._base
 class Giraf.Task.RefreshComposition
   run: (app, uuid) ->
     d = do $.Deferred
-    piece = app.view.expert.project.pieces[uuid]
-    file = app.model.get piece.referer_uuid
-    type = null
-    switch file.file.type
-      when "video/mp4"
-        type = "video"
-      when "image/gif", "image/png", "image/jpeg"
-        type = "img"
-      else
+    model = app.model.get uuid
+    if model instanceof Giraf.Model.File
+      type = null
+      switch model.file.type
+        when "video/mp4"
+          type = "video"
+        when "image/gif", "image/png", "image/jpeg"
+          type = "img"
+        else
 
-    do d.reject unless type?
-    app.view.expert.composition.refresh type, file.content
-    .then ->
-      do d.resolve
-    , ->
-      do d.reject
+      do d.reject unless type?
+      app.view.expert.composition.refresh type, model.content
+      .then ->
+        do d.resolve
+      , ->
+        do d.reject
+
+    if model instanceof Giraf.Model.Composition
+      app.view.expert.composition.refresh "img", null
+      .then ->
+        do d.resolve
+      , ->
+        do d.reject
 
     do d.promise
 
@@ -1065,7 +1096,7 @@ class Giraf.View.Expert.Composition extends Giraf.View.Expert._base
                               <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores corporis delectus, doloremque eligendi explicabo fugit harum iusto magnam minus natus non odit officia perspiciatis possimus provident quo similique, suscipit tempora!</p><p>Aut ea eveniet facere officia placeat qui quod soluta! A autem commodi culpa cum, dignissimos dolorum eveniet, explicabo minima nesciunt nisi, officia omnis optio quae quas quia reiciendis rem unde?</p><p>Assumenda consectetur corporis et magnam voluptate. Ab aut beatae corporis cum dolorem dolores eius est expedita fuga hic, ipsum nobis quasi quibusdam quo recusandae soluta temporibus ut veniam vitae voluptatem?</p><p>Cupiditate dignissimos dolore dolorum ducimus enim, et explicabo fugit illo ipsa ipsam itaque laborum maiores nemo obcaecati quas quia quis similique! Autem consectetur dignissimos laudantium magni odit tenetur veniam vero.</p><p>Ab amet debitis dolorem est eveniet explicabo illum incidunt libero, magni minima, natus numquam omnis placeat porro quisquam saepe tempora voluptate! Aliquam eius error facere, maiores numquam vel veniam voluptatum.</p><p>Aliquid, assumenda consectetur cum cumque deserunt distinctio expedita fugit harum impedit magnam nemo nihil nobis perspiciatis ratione repellat sed, suscipit. At atque eos in molestias, nesciunt quas reiciendis. Consequuntur, ipsum.</p>
                             </div>
                             <img class="composition-img hidden"/>
-                            <video class="composition-video hidden"></video>
+                            <video class="composition-video hidden" controls></video>
                           </div>
                           <div class="composition-progress"></div>
                           """
@@ -1159,7 +1190,8 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
     uuid = do Giraf.Tools.uuid
     if referer instanceof Giraf.Model.File
       piece = new Giraf.View.Expert.Project.Piece.File @app, uuid, referer
-
+    if referer instanceof Giraf.Model.Composition
+      piece = new Giraf.View.Expert.Project.Piece.Composition @app, uuid, referer
     if piece?
       @pieces[uuid] = piece
       @$project.append do piece.html
@@ -1167,10 +1199,10 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
       return uuid
 
 ###
-            File
-  referer   Model.File
-  type      "file"
-  title     referer.file.name
+            File                  Composition
+  referer   Model.File            Model.Composition
+  type      "file"                "composition"
+  title     referer.file.name     referer.name
 ###
 
 class Giraf.View.Expert.Project.Piece
@@ -1214,7 +1246,8 @@ class Giraf.View.Expert.Project.Piece.File extends Giraf.View.Expert.Project.Pie
     return $rtn.get(0)
 
 class Giraf.View.Expert.Project.Piece.Composition extends Giraf.View.Expert.Project.Piece
-  constructor: ->
+  constructor: (@app, @uuid, referer) ->
+    super app, uuid, referer, "composition", referer.name
 
 # js/giraf/view/modal.coffee
 

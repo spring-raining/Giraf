@@ -8,11 +8,19 @@ class Giraf.View.Expert.Droparea extends Giraf.View.Expert._base
         true
       .on "dragover", =>
         false
-      .on "dragenter", =>
+      .on "dragenter", (event) =>
         if isActive
           innerAcitve++
         else
-          do @show
+          for item in event.originalEvent.dataTransfer.items
+            if item.type in [
+              "video/mp4",
+              "image/gif",
+              "image/png",
+              "image/jpeg",
+            ]
+              do @show
+              break
         false
       .on "dragleave", =>
         if innerAcitve > 0

@@ -4,6 +4,12 @@ class Giraf.Task.FileLoader extends Giraf.Task._base
     tasks = []
 
     for file in files
+      continue unless file.type in [
+        "video/mp4",
+        "image/gif",
+        "image/png",
+        "image/jpeg",
+      ]
       tasks.push do ->
         d_ = do $.Deferred
         uuid = null

@@ -31,6 +31,7 @@ Giraf.View.Expert = {} unless Giraf.View.Expert?
 Giraf.View.Expert._base = {} unless Giraf.View.Expert._base?
 Giraf.View.Expert.Composition = {} unless Giraf.View.Expert.Composition?
 Giraf.View.Expert.Droparea = {} unless Giraf.View.Expert.Droparea?
+Giraf.View.Expert.Node = {} unless Giraf.View.Expert.Node?
 Giraf.View.Expert.Project = {} unless Giraf.View.Expert.Project?
 Giraf.View.Modal = {} unless Giraf.View.Modal?
 Giraf.View.Nav = {} unless Giraf.View.Nav?
@@ -738,6 +739,12 @@ class Giraf.Task.FileLoader extends Giraf.Task._base
     tasks = []
 
     for file in files
+      continue unless file.type in [
+        "video/mp4",
+        "image/gif",
+        "image/png",
+        "image/jpeg",
+      ]
       tasks.push do ->
         d_ = do $.Deferred
         uuid = null
@@ -1076,6 +1083,7 @@ class Giraf.View.Expert extends Giraf.View._base
   constructor: (@app, @$expert) ->
     @project = new Giraf.View.Expert.Project app, $expert.find _selector_project
     @composition = new Giraf.View.Expert.Composition app, $expert.find _selector_composition
+    @node = new Giraf.View.Expert.Node app, $expert.find _selector_node
     @droparea = new Giraf.View.Expert.Droparea app, $expert
 
 
@@ -1140,11 +1148,19 @@ class Giraf.View.Expert.Droparea extends Giraf.View.Expert._base
         true
       .on "dragover", =>
         false
-      .on "dragenter", =>
+      .on "dragenter", (event) =>
         if isActive
           innerAcitve++
         else
-          do @show
+          for item in event.originalEvent.dataTransfer.items
+            if item.type in [
+              "video/mp4",
+              "image/gif",
+              "image/png",
+              "image/jpeg",
+            ]
+              do @show
+              break
         false
       .on "dragleave", =>
         if innerAcitve > 0
@@ -1177,6 +1193,36 @@ class Giraf.View.Expert.Droparea extends Giraf.View.Expert._base
   hide: ->
     isActive = false
     do $(".droparea").remove
+
+# js/giraf/view/expert/node.coffee
+
+class Giraf.View.Expert.Node extends Giraf.View.Expert._base
+
+  constructor: (@app, @$node) ->
+    @pieces = {}
+
+    $node.on "drop", (event) =>
+      referer_uuid = event.originalEvent.dataTransfer.getData "referer_uuid"
+      return unless referer_uuid
+      referer = app.model.get referer_uuid
+      piece = null
+      uuid = do Giraf.Tools.uuid
+      if referer instanceof Giraf.Model.Composition
+        piece = new Giraf.View.Expert.Node.Piece.Composition app, uuid, referer
+      if piece?
+        @pieces[uuid] = piece
+        $node.append piece.html()
+
+class Giraf.View.Expert.Node.Piece extends Giraf.View.Expert._base
+  constructor: (@app, @uuid) ->
+
+  html: ->
+    return "<div>Override me!</div>"
+
+class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Piece
+  constructor: (@app, @uuid, referer) ->
+    super app, uuid
+    @referer_uuid = referer.uuid
 
 # js/giraf/view/expert/project.coffee
 
@@ -1221,7 +1267,7 @@ class Giraf.View.Expert.Project.Piece
 
   html: ->
     template = _.template """
-                          <div class="project-piece" data-referer-type="<%- type %>" data-uuid="<%- uuid %>"
+                          <div class="project-piece" draggable="true" data-referer-type="<%- type %>" data-uuid="<%- uuid %>"
                            data-action-click="expert__project__change_target" data-action-dblclick="expert__project__refresh_composition">
                             <div class="project-piece-tag"></div>
                             <div class="project-piece-content">
@@ -1230,10 +1276,13 @@ class Giraf.View.Expert.Project.Piece
                             </div>
                           </div>
                           """
-    return template
+    $rtn = $ template
       type: @type ? ""
       uuid: @uuid ? ""
       title: @title ? ""
+    $rtn.on "dragstart", (event) =>
+      event.originalEvent.dataTransfer.setData "referer_uuid", @referer_uuid
+    return $rtn.get(0)
 
 class Giraf.View.Expert.Project.Piece.File extends Giraf.View.Expert.Project.Piece
   constructor: (@app, @uuid, referer) ->

@@ -136,6 +136,10 @@ if (Giraf.View.Expert.Droparea == null) {
   Giraf.View.Expert.Droparea = {};
 }
 
+if (Giraf.View.Expert.Node == null) {
+  Giraf.View.Expert.Node = {};
+}
+
 if (Giraf.View.Expert.Project == null) {
   Giraf.View.Expert.Project = {};
 }
@@ -1049,11 +1053,14 @@ Giraf.Task.FileLoader = (function(_super) {
   }
 
   FileLoader.prototype.run = function(app, files) {
-    var d, file, tasks, _i, _len;
+    var d, file, tasks, _i, _len, _ref;
     d = $.Deferred();
     tasks = [];
     for (_i = 0, _len = files.length; _i < _len; _i++) {
       file = files[_i];
+      if ((_ref = file.type) !== "video/mp4" && _ref !== "image/gif" && _ref !== "image/png" && _ref !== "image/jpeg") {
+        continue;
+      }
       tasks.push((function() {
         var d_, uuid;
         d_ = $.Deferred();
@@ -1581,6 +1588,7 @@ Giraf.View.Expert = (function(_super) {
     this.$expert = $expert;
     this.project = new Giraf.View.Expert.Project(app, $expert.find(_selector_project));
     this.composition = new Giraf.View.Expert.Composition(app, $expert.find(_selector_composition));
+    this.node = new Giraf.View.Expert.Node(app, $expert.find(_selector_node));
     this.droparea = new Giraf.View.Expert.Droparea(app, $expert);
   }
 
@@ -1669,11 +1677,19 @@ Giraf.View.Expert.Droparea = (function(_super) {
         return false;
       };
     })(this)).on("dragenter", (function(_this) {
-      return function() {
+      return function(event) {
+        var item, _i, _len, _ref, _ref1;
         if (isActive) {
           innerAcitve++;
         } else {
-          _this.show();
+          _ref = event.originalEvent.dataTransfer.items;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            item = _ref[_i];
+            if ((_ref1 = item.type) === "video/mp4" || _ref1 === "image/gif" || _ref1 === "image/png" || _ref1 === "image/jpeg") {
+              _this.show();
+              break;
+            }
+          }
         }
         return false;
       };
@@ -1716,6 +1732,68 @@ Giraf.View.Expert.Droparea = (function(_super) {
   return Droparea;
 
 })(Giraf.View.Expert._base);
+
+Giraf.View.Expert.Node = (function(_super) {
+  __extends(Node, _super);
+
+  function Node(app, $node) {
+    this.app = app;
+    this.$node = $node;
+    this.pieces = {};
+    $node.on("drop", (function(_this) {
+      return function(event) {
+        var piece, referer, referer_uuid, uuid;
+        referer_uuid = event.originalEvent.dataTransfer.getData("referer_uuid");
+        if (!referer_uuid) {
+          return;
+        }
+        referer = app.model.get(referer_uuid);
+        piece = null;
+        uuid = Giraf.Tools.uuid();
+        if (referer instanceof Giraf.Model.Composition) {
+          piece = new Giraf.View.Expert.Node.Piece.Composition(app, uuid, referer);
+        }
+        if (piece != null) {
+          _this.pieces[uuid] = piece;
+          return $node.append(piece.html());
+        }
+      };
+    })(this));
+  }
+
+  return Node;
+
+})(Giraf.View.Expert._base);
+
+Giraf.View.Expert.Node.Piece = (function(_super) {
+  __extends(Piece, _super);
+
+  function Piece(app, uuid) {
+    this.app = app;
+    this.uuid = uuid;
+  }
+
+  Piece.prototype.html = function() {
+    return "<div>Override me!</div>";
+  };
+
+  return Piece;
+
+})(Giraf.View.Expert._base);
+
+Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
+  __extends(Composition, _super);
+
+  function Composition(app, uuid, referer) {
+    this.app = app;
+    this.uuid = uuid;
+    Composition.__super__.constructor.call(this, app, uuid);
+    this.referer_uuid = referer.uuid;
+  }
+
+  return Composition;
+
+})(Giraf.View.Expert.Node.Piece);
 
 Giraf.View.Expert.Project = (function(_super) {
   __extends(Project, _super);
@@ -1777,13 +1855,19 @@ Giraf.View.Expert.Project.Piece = (function() {
   }
 
   Piece.prototype.html = function() {
-    var template, _ref, _ref1, _ref2;
-    template = _.template("<div class=\"project-piece\" data-referer-type=\"<%- type %>\" data-uuid=\"<%- uuid %>\"\n data-action-click=\"expert__project__change_target\" data-action-dblclick=\"expert__project__refresh_composition\">\n  <div class=\"project-piece-tag\"></div>\n  <div class=\"project-piece-content\">\n    <img class=\"project-piece-thumbnail\"/>\n    <div class=\"project-piece-title\"><%- title %></div>\n  </div>\n</div>");
-    return template({
+    var $rtn, template, _ref, _ref1, _ref2;
+    template = _.template("<div class=\"project-piece\" draggable=\"true\" data-referer-type=\"<%- type %>\" data-uuid=\"<%- uuid %>\"\n data-action-click=\"expert__project__change_target\" data-action-dblclick=\"expert__project__refresh_composition\">\n  <div class=\"project-piece-tag\"></div>\n  <div class=\"project-piece-content\">\n    <img class=\"project-piece-thumbnail\"/>\n    <div class=\"project-piece-title\"><%- title %></div>\n  </div>\n</div>");
+    $rtn = $(template({
       type: (_ref = this.type) != null ? _ref : "",
       uuid: (_ref1 = this.uuid) != null ? _ref1 : "",
       title: (_ref2 = this.title) != null ? _ref2 : ""
-    });
+    }));
+    $rtn.on("dragstart", (function(_this) {
+      return function(event) {
+        return event.originalEvent.dataTransfer.setData("referer_uuid", _this.referer_uuid);
+      };
+    })(this));
+    return $rtn.get(0);
   };
 
   return Piece;

@@ -39,7 +39,7 @@ class Giraf.View.Expert.Project.Piece
 
   html: ->
     template = _.template """
-                          <div class="project-piece" data-referer-type="<%- type %>" data-uuid="<%- uuid %>"
+                          <div class="project-piece" draggable="true" data-referer-type="<%- type %>" data-uuid="<%- uuid %>"
                            data-action-click="expert__project__change_target" data-action-dblclick="expert__project__refresh_composition">
                             <div class="project-piece-tag"></div>
                             <div class="project-piece-content">
@@ -48,10 +48,13 @@ class Giraf.View.Expert.Project.Piece
                             </div>
                           </div>
                           """
-    return template
+    $rtn = $ template
       type: @type ? ""
       uuid: @uuid ? ""
       title: @title ? ""
+    $rtn.on "dragstart", (event) =>
+      event.originalEvent.dataTransfer.setData "referer_uuid", @referer_uuid
+    return $rtn.get(0)
 
 class Giraf.View.Expert.Project.Piece.File extends Giraf.View.Expert.Project.Piece
   constructor: (@app, @uuid, referer) ->

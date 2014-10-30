@@ -15,6 +15,12 @@ class Giraf.Controller.Action extends Giraf.Controller._base
           task.run app, piece.referer_uuid
           .fail ->
             console.log "failed"
+      when "nav__append_point"
+          app.view.nav.inactive()
+          .then ->
+            app.view.expert.node.appendPoint()
+          .fail ->
+            console.log "failed"
       when "nav__import_file"
           app.view.nav.inactive()
           .then ->

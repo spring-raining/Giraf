@@ -688,6 +688,13 @@ Giraf.Controller.Action = (function(_super) {
           return console.log("failed");
         });
         break;
+      case "nav__append_point":
+        app.view.nav.inactive().then(function() {
+          return app.view.expert.node.appendPoint();
+        }).fail(function() {
+          return console.log("failed");
+        });
+        break;
       case "nav__import_file":
         app.view.nav.inactive().then(function() {
           task = new Giraf.Task.SelectFile;
@@ -1737,63 +1744,617 @@ Giraf.View.Expert.Node = (function(_super) {
   __extends(Node, _super);
 
   function Node(app, $node) {
+    var template;
     this.app = app;
     this.$node = $node;
     this.pieces = {};
+    this.corkboardWidth = 3000;
+    this.corkboardHeight = 3000;
+    this.svg = new Giraf.View.Expert.Node.SVG(app, this.corkboardWidth, this.corkboardHeight);
+    template = _.template("<div class=\"node-corkboard-container\">\n  <div class=\"node-corkboard\">\n    <div id=\"node_corkboard_svg\"></div>\n  </div>\n</div>");
+    $node.append(template());
+    $node.find(".node-corkboard").css("width", "" + this.corkboardWidth + "px").css("height", "" + this.corkboardHeight + "px");
     $node.on("drop", (function(_this) {
       return function(event) {
-        var piece, referer, referer_uuid, uuid;
-        referer_uuid = event.originalEvent.dataTransfer.getData("referer_uuid");
-        if (!referer_uuid) {
-          return;
-        }
-        referer = app.model.get(referer_uuid);
-        piece = null;
-        uuid = Giraf.Tools.uuid();
-        if (referer instanceof Giraf.Model.Composition) {
-          piece = new Giraf.View.Expert.Node.Piece.Composition(app, uuid, referer);
-        }
-        if (piece != null) {
-          _this.pieces[uuid] = piece;
-          return $node.append(piece.html());
+        var oe, referer_uuid;
+        oe = event.originalEvent;
+        referer_uuid = oe.dataTransfer.getData("referer_uuid");
+        if (referer_uuid) {
+          return _this.appendComposition(app.model.get(referer_uuid), oe.offsetX, oe.offsetY);
         }
       };
     })(this));
   }
 
+  Node.prototype.appendPoint = function(x, y) {
+    var d;
+    d = $.Deferred();
+    if (x == null) {
+      x = this.$node.scrollLeft() + this.$node.width() / 2;
+    }
+    if (y == null) {
+      y = this.$node.scrollTop() + this.$node.height() / 2;
+    }
+    this.svg.addPoint(x, y);
+    d.resolve();
+    return d.promise();
+  };
+
+  Node.prototype.appendComposition = function(referer, x, y) {
+    var d;
+    d = $.Deferred();
+    if (x == null) {
+      x = this.$node.scrollLeft() + this.$node.width() / 2;
+    }
+    if (y == null) {
+      y = this.$node.scrollTop() + this.$node.height() / 2;
+    }
+    this.svg.addComposition(referer, x, y);
+    d.resolve();
+    return d.promise();
+  };
+
   return Node;
+
+})(Giraf.View.Expert._base);
+
+Giraf.View.Expert.Node.SVG = (function(_super) {
+  __extends(SVG, _super);
+
+  SVG.D3 = {};
+
+  SVG.pieces = {};
+
+  SVG.hoveredContent = null;
+
+  function SVG(app, width, height) {
+    this.app = app;
+    this.width = width;
+    this.height = height;
+    this.D3 = {};
+    this.pieces = {};
+    $((function(_this) {
+      return function() {
+        _this.D3.svg = d3.select("#node_corkboard_svg").append("svg").attr("width", width).attr("height", height);
+        _this.D3.svg.defs = _this.D3.svg.append("defs");
+        _this.D3.svg.nodeLayer = _this.D3.svg.append("g");
+        _this.D3.svg.contentLayer = _this.D3.svg.append("g").on("mousemove", function() {
+          var $node, uuid, _ref;
+          $node = $(d3.event.target);
+          uuid = (_ref = $node.parents("[data-uuid]")) != null ? _ref.attr("data-uuid") : void 0;
+          return _this.hoveredContent = uuid != null ? uuid : null;
+        });
+        _this.D3.svg.contentLayer.append("rect").attr({
+          x: 0,
+          y: 0,
+          width: width,
+          height: height,
+          fill: "transparent"
+        });
+        return _this.D3.svg.overLayer = _this.D3.svg.append("g");
+      };
+    })(this));
+  }
+
+  SVG.prototype.addComposition = function(referer, x, y) {
+    var piece, uuid;
+    x = Math.min(Math.max(x, 0), this.width);
+    y = Math.min(Math.max(y, 0), this.height);
+    piece = null;
+    uuid = Giraf.Tools.uuid();
+    if (referer instanceof Giraf.Model.Composition) {
+      piece = new Giraf.View.Expert.Node.Piece.Composition(this, uuid, referer);
+    }
+    if (piece != null) {
+      this.pieces[uuid] = piece;
+      return piece.draw().move(x, y);
+    }
+  };
+
+  SVG.prototype.addPoint = function(x, y) {
+    var piece, uuid;
+    x = Math.min(Math.max(x, 0), this.width);
+    y = Math.min(Math.max(y, 0), this.height);
+    uuid = Giraf.Tools.uuid();
+    piece = new Giraf.View.Expert.Node.Piece.Point(this, uuid);
+    this.pieces[uuid] = piece;
+    return piece.draw().move(x, y);
+  };
+
+  SVG.prototype.addArrow = function(from, to) {
+    var arrow, cdn;
+    if ((from == null) && (to == null)) {
+      return;
+    }
+    arrow = {};
+    if (from != null) {
+      arrow.from = from;
+    }
+    if (to != null) {
+      arrow.to = to;
+    }
+    cdn = this.getLineCoordinate(from, to);
+    arrow.line = this.svg.line(cdn.x1, cdn.y1, cdn.x2, cdn.y2).stroke({
+      width: 2
+    });
+    return this.arrows.push(arrow);
+  };
+
+  SVG.prototype.updateArrow = function(moveObject) {
+    return this.arrows.forEach((function(_this) {
+      return function(arrow) {
+        var cdn, _ref, _ref1;
+        if ((moveObject == null) || (((_ref = arrow.from) != null ? _ref.uuid : void 0) === moveObject.uuid || ((_ref1 = arrow.to) != null ? _ref1.uuid : void 0) === moveObject.uuid)) {
+          cdn = _this.getLineCoordinate(arrow.from, arrow.to);
+          return arrow.line.plot(cdn.x1, cdn.y1, cdn.x2, cdn.y2);
+        }
+      };
+    })(this));
+  };
+
+  SVG.prototype.getLineCoordinate = function(from, to) {
+    var cdn;
+    if ((from == null) && (to == null)) {
+      return;
+    }
+    cdn = {};
+    if (from != null) {
+      cdn.x1 = from.x;
+      cdn.y1 = from.y;
+      if (to != null) {
+        cdn.x2 = to.x;
+        cdn.y2 = to.y;
+      } else {
+        cdn.x2 = from.x + 100;
+        cdn.y2 = from.y;
+      }
+    } else {
+      cdn.x1 = to.x - 100;
+      cdn.y1 = to.y;
+      cdn.x2 = to.x;
+      cdn.y2 = to.y;
+    }
+    return cdn;
+  };
+
+  return SVG;
 
 })(Giraf.View.Expert._base);
 
 Giraf.View.Expert.Node.Piece = (function(_super) {
   __extends(Piece, _super);
 
-  function Piece(app, uuid) {
-    this.app = app;
-    this.uuid = uuid;
+  function Piece() {
+    return Piece.__super__.constructor.apply(this, arguments);
   }
 
-  Piece.prototype.html = function() {
-    return "<div>Override me!</div>";
-  };
+  Piece.x = 0;
+
+  Piece.y = 0;
 
   return Piece;
 
 })(Giraf.View.Expert._base);
 
+Giraf.View.Expert.Node.Piece.Content = (function(_super) {
+  __extends(Content, _super);
+
+  function Content(svg) {
+    this.svg = svg;
+    this.controllable = true;
+  }
+
+  Content.prototype.controll = function(bool) {
+    this.controllable = bool;
+    return this;
+  };
+
+  Content.prototype.select = function(bool) {};
+
+  return Content;
+
+})(Giraf.View.Expert.Node.Piece);
+
+Giraf.View.Expert.Node.Piece.Over = (function(_super) {
+  __extends(Over, _super);
+
+  function Over(svg) {
+    this.svg = svg;
+  }
+
+  return Over;
+
+})(Giraf.View.Expert.Node.Piece);
+
 Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
+  var data;
+
   __extends(Composition, _super);
 
-  function Composition(app, uuid, referer) {
-    this.app = app;
+  Composition.destination = null;
+
+  data = {
+    width: 120,
+    height: 80,
+    rect: {
+      radius: 6,
+      color: "#3E90BA"
+    },
+    text: {
+      x: 0,
+      y: -25,
+      fontSize: 11,
+      fontWeight: 20,
+      color: "white"
+    },
+    hook: {
+      x: 45,
+      y: 0
+    }
+  };
+
+  function Composition(svg, uuid, referer) {
+    this.svg = svg;
     this.uuid = uuid;
-    Composition.__super__.constructor.call(this, app, uuid);
+    Composition.__super__.constructor.call(this, svg);
+    this.app = svg.app;
     this.referer_uuid = referer.uuid;
+    this.d3svg = svg.D3.svg;
   }
+
+  Composition.prototype.move = function(x, y) {
+    var _ref;
+    this.x = Math.min(Math.max(x, 0), this.svg.width);
+    this.y = Math.min(Math.max(y, 0), this.svg.height);
+    if ((_ref = this.d3composition) != null) {
+      _ref.attr("transform", "translate(" + this.x + ", " + this.y + ")");
+    }
+    return this;
+  };
+
+  Composition.prototype.draw = function() {
+    $((function(_this) {
+      return function() {
+        var d3compositionEventHandler, d3hookEventHandler, _ref;
+        d3compositionEventHandler = d3.behavior.drag().on("dragstart", function() {
+          d3.event.sourceEvent.stopPropagation();
+          _this.controll(false);
+          return _this.d3svg.attr("cursor", "move");
+        }).on("drag", function() {
+          return _this.move(d3.event.x, d3.event.y);
+        }).on("dragend", function() {
+          _this.controll(true);
+          return _this.d3svg.attr("cursor", null);
+        });
+        d3hookEventHandler = d3.behavior.drag().on("dragstart", function() {
+          d3.event.sourceEvent.stopPropagation();
+          _.each(_this.svg.pieces, function(v) {
+            return v.controll(false);
+          });
+          _this.d3svg.attr("cursor", "none");
+          _this.arrow = new Giraf.View.Expert.Node.Piece.Arrow(_this.svg);
+          return _this.arrow.draw().move(_this.x + data.hook.x, _this.y + data.hook.y, _this.x + data.hook.x, _this.y + data.hook.y);
+        }).on("drag", function() {
+          _.each(_this.svg.pieces, function(v, k) {
+            if (_this.svg.hoveredContent === k && k !== _this.uuid) {
+              return v.select(true);
+            } else {
+              return v.select(false);
+            }
+          });
+          return _this.arrow.move(_this.x + data.hook.x, _this.y + data.hook.y, _this.x + d3.event.x, _this.y + d3.event.y);
+        }).on("dragend", function() {
+          _this.d3svg.attr("cursor", null);
+          _.each(_this.svg.pieces, function(v) {
+            return v.select(false).controll(true);
+          });
+          _this.arrow.remove();
+          return _this.arrow = null;
+        });
+        _this.d3composition = _this.d3svg.contentLayer.append("g").attr("data-uuid", _this.uuid).call(d3compositionEventHandler);
+        _this.d3rect = _this.d3composition.append("rect").attr({
+          x: -data.width / 2,
+          y: -data.height / 2,
+          width: data.width,
+          height: data.height,
+          rx: data.rect.radius,
+          ry: data.rect.radius,
+          fill: data.rect.color
+        });
+        _this.d3text = _this.d3composition.append("text").text((_ref = _this.app.model.get(_this.referer_uuid)) != null ? _ref.name : void 0).attr({
+          x: data.text.x,
+          y: data.text.y,
+          "font-size": data.text.fontSize,
+          "font-weight": data.text.fontWeight,
+          "text-anchor": "middle",
+          "fill": data.text.color
+        });
+        _this.d3circleDot = _this.d3composition.append("circle").attr({
+          cx: data.hook.x,
+          cy: data.hook.y,
+          r: 3.5,
+          fill: "white",
+          opacity: 0
+        });
+        return _this.d3circleHook = _this.d3composition.append("circle").attr({
+          cx: data.hook.x,
+          cy: data.hook.y,
+          r: 6,
+          stroke: "white",
+          "stroke-width": 1.5,
+          fill: "transparent"
+        }).on("mouseover", function() {
+          if (_this.controllable) {
+            return _this.d3circleDot.attr("opacity", 1);
+          }
+        }).on("mouseout", function() {
+          return _this.d3circleDot.attr("opacity", 0);
+        }).call(d3hookEventHandler);
+      };
+    })(this));
+    return this;
+  };
+
+  Composition.prototype.select = function(bool) {
+    var _ref, _ref1;
+    Composition.__super__.select.call(this, bool);
+    if (bool) {
+      if ((_ref = this.d3rect) != null) {
+        _ref.attr({
+          stroke: "white",
+          "stroke-width": 2
+        });
+      }
+    } else {
+      if ((_ref1 = this.d3rect) != null) {
+        _ref1.attr({
+          "stroke-width": 0
+        });
+      }
+    }
+    return this;
+  };
 
   return Composition;
 
-})(Giraf.View.Expert.Node.Piece);
+})(Giraf.View.Expert.Node.Piece.Content);
+
+Giraf.View.Expert.Node.Piece.Point = (function(_super) {
+  var data;
+
+  __extends(Point, _super);
+
+  Point.source = null;
+
+  data = {
+    width: 40,
+    height: 40,
+    rect: {
+      radius: 6,
+      color: "#D59B0A"
+    },
+    hook: {
+      x: 0,
+      y: 0
+    }
+  };
+
+  function Point(svg, uuid) {
+    this.svg = svg;
+    this.uuid = uuid;
+    Point.__super__.constructor.call(this, svg);
+    this.d3svg = svg.D3.svg;
+  }
+
+  Point.prototype.move = function(x, y) {
+    var _ref;
+    this.x = Math.min(Math.max(x, 0), this.svg.width);
+    this.y = Math.min(Math.max(y, 0), this.svg.height);
+    if ((_ref = this.d3point) != null) {
+      _ref.attr("transform", "translate(" + this.x + ", " + this.y + ")");
+    }
+    return this;
+  };
+
+  Point.prototype.draw = function() {
+    $((function(_this) {
+      return function() {
+        var d3hookEventHandler, d3pointEventHandler;
+        d3pointEventHandler = d3.behavior.drag().on("dragstart", function() {
+          d3.event.sourceEvent.stopPropagation();
+          _this.controll(false);
+          return _this.d3svg.attr("cursor", "move");
+        }).on("drag", function() {
+          return _this.move(d3.event.x, d3.event.y);
+        }).on("dragend", function() {
+          _this.controll(true);
+          return _this.d3svg.attr("cursor", null);
+        });
+        d3hookEventHandler = d3.behavior.drag().on("dragstart", function() {
+          d3.event.sourceEvent.stopPropagation();
+          _.each(_this.svg.pieces, function(v) {
+            return v.controll(false);
+          });
+          _this.d3svg.attr("cursor", "none");
+          _this.arrow = new Giraf.View.Expert.Node.Piece.Arrow(_this.svg);
+          return _this.arrow.draw().move(_this.x + data.hook.x, _this.y + data.hook.y, _this.x + data.hook.y, _this.y + data.hook.y);
+        }).on("drag", function() {
+          _.each(_this.svg.pieces, function(v, k) {
+            if (_this.svg.hoveredContent === k && k !== _this.uuid) {
+              return v.select(true);
+            } else {
+              return v.select(false);
+            }
+          });
+          return _this.arrow.move(_this.x + data.hook.x, _this.y + data.hook.y, _this.x + d3.event.x, _this.y + d3.event.y);
+        }).on("dragend", function() {
+          _this.d3svg.attr("cursor", null);
+          _.each(_this.svg.pieces, function(v) {
+            return v.select(false).controll(true);
+          });
+          _this.arrow.remove();
+          return _this.arrow = null;
+        });
+        _this.d3point = _this.d3svg.contentLayer.append("g").attr("data-uuid", _this.uuid).call(d3pointEventHandler).on("tick", function() {
+          var _ref;
+          return (_ref = _this.link) != null ? _ref.move() : void 0;
+        });
+        _this.d3rect = _this.d3point.append("rect").attr({
+          x: -data.width / 2,
+          y: -data.height / 2,
+          width: data.width,
+          height: data.height,
+          rx: data.rect.radius,
+          ry: data.rect.radius,
+          fill: data.rect.color
+        });
+        _this.d3circleDot = _this.d3point.append("circle").attr({
+          cx: data.hook.x,
+          cy: data.hook.y,
+          r: 3.5,
+          fill: "white",
+          opacity: 0
+        });
+        return _this.d3circleHook = _this.d3point.append("circle").attr({
+          cx: data.hook.x,
+          cy: data.hook.y,
+          r: 6,
+          stroke: "white",
+          "stroke-width": 1.5,
+          fill: "transparent"
+        }).on("mouseover", function() {
+          if (_this.controllable) {
+            return _this.d3circleDot.attr("opacity", 1);
+          }
+        }).on("mouseout", function() {
+          return _this.d3circleDot.attr("opacity", 0);
+        }).call(d3hookEventHandler);
+      };
+    })(this));
+    return this;
+  };
+
+  Point.prototype.select = function(bool) {
+    var _ref, _ref1;
+    Point.__super__.select.call(this, bool);
+    if (bool) {
+      if ((_ref = this.d3rect) != null) {
+        _ref.attr({
+          stroke: "white",
+          "stroke-width": 2
+        });
+      }
+    } else {
+      if ((_ref1 = this.d3rect) != null) {
+        _ref1.attr({
+          "stroke-width": 0
+        });
+      }
+    }
+    return this;
+  };
+
+  return Point;
+
+})(Giraf.View.Expert.Node.Piece.Content);
+
+Giraf.View.Expert.Node.Piece.Arrow = (function(_super) {
+  __extends(Arrow, _super);
+
+  Arrow.x1 = 0;
+
+  Arrow.y1 = 0;
+
+  Arrow.x2 = 0;
+
+  Arrow.y2 = 0;
+
+  function Arrow(svg) {
+    this.svg = svg;
+    Arrow.__super__.constructor.call(this, svg);
+    this.uuid = Giraf.Tools.uuid();
+    this.d3svg = svg.D3.svg;
+  }
+
+  Arrow.prototype.move = function(x1, y1, x2, y2) {
+    var _ref;
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+    if ((_ref = this.d3arrow) != null) {
+      _ref.attr({
+        x1: this.x1,
+        y1: this.y1,
+        x2: this.x2,
+        y2: this.y2
+      });
+    }
+    return this;
+  };
+
+  Arrow.prototype.draw = function() {
+    $((function(_this) {
+      return function() {
+        _this.d3arrowTail = _this.d3svg.defs.append("marker").attr({
+          id: "" + _this.uuid + "_arrow_tail",
+          refX: 2,
+          refY: 2,
+          markerWidth: 4,
+          markerHeight: 4,
+          orient: "auto"
+        });
+        _this.d3arrowTail.append("circle").attr({
+          cx: 2,
+          cy: 2,
+          r: 1.75,
+          fill: "white"
+        });
+        _this.d3arrowHead = _this.d3svg.defs.append("marker").attr({
+          id: "" + _this.uuid + "_arrow_head",
+          refX: 0,
+          refY: 3,
+          markerWidth: 6,
+          markerHeight: 6,
+          orient: "auto"
+        });
+        _this.d3arrowHead.append("path").attr({
+          d: "M0,0 V6 L6,3 Z",
+          fill: "white"
+        });
+        return _this.d3arrow = _this.d3svg.overLayer.append("line").attr({
+          x1: _this.x1,
+          y1: _this.y1,
+          x2: _this.x2,
+          y2: _this.y2,
+          stroke: "white",
+          "stroke-width": 2,
+          "stroke-dasharray": "7,5",
+          "marker-start": "url(#" + _this.uuid + "_arrow_tail)",
+          "marker-end": "url(#" + _this.uuid + "_arrow_head)"
+        });
+      };
+    })(this));
+    return this;
+  };
+
+  Arrow.prototype.remove = function() {
+    var _ref, _ref1, _ref2;
+    if ((_ref = this.d3arrowTail) != null) {
+      _ref.remove();
+    }
+    if ((_ref1 = this.d3arrowHead) != null) {
+      _ref1.remove();
+    }
+    if ((_ref2 = this.d3arrow) != null) {
+      _ref2.remove();
+    }
+    return this;
+  };
+
+  return Arrow;
+
+})(Giraf.View.Expert.Node.Piece.Over);
 
 Giraf.View.Expert.Project = (function(_super) {
   __extends(Project, _super);

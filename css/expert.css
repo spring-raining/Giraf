@@ -158,3 +158,36 @@
     background-color: #3f7dce;
     opacity: .8;
 }
+
+/*
+ *  #expert_node
+ */
+
+#expert_node > .panel-container {
+    position: relative;
+}
+
+#expert_node .node-corkboard-container {
+    scroll: auto;
+}
+
+#expert_node .node-corkboard {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAHUlEQVQYV2NkYGDwAeItQIwXMBJSAJMfVUidcAQAnagBC/F0hK8AAAAASUVORK5CYII=) repeat;
+}
+
+#expert_node #node_corkboard_svg {
+    position: absolute;
+}
+
+#expert_node .node-piece-composition {
+    width: 100px;
+    position: absolute !important;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    background-color: rgb(147, 140, 255);
+    color: #000;
+}
+
+#expert_node .node-piece-composition-title {
+    font-size: 11px;
+}

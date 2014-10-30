@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="css/normalize.css"/>
   <link rel="stylesheet" href="css/jquery.Jcrop.min.css"/>
   <link rel="stylesheet" href="css/codemirror.css"/>
+  <link rel="stylesheet" href="css/jquery-ui.min.css"/>
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="stylesheet" href="css/dropdown.css"/>
   <link rel="stylesheet" href="css/nav.css"/>
@@ -57,8 +58,9 @@
       </ul>
     </li>
     <li class="dropdown">
-      <a class="dropdown-toggle" href="#">レイヤー</a>
+      <a class="dropdown-toggle" href="#">ノード</a>
       <ul class="dropdown-menu">
+        <li><a data-action-click="nav__append_point">分岐点を追加</a></li>
       </ul>
     </li>
   </ul>
@@ -101,7 +103,9 @@
 <script src="js/lib/addon/edit/closebrackets.js"></script>
 <script src="js/lib/addon/edit/matchbrackets.js"></script>
 <script src="js/lib/addon/selection/active-line.js"></script>
+<script src="js/lib/jquery-ui.min.js"></script>
 <script src="js/lib/jquery.cookie.min.js"></script>
+<script src="js/lib/d3.min.js"></script>
 <script src="js/lib/gif.js/dist/gif.js"></script>
 <script src="js/main.js"></script>
 

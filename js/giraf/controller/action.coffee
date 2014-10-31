@@ -7,8 +7,6 @@ class Giraf.Controller.Action extends Giraf.Controller._base
           task.run app, fileList
           .fail ->
             console.log "failed"
-      when "expert__project__change_target"
-          console.log args
       when "expert__project__refresh_composition"
           piece = app.view.expert.project.pieces[$(args.element).attr "data-uuid"]
           task = new Giraf.Task.RefreshComposition
@@ -19,6 +17,11 @@ class Giraf.Controller.Action extends Giraf.Controller._base
           app.view.nav.inactive()
           .then ->
             app.view.expert.node.appendPoint()
+          .fail ->
+            console.log "failed"
+      when "expert__change_target"
+          task = new Giraf.Task.ChangeSelected
+          task.run app, ($(args.element).attr "data-uuid")
           .fail ->
             console.log "failed"
       when "nav__import_file"

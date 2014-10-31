@@ -69,7 +69,11 @@
 
 #expert_project .project-piece {
     height: 42px;
-    border-bottom: solid 1px #363636;
+    border: solid 1px #363636;
+}
+
+#expert_project .project-piece.selected{
+    border: solid 1px orange
 }
 
 #expert_project .project-piece.loading {
@@ -83,7 +87,7 @@
 
 #expert_project .project-piece-tag {
     width: 6px;
-    height: 42px;
+    height: 40px;
 }
 
 #expert_project .project-piece[data-referer-type="file"] .project-piece-tag {

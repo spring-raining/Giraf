@@ -76,6 +76,10 @@ if (Giraf.Task._base == null) {
   Giraf.Task._base = {};
 }
 
+if (Giraf.Task.ChangeSelected == null) {
+  Giraf.Task.ChangeSelected = {};
+}
+
 if (Giraf.Task.CreateNewComposition == null) {
   Giraf.Task.CreateNewComposition = {};
 }
@@ -678,9 +682,6 @@ Giraf.Controller.Action = (function(_super) {
           return console.log("failed");
         });
         break;
-      case "expert__project__change_target":
-        console.log(args);
-        break;
       case "expert__project__refresh_composition":
         piece = app.view.expert.project.pieces[$(args.element).attr("data-uuid")];
         task = new Giraf.Task.RefreshComposition;
@@ -692,6 +693,12 @@ Giraf.Controller.Action = (function(_super) {
         app.view.nav.inactive().then(function() {
           return app.view.expert.node.appendPoint();
         }).fail(function() {
+          return console.log("failed");
+        });
+        break;
+      case "expert__change_target":
+        task = new Giraf.Task.ChangeSelected;
+        task.run(app, $(args.element).attr("data-uuid")).fail(function() {
           return console.log("failed");
         });
         break;
@@ -1028,6 +1035,24 @@ Giraf.Task._base = (function(_super) {
   return _base;
 
 })(Giraf._base);
+
+Giraf.Task.ChangeSelected = (function() {
+  function ChangeSelected() {}
+
+  ChangeSelected.prototype.run = function(app, uuid) {
+    var d;
+    d = $.Deferred();
+    $.when(app.view.expert.project.select(uuid), app.view.expert.node.select(uuid)).done((function(_this) {
+      return function() {
+        return d.resolve();
+      };
+    })(this));
+    return d.promise();
+  };
+
+  return ChangeSelected;
+
+})();
 
 Giraf.Task.CreateNewComposition = (function() {
   function CreateNewComposition() {}
@@ -1505,34 +1530,50 @@ Giraf.View = (function(_super) {
         var $t;
         $t = $(event.target);
         if ($t.attr("data-action") != null) {
-          Giraf.Controller.Action(app, $t.attr("data-action"), {
-            element: event.target
+          _.each($t.attr("data-action").split(" "), function(action) {
+            return Giraf.Controller.Action(app, action, {
+              element: event.target
+            });
           });
         }
         if ($t.attr("data-action-weak") != null) {
-          Giraf.Controller.Action(app, $t.attr("data-action-weak"), {
-            element: event.target
+          _.each($t.attr("data-action-weak").split(" "), function(action) {
+            return Giraf.Controller.Action(app, action, {
+              element: event.target
+            });
           });
         }
         if ($t.attr("data-action-click") != null) {
-          Giraf.Controller.Action(app, $t.attr("data-action-click"), {
-            element: event.target
+          _.each($t.attr("data-action-click").split(" "), function(action) {
+            return Giraf.Controller.Action(app, action, {
+              element: event.target
+            });
           });
         }
         if ($t.attr("data-action-click-weak") != null) {
-          Giraf.Controller.Action(app, $t.attr("data-action-click-weak"), {
-            element: event.target
+          _.each($t.attr("data-action-click-weak").split(" "), function(action) {
+            return Giraf.Controller.Action(app, action, {
+              element: event.target
+            });
           });
         }
         $t.parents("[data-action]").each(function() {
-          return Giraf.Controller.Action(app, $(this).attr("data-action"), {
-            element: this
-          });
+          return _.each($(this).attr("data-action").split(" "), (function(_this) {
+            return function(action) {
+              return Giraf.Controller.Action(app, action, {
+                element: _this
+              });
+            };
+          })(this));
         });
         return $t.parents("[data-action-click]").each(function() {
-          return Giraf.Controller.Action(app, $(this).attr("data-action-click"), {
-            element: this
-          });
+          return _.each($(this).attr("data-action-click").split(" "), (function(_this) {
+            return function(action) {
+              return Giraf.Controller.Action(app, action, {
+                element: _this
+              });
+            };
+          })(this));
         });
       };
     })(this)).on("dblclick", (function(_this) {
@@ -1540,19 +1581,27 @@ Giraf.View = (function(_super) {
         var $t;
         $t = $(event.target);
         if ($t.attr("data-action-dblclick") != null) {
-          Giraf.Controller.Action(app, $t.attr("data-action-dblclick"), {
-            element: event.target
+          _.each($t.attr("data-action-dblclick").split(" "), function(action) {
+            return Giraf.Controller.Action(app, action, {
+              element: event.target
+            });
           });
         }
         if ($t.attr("data-action-dblclick-weak") != null) {
-          Giraf.Controller.Action(app, $t.attr("data-action-dblclick-weak"), {
-            element: event.target
+          _.each($t.attr("data-aciton-dblclick-weak").split(" "), function(action) {
+            return Giraf.Controller.Action(app, action, {
+              element: event.target
+            });
           });
         }
         return $t.parents("[data-action-dblclick]").each(function() {
-          return Giraf.Controller.Action(app, $(this).attr("data-action-dblclick"), {
-            element: this
-          });
+          return _.each($(this).attr("data-action-dblclick").split(" "), (function(_this) {
+            return function(action) {
+              return Giraf.Controller.Action(app, action, {
+                element: _this
+              });
+            };
+          })(this));
         });
       };
     })(this));
@@ -1794,6 +1843,18 @@ Giraf.View.Expert.Node = (function(_super) {
     return d.promise();
   };
 
+  Node.prototype.select = function(uuid) {
+    var d;
+    d = $.Deferred();
+    _.each(this.svg.pieces, (function(_this) {
+      return function(v, k) {
+        return v.select(k === uuid);
+      };
+    })(this));
+    d.resolve();
+    return d.promise();
+  };
+
   return Node;
 
 })(Giraf.View.Expert._base);
@@ -1951,6 +2012,8 @@ Giraf.View.Expert.Node.Piece.Content = (function(_super) {
 
   Content.prototype.select = function(bool) {};
 
+  Content.prototype.target = function(bool) {};
+
   return Content;
 
 })(Giraf.View.Expert.Node.Piece);
@@ -2037,21 +2100,24 @@ Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
         }).on("drag", function() {
           _.each(_this.svg.pieces, function(v, k) {
             if (_this.svg.hoveredContent === k && k !== _this.uuid) {
-              return v.select(true);
+              return v.target(true);
             } else {
-              return v.select(false);
+              return v.target(false);
             }
           });
           return _this.arrow.move(_this.x + data.hook.x, _this.y + data.hook.y, _this.x + d3.event.x, _this.y + d3.event.y);
         }).on("dragend", function() {
           _this.d3svg.attr("cursor", null);
           _.each(_this.svg.pieces, function(v) {
-            return v.select(false).controll(true);
+            return v.target(false).controll(true);
           });
           _this.arrow.remove();
           return _this.arrow = null;
         });
-        _this.d3composition = _this.d3svg.contentLayer.append("g").attr("data-uuid", _this.uuid).call(d3compositionEventHandler);
+        _this.d3composition = _this.d3svg.contentLayer.append("g").attr({
+          "data-uuid": _this.uuid,
+          "data-action-dblclick": "expert__change_target"
+        }).call(d3compositionEventHandler);
         _this.d3rect = _this.d3composition.append("rect").attr({
           x: -data.width / 2,
           y: -data.height / 2,
@@ -2095,14 +2161,40 @@ Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
     return this;
   };
 
+  Composition.prototype.target = function(bool) {
+    var _ref;
+    Composition.__super__.target.call(this, bool);
+    if (bool) {
+      if (this.d3hover == null) {
+        this.d3hover = this.d3composition.append("rect").attr({
+          x: -data.width / 2,
+          y: -data.height / 2,
+          width: data.width,
+          height: data.height,
+          rx: data.rect.radius,
+          ry: data.rect.radius,
+          fill: "transparent",
+          stroke: "white",
+          "stroke-width": 2
+        });
+      }
+    } else {
+      if ((_ref = this.d3hover) != null) {
+        _ref.remove();
+      }
+      this.d3hover = null;
+    }
+    return this;
+  };
+
   Composition.prototype.select = function(bool) {
     var _ref, _ref1;
     Composition.__super__.select.call(this, bool);
     if (bool) {
       if ((_ref = this.d3rect) != null) {
         _ref.attr({
-          stroke: "white",
-          "stroke-width": 2
+          stroke: "orange",
+          "stroke-width": 1
         });
       }
     } else {
@@ -2181,24 +2273,23 @@ Giraf.View.Expert.Node.Piece.Point = (function(_super) {
         }).on("drag", function() {
           _.each(_this.svg.pieces, function(v, k) {
             if (_this.svg.hoveredContent === k && k !== _this.uuid) {
-              return v.select(true);
+              return v.target(true);
             } else {
-              return v.select(false);
+              return v.target(false);
             }
           });
           return _this.arrow.move(_this.x + data.hook.x, _this.y + data.hook.y, _this.x + d3.event.x, _this.y + d3.event.y);
         }).on("dragend", function() {
           _this.d3svg.attr("cursor", null);
           _.each(_this.svg.pieces, function(v) {
-            return v.select(false).controll(true);
+            return v.target(false).controll(true);
           });
           _this.arrow.remove();
           return _this.arrow = null;
         });
-        _this.d3point = _this.d3svg.contentLayer.append("g").attr("data-uuid", _this.uuid).call(d3pointEventHandler).on("tick", function() {
-          var _ref;
-          return (_ref = _this.link) != null ? _ref.move() : void 0;
-        });
+        _this.d3point = _this.d3svg.contentLayer.append("g").attr({
+          "data-uuid": _this.uuid
+        }).call(d3pointEventHandler);
         _this.d3rect = _this.d3point.append("rect").attr({
           x: -data.width / 2,
           y: -data.height / 2,
@@ -2234,14 +2325,40 @@ Giraf.View.Expert.Node.Piece.Point = (function(_super) {
     return this;
   };
 
+  Point.prototype.target = function(bool) {
+    var _ref, _ref1;
+    Point.__super__.target.call(this, bool);
+    if (bool) {
+      if (this.d3hover == null) {
+        this.d3hover = (_ref = this.d3point) != null ? _ref.append("rect").attr({
+          x: -data.width / 2,
+          y: -data.height / 2,
+          width: data.width,
+          height: data.height,
+          rx: data.rect.radius,
+          ry: data.rect.radius,
+          fill: "transparent",
+          stroke: "white",
+          "stroke-width": 2
+        }) : void 0;
+      }
+    } else {
+      if ((_ref1 = this.d3hover) != null) {
+        _ref1.remove();
+      }
+      this.d3hover = null;
+    }
+    return this;
+  };
+
   Point.prototype.select = function(bool) {
     var _ref, _ref1;
     Point.__super__.select.call(this, bool);
     if (bool) {
       if ((_ref = this.d3rect) != null) {
         _ref.attr({
-          stroke: "white",
-          "stroke-width": 2
+          stroke: "orange",
+          "stroke-width": 1
         });
       }
     } else {
@@ -2382,6 +2499,18 @@ Giraf.View.Expert.Project = (function(_super) {
     }
   };
 
+  Project.prototype.select = function(uuid) {
+    var d;
+    d = $.Deferred();
+    _.each(this.pieces, (function(_this) {
+      return function(v, k) {
+        return v.select(k === uuid);
+      };
+    })(this));
+    d.resolve();
+    return d.promise();
+  };
+
   return Project;
 
 })(Giraf.View.Expert._base);
@@ -2401,23 +2530,25 @@ Giraf.View.Expert.Project.Piece = (function() {
     this.type = type;
     this.title = title;
     this.referer_uuid = referer.uuid;
-    $(referer).on("statusChanged", function(event, status) {
-      var $target;
-      $target = $(".project-piece[data-uuid=" + uuid + "]");
-      switch (status) {
-        case "loading":
-          return $target.addClass("loading");
-        case "normal":
-          return $target.removeClass("loading");
-        case "dying":
-          return $target.remove();
-      }
-    });
+    $(referer).on("statusChanged", (function(_this) {
+      return function(event, status) {
+        var $target;
+        $target = $(".project-piece[data-uuid=" + uuid + "]");
+        switch (status) {
+          case "loading":
+            return $target.addClass("loading");
+          case "normal":
+            return $target.removeClass("loading");
+          case "dying":
+            return $target.remove();
+        }
+      };
+    })(this));
   }
 
   Piece.prototype.html = function() {
     var $rtn, template, _ref, _ref1, _ref2;
-    template = _.template("<div class=\"project-piece\" draggable=\"true\" data-referer-type=\"<%- type %>\" data-uuid=\"<%- uuid %>\"\n data-action-click=\"expert__project__change_target\" data-action-dblclick=\"expert__project__refresh_composition\">\n  <div class=\"project-piece-tag\"></div>\n  <div class=\"project-piece-content\">\n    <img class=\"project-piece-thumbnail\"/>\n    <div class=\"project-piece-title\"><%- title %></div>\n  </div>\n</div>");
+    template = _.template("<div class=\"project-piece\" draggable=\"true\" data-referer-type=\"<%- type %>\" data-uuid=\"<%- uuid %>\"\n data-action-click=\"expert__change_target\" data-action-dblclick=\"expert__project__refresh_composition\">\n  <div class=\"project-piece-tag\"></div>\n  <div class=\"project-piece-content\">\n    <img class=\"project-piece-thumbnail\"/>\n    <div class=\"project-piece-title\"><%- title %></div>\n  </div>\n</div>");
     $rtn = $(template({
       type: (_ref = this.type) != null ? _ref : "",
       uuid: (_ref1 = this.uuid) != null ? _ref1 : "",
@@ -2429,6 +2560,16 @@ Giraf.View.Expert.Project.Piece = (function() {
       };
     })(this));
     return $rtn.get(0);
+  };
+
+  Piece.prototype.select = function(bool) {
+    var $target;
+    $target = $(".project-piece[data-uuid=" + this.uuid + "]");
+    if (bool) {
+      return $target.addClass("selected");
+    } else {
+      return $target.removeClass("selected");
+    }
   };
 
   return Piece;

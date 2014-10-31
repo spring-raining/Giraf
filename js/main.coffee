@@ -16,6 +16,7 @@ Giraf.Settings._base = {} unless Giraf.Settings._base?
 Giraf.Settings.CookieBinder = {} unless Giraf.Settings.CookieBinder?
 Giraf.Task = {} unless Giraf.Task?
 Giraf.Task._base = {} unless Giraf.Task._base?
+Giraf.Task.ChangeSelected = {} unless Giraf.Task.ChangeSelected?
 Giraf.Task.CreateNewComposition = {} unless Giraf.Task.CreateNewComposition?
 Giraf.Task.FileLoader = {} unless Giraf.Task.FileLoader?
 Giraf.Task.RefreshComposition = {} unless Giraf.Task.RefreshComposition?
@@ -496,8 +497,6 @@ class Giraf.Controller.Action extends Giraf.Controller._base
           task.run app, fileList
           .fail ->
             console.log "failed"
-      when "expert__project__change_target"
-          console.log args
       when "expert__project__refresh_composition"
           piece = app.view.expert.project.pieces[$(args.element).attr "data-uuid"]
           task = new Giraf.Task.RefreshComposition
@@ -508,6 +507,11 @@ class Giraf.Controller.Action extends Giraf.Controller._base
           app.view.nav.inactive()
           .then ->
             app.view.expert.node.appendPoint()
+          .fail ->
+            console.log "failed"
+      when "expert__change_target"
+          task = new Giraf.Task.ChangeSelected
+          task.run app, ($(args.element).attr "data-uuid")
           .fail ->
             console.log "failed"
       when "nav__import_file"
@@ -720,6 +724,19 @@ class Giraf.Settings.CookieBinder extends Giraf.Settings._base
 
 class Giraf.Task._base extends Giraf._base
   # Giraf.Task._base
+
+# js/giraf/task/changeSelected.coffee
+
+class Giraf.Task.ChangeSelected
+  run: (app, uuid) ->
+    d = do $.Deferred
+
+    $.when (app.view.expert.project.select uuid),
+           (app.view.expert.node.select uuid)
+    .done =>
+      do d.resolve
+
+    do d.promise
 
 # js/giraf/task/createNewComposition.coffee
 
@@ -1040,36 +1057,46 @@ class Giraf.View extends Giraf._base
     $(document).on "click", (event) =>
       $t = $ event.target
       if $t.attr("data-action")?
-        Giraf.Controller.Action app, $t.attr("data-action"),
-          element: event.target
+        _.each $t.attr("data-action").split(" "), (action) =>
+          Giraf.Controller.Action app, action,
+            element: event.target
       if $t.attr("data-action-weak")?
-        Giraf.Controller.Action app, $t.attr("data-action-weak"),
-          element: event.target
+        _.each $t.attr("data-action-weak").split(" "), (action) =>
+          Giraf.Controller.Action app, action,
+            element: event.target
       if $t.attr("data-action-click")?
-        Giraf.Controller.Action app, $t.attr("data-action-click"),
-          element: event.target
+        _.each $t.attr("data-action-click").split(" "), (action) =>
+          Giraf.Controller.Action app, action,
+            element: event.target
       if $t.attr("data-action-click-weak")?
-        Giraf.Controller.Action app, $t.attr("data-action-click-weak"),
-          element: event.target
+        _.each $t.attr("data-action-click-weak").split(" "), (action) =>
+          Giraf.Controller.Action app, action,
+            element: event.target
 
       $t.parents("[data-action]").each ->
-        Giraf.Controller.Action app, $(@).attr("data-action"),
-          element: @
+        _.each $(@).attr("data-action").split(" "), (action) =>
+          Giraf.Controller.Action app, action,
+            element: @
       $t.parents("[data-action-click]").each ->
-        Giraf.Controller.Action app, $(@).attr("data-action-click"),
-          element: @
+        _.each $(@).attr("data-action-click").split(" "), (action) =>
+          Giraf.Controller.Action app, action,
+            element: @
+
     .on "dblclick", (event) =>
       $t = $ event.target
       if $t.attr("data-action-dblclick")?
-        Giraf.Controller.Action app, $t.attr("data-action-dblclick"),
-          element: event.target
+        _.each $t.attr("data-action-dblclick").split(" "), (action) =>
+          Giraf.Controller.Action app, action,
+            element: event.target
       if $t.attr("data-action-dblclick-weak")?
-        Giraf.Controller.Action app, $t.attr("data-action-dblclick-weak"),
-          element: event.target
+        _.each $t.attr("data-aciton-dblclick-weak").split(" "), (action) =>
+          Giraf.Controller.Action app, action,
+            element: event.target
 
       $t.parents("[data-action-dblclick]").each ->
-        Giraf.Controller.Action app, $(@).attr("data-action-dblclick"),
-          element: @
+        _.each $(@).attr("data-action-dblclick").split(" "), (action) =>
+          Giraf.Controller.Action app, action,
+            element: @
 
 # js/giraf/view/_base.coffee
 
@@ -1248,6 +1275,13 @@ class Giraf.View.Expert.Node extends Giraf.View.Expert._base
 
     do d.promise
 
+  select: (uuid) ->
+    d = do $.Deferred
+    _.each @svg.pieces, (v, k) =>
+      v.select (k == uuid)
+    do d.resolve
+
+    do d.promise
 
 
 class Giraf.View.Expert.Node.SVG extends Giraf.View.Expert._base
@@ -1352,6 +1386,8 @@ class Giraf.View.Expert.Node.Piece.Content extends Giraf.View.Expert.Node.Piece
 
   select: (bool) ->
 
+  target: (bool) ->
+
 
 class Giraf.View.Expert.Node.Piece.Over extends Giraf.View.Expert.Node.Piece
   constructor: (@svg) ->
@@ -1414,21 +1450,23 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
           .on "drag", =>
             _.each @svg.pieces, (v, k) =>
               if @svg.hoveredContent is k and k isnt @uuid
-                v.select true
+                v.target true
               else
-                v.select false
+                v.target false
             @arrow.move @x + data.hook.x, @y + data.hook.y,
                         @x + d3.event.x,  @y + d3.event.y
           .on "dragend", =>
             @d3svg.attr "cursor", null
             _.each @svg.pieces, (v) =>
-              v.select false
+              v.target false
                .controll true
             do @arrow.remove
             @arrow = null
 
       @d3composition = @d3svg.contentLayer.append "g"
-        .attr "data-uuid", @uuid
+        .attr
+          "data-uuid": @uuid
+          "data-action-dblclick": "expert__change_target"
         .call d3compositionEventHandler
       @d3rect = @d3composition.append "rect"
         .attr
@@ -1469,12 +1507,31 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
 
     return @
 
+  target: (bool) ->
+    super bool
+    if bool
+      @d3hover ?= @d3composition.append "rect"
+        .attr
+          x: (-data.width / 2)
+          y: (-data.height / 2)
+          width: data.width
+          height: data.height
+          rx: data.rect.radius
+          ry: data.rect.radius
+          fill: "transparent"
+          stroke: "white"
+          "stroke-width": 2
+    else
+      do @d3hover?.remove
+      @d3hover = null
+    return @
+
   select: (bool) ->
     super bool
     if bool
       @d3rect?.attr
-        stroke: "white"
-        "stroke-width": 2
+        stroke: "orange"
+        "stroke-width": 1
     else
       @d3rect?.attr
         "stroke-width": 0
@@ -1530,23 +1587,22 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
           .on "drag", =>
             _.each @svg.pieces, (v, k) =>
               if @svg.hoveredContent is k and k isnt @uuid
-                v.select true
+                v.target true
               else
-                v.select false
+                v.target false
             @arrow.move @x + data.hook.x, @y + data.hook.y,
                         @x + d3.event.x,  @y + d3.event.y
           .on "dragend", =>
             @d3svg.attr "cursor", null
             _.each @svg.pieces, (v) =>
-              v.select false
+              v.target false
                .controll true
             do @arrow.remove
             @arrow = null
       @d3point = @d3svg.contentLayer.append "g"
-        .attr "data-uuid", @uuid
+        .attr
+          "data-uuid": @uuid
         .call d3pointEventHandler
-        .on "tick", =>
-          @link?.move()
       @d3rect = @d3point.append "rect"
         .attr
           x: (-data.width / 2)
@@ -1577,12 +1633,31 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
 
     return @
 
+  target: (bool) ->
+    super bool
+    if bool
+      @d3hover ?= @d3point?.append "rect"
+        .attr
+          x: (-data.width / 2)
+          y: (-data.height / 2)
+          width: data.width
+          height: data.height
+          rx: data.rect.radius
+          ry: data.rect.radius
+          fill: "transparent"
+          stroke: "white"
+          "stroke-width": 2
+    else
+      do @d3hover?.remove
+      @d3hover = null
+    return @
+
   select: (bool) ->
     super bool
     if bool
       @d3rect?.attr
-        stroke: "white"
-        "stroke-width": 2
+        stroke: "orange"
+        "stroke-width": 1
     else
       @d3rect?.attr
         "stroke-width": 0
@@ -1678,6 +1753,15 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
 
       return uuid
 
+  select: (uuid) ->
+    d = do $.Deferred
+    _.each @pieces, (v, k) =>
+      v.select (k == uuid)
+    do d.resolve
+
+    do d.promise
+
+
 ###
             File                  Composition
   referer   Model.File            Model.Composition
@@ -1688,7 +1772,7 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
 class Giraf.View.Expert.Project.Piece
   constructor: (@app, @uuid, referer, @type, @title) ->
     @referer_uuid = referer.uuid
-    $(referer).on "statusChanged", (event, status) ->
+    $(referer).on "statusChanged", (event, status) =>
       $target = $ ".project-piece[data-uuid=#{uuid}]"
       switch status
         when "loading"
@@ -1702,7 +1786,7 @@ class Giraf.View.Expert.Project.Piece
   html: ->
     template = _.template """
                           <div class="project-piece" draggable="true" data-referer-type="<%- type %>" data-uuid="<%- uuid %>"
-                           data-action-click="expert__project__change_target" data-action-dblclick="expert__project__refresh_composition">
+                           data-action-click="expert__change_target" data-action-dblclick="expert__project__refresh_composition">
                             <div class="project-piece-tag"></div>
                             <div class="project-piece-content">
                               <img class="project-piece-thumbnail"/>
@@ -1717,6 +1801,14 @@ class Giraf.View.Expert.Project.Piece
     $rtn.on "dragstart", (event) =>
       event.originalEvent.dataTransfer.setData "referer_uuid", @referer_uuid
     return $rtn.get(0)
+
+  select: (bool) ->
+    $target = $ ".project-piece[data-uuid=#{@uuid}]"
+    if bool
+      $target.addClass "selected"
+    else
+      $target.removeClass "selected"
+
 
 class Giraf.View.Expert.Project.Piece.File extends Giraf.View.Expert.Project.Piece
   constructor: (@app, @uuid, referer) ->

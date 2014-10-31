@@ -44,6 +44,13 @@ class Giraf.View.Expert.Node extends Giraf.View.Expert._base
 
     do d.promise
 
+  select: (uuid) ->
+    d = do $.Deferred
+    _.each @svg.pieces, (v, k) =>
+      v.select (k == uuid)
+    do d.resolve
+
+    do d.promise
 
 
 class Giraf.View.Expert.Node.SVG extends Giraf.View.Expert._base
@@ -148,6 +155,8 @@ class Giraf.View.Expert.Node.Piece.Content extends Giraf.View.Expert.Node.Piece
 
   select: (bool) ->
 
+  target: (bool) ->
+
 
 class Giraf.View.Expert.Node.Piece.Over extends Giraf.View.Expert.Node.Piece
   constructor: (@svg) ->
@@ -210,21 +219,23 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
           .on "drag", =>
             _.each @svg.pieces, (v, k) =>
               if @svg.hoveredContent is k and k isnt @uuid
-                v.select true
+                v.target true
               else
-                v.select false
+                v.target false
             @arrow.move @x + data.hook.x, @y + data.hook.y,
                         @x + d3.event.x,  @y + d3.event.y
           .on "dragend", =>
             @d3svg.attr "cursor", null
             _.each @svg.pieces, (v) =>
-              v.select false
+              v.target false
                .controll true
             do @arrow.remove
             @arrow = null
 
       @d3composition = @d3svg.contentLayer.append "g"
-        .attr "data-uuid", @uuid
+        .attr
+          "data-uuid": @uuid
+          "data-action-dblclick": "expert__change_target"
         .call d3compositionEventHandler
       @d3rect = @d3composition.append "rect"
         .attr
@@ -265,12 +276,31 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
 
     return @
 
+  target: (bool) ->
+    super bool
+    if bool
+      @d3hover ?= @d3composition.append "rect"
+        .attr
+          x: (-data.width / 2)
+          y: (-data.height / 2)
+          width: data.width
+          height: data.height
+          rx: data.rect.radius
+          ry: data.rect.radius
+          fill: "transparent"
+          stroke: "white"
+          "stroke-width": 2
+    else
+      do @d3hover?.remove
+      @d3hover = null
+    return @
+
   select: (bool) ->
     super bool
     if bool
       @d3rect?.attr
-        stroke: "white"
-        "stroke-width": 2
+        stroke: "orange"
+        "stroke-width": 1
     else
       @d3rect?.attr
         "stroke-width": 0
@@ -326,23 +356,22 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
           .on "drag", =>
             _.each @svg.pieces, (v, k) =>
               if @svg.hoveredContent is k and k isnt @uuid
-                v.select true
+                v.target true
               else
-                v.select false
+                v.target false
             @arrow.move @x + data.hook.x, @y + data.hook.y,
                         @x + d3.event.x,  @y + d3.event.y
           .on "dragend", =>
             @d3svg.attr "cursor", null
             _.each @svg.pieces, (v) =>
-              v.select false
+              v.target false
                .controll true
             do @arrow.remove
             @arrow = null
       @d3point = @d3svg.contentLayer.append "g"
-        .attr "data-uuid", @uuid
+        .attr
+          "data-uuid": @uuid
         .call d3pointEventHandler
-        .on "tick", =>
-          @link?.move()
       @d3rect = @d3point.append "rect"
         .attr
           x: (-data.width / 2)
@@ -373,12 +402,31 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
 
     return @
 
+  target: (bool) ->
+    super bool
+    if bool
+      @d3hover ?= @d3point?.append "rect"
+        .attr
+          x: (-data.width / 2)
+          y: (-data.height / 2)
+          width: data.width
+          height: data.height
+          rx: data.rect.radius
+          ry: data.rect.radius
+          fill: "transparent"
+          stroke: "white"
+          "stroke-width": 2
+    else
+      do @d3hover?.remove
+      @d3hover = null
+    return @
+
   select: (bool) ->
     super bool
     if bool
       @d3rect?.attr
-        stroke: "white"
-        "stroke-width": 2
+        stroke: "orange"
+        "stroke-width": 1
     else
       @d3rect?.attr
         "stroke-width": 0

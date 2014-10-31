@@ -16,6 +16,15 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
 
       return uuid
 
+  select: (uuid) ->
+    d = do $.Deferred
+    _.each @pieces, (v, k) =>
+      v.select (k == uuid)
+    do d.resolve
+
+    do d.promise
+
+
 ###
             File                  Composition
   referer   Model.File            Model.Composition
@@ -26,7 +35,7 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
 class Giraf.View.Expert.Project.Piece
   constructor: (@app, @uuid, referer, @type, @title) ->
     @referer_uuid = referer.uuid
-    $(referer).on "statusChanged", (event, status) ->
+    $(referer).on "statusChanged", (event, status) =>
       $target = $ ".project-piece[data-uuid=#{uuid}]"
       switch status
         when "loading"
@@ -40,7 +49,7 @@ class Giraf.View.Expert.Project.Piece
   html: ->
     template = _.template """
                           <div class="project-piece" draggable="true" data-referer-type="<%- type %>" data-uuid="<%- uuid %>"
-                           data-action-click="expert__project__change_target" data-action-dblclick="expert__project__refresh_composition">
+                           data-action-click="expert__change_target" data-action-dblclick="expert__project__refresh_composition">
                             <div class="project-piece-tag"></div>
                             <div class="project-piece-content">
                               <img class="project-piece-thumbnail"/>
@@ -55,6 +64,14 @@ class Giraf.View.Expert.Project.Piece
     $rtn.on "dragstart", (event) =>
       event.originalEvent.dataTransfer.setData "referer_uuid", @referer_uuid
     return $rtn.get(0)
+
+  select: (bool) ->
+    $target = $ ".project-piece[data-uuid=#{@uuid}]"
+    if bool
+      $target.addClass "selected"
+    else
+      $target.removeClass "selected"
+
 
 class Giraf.View.Expert.Project.Piece.File extends Giraf.View.Expert.Project.Piece
   constructor: (@app, @uuid, referer) ->

@@ -188,3 +188,39 @@ span.glyphicon-cog {
     font-family: Osaka-mono, "Osaka-等幅", "ＭＳ ゴシック", monospace;
     font-size: 14px;
 }
+
+
+/*
+ *  Ligature Symbols
+ */
+@font-face {
+    font-family: 'girafont';
+    src: url('../fonts/girafont.eot');
+    src: url('../fonts/girafont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/girafont.woff') format('woff'),
+         url('../fonts/girafont.ttf') format('truetype'),
+         url('../fonts/girafont.svg#girafont') format('svg');
+    src: url('../fonts/girafont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.girafont, .girafont-icon:before {
+  font-family: 'girafont';
+  -webkit-text-rendering: optimizeLegibility;
+  -moz-text-rendering: optimizeLegibility;
+  -ms-text-rendering: optimizeLegibility;
+  -o-text-rendering: optimizeLegibility;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  -ms-font-smoothing: antialiased;
+  -o-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+.girafont-icon:before {
+  content:attr(title);
+  margin-right:0.3em;
+  font-size:130%;
+}

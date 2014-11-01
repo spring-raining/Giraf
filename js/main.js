@@ -140,6 +140,10 @@ if (Giraf.View.Expert.Droparea == null) {
   Giraf.View.Expert.Droparea = {};
 }
 
+if (Giraf.View.Expert.Effect == null) {
+  Giraf.View.Expert.Effect = {};
+}
+
 if (Giraf.View.Expert.Node == null) {
   Giraf.View.Expert.Node = {};
 }
@@ -1623,7 +1627,7 @@ Giraf.View._base = (function(_super) {
 })(Giraf._base);
 
 Giraf.View.Expert = (function(_super) {
-  var _selector_composition, _selector_container, _selector_effect, _selector_node, _selector_project, _selector_tool;
+  var _selector_composition, _selector_container, _selector_effect, _selector_node, _selector_project;
 
   __extends(Expert, _super);
 
@@ -1635,8 +1639,6 @@ Giraf.View.Expert = (function(_super) {
 
   _selector_effect = "#expert_effect > .panel-container";
 
-  _selector_tool = "#expert_tool > .panel-container";
-
   _selector_node = "#expert_node > .panel-container";
 
   function Expert(app, $expert) {
@@ -1644,6 +1646,7 @@ Giraf.View.Expert = (function(_super) {
     this.$expert = $expert;
     this.project = new Giraf.View.Expert.Project(app, $expert.find(_selector_project));
     this.composition = new Giraf.View.Expert.Composition(app, $expert.find(_selector_composition));
+    this.effect = new Giraf.View.Expert.Effect(app, $expert.find(_selector_effect));
     this.node = new Giraf.View.Expert.Node(app, $expert.find(_selector_node));
     this.droparea = new Giraf.View.Expert.Droparea(app, $expert);
   }
@@ -1786,6 +1789,44 @@ Giraf.View.Expert.Droparea = (function(_super) {
   };
 
   return Droparea;
+
+})(Giraf.View.Expert._base);
+
+Giraf.View.Expert.Effect = (function(_super) {
+  __extends(Effect, _super);
+
+  function Effect(app, $effect) {
+    var self, template;
+    this.app = app;
+    this.$effect = $effect;
+    template = _.template("<div class=\"effect-content hidden\" data-effect-content=\"property\"><%= property %></div>\n<div class=\"effect-content hidden\" data-effect-content=\"script\"><%= script %></div>\n<div class=\"effect-content hidden\" data-effect-content=\"crop\"><%= crop %></div>\n<div class=\"effect-content hidden\" data-effect-content=\"keying\"><%= keying %></div>\n<div class=\"effect-content hidden\" data-effect-content=\"color\"><%= color %></div>\n<div class=\"effect-content hidden\" data-effect-content=\"text\"><%= text %></div>\n<div class=\"effect-tab layer\"></div>\n<ul class=\"effect-tab\">\n  <li class=\"effect-tab-menu girafont\" data-change-effect-tab=\"property\">parameter</li>\n  <li class=\"effect-tab-menu girafont\" data-change-effect-tab=\"script\">magic</li>\n  <li class=\"effect-tab-menu girafont\" data-change-effect-tab=\"crop\">crop</li>\n  <li class=\"effect-tab-menu girafont\" data-change-effect-tab=\"keying\">keying</li>\n  <li class=\"effect-tab-menu girafont\" data-change-effect-tab=\"color\">palette</li>\n  <li class=\"effect-tab-menu girafont\" data-change-effect-tab=\"text\">text</li>\n</ul>");
+    this.$effect.append(template({
+      property: "<a>ぷろぱてぃ</a>",
+      script: "<a>すくりぷと</a>",
+      crop: "<a>くろっぷ</a>",
+      keying: "<a>きーいんぐ</a>",
+      color: "<a>からー</a>",
+      text: "<a>てきすと</a>"
+    }));
+    self = this;
+    $("li.effect-tab-menu").on("click", function() {
+      return self.changeTab($(this).attr("data-change-effect-tab"));
+    });
+    this.changeTab("property");
+  }
+
+  Effect.prototype.changeTab = function(name) {
+    $("li.effect-tab-menu").each(function() {
+      return $(this).removeClass("selected");
+    });
+    $("li.effect-tab-menu[data-change-effect-tab=" + name + "]").addClass("selected");
+    $(".effect-content").each(function() {
+      return $(this).addClass("hidden");
+    });
+    return $(".effect-content[data-effect-content=" + name + "]").removeClass("hidden");
+  };
+
+  return Effect;
 
 })(Giraf.View.Expert._base);
 

@@ -46,14 +46,7 @@
     top: 0%;
     left: 20%;
     width: 30%;
-    height: 50%;
-}
-
-#expert_tool {
-    top: 50%;
-    left: 20%;
-    width: 30%;
-    height: 5%;
+    height: 55%;
 }
 
 #expert_node {
@@ -194,4 +187,59 @@
 
 #expert_node .node-piece-composition-title {
     font-size: 11px;
+}
+
+/*
+ *  #expert_effect
+ */
+
+#expert_effect > .panel-container {
+    position: relative;
+}
+
+#expert_effect .effect-tab {
+    position: absolute;
+    list-style: none;
+    height: 42px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: table;
+}
+
+#expert_effect .effect-tab.layer {
+    background-color: #404040;
+    opacity: 0.85;
+    border-bottom: 1px solid #505050;
+}
+
+#expert_effect .effect-tab-menu {
+    display: table-cell;
+    height: 42px;
+    font-size: 140%;
+    vertical-align:middle;
+    text-align:center;
+    cursor: pointer;
+    color: #888888;
+}
+#expert_effect .effect-tab-menu:hover {
+    color: #dddddd;
+}
+
+#expert_effect .effect-tab-menu.selected {
+    color: #53b0ff;
+}
+
+#expert_effect .effect-tab-menu a {
+    height: 100%;
+}
+
+#expert_effect .effect-content {
+    position: absolute;
+    overflow: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-top: 42px;
 }

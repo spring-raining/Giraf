@@ -32,6 +32,7 @@ Giraf.View.Expert = {} unless Giraf.View.Expert?
 Giraf.View.Expert._base = {} unless Giraf.View.Expert._base?
 Giraf.View.Expert.Composition = {} unless Giraf.View.Expert.Composition?
 Giraf.View.Expert.Droparea = {} unless Giraf.View.Expert.Droparea?
+Giraf.View.Expert.Effect = {} unless Giraf.View.Expert.Effect?
 Giraf.View.Expert.Node = {} unless Giraf.View.Expert.Node?
 Giraf.View.Expert.Project = {} unless Giraf.View.Expert.Project?
 Giraf.View.Modal = {} unless Giraf.View.Modal?
@@ -1110,12 +1111,12 @@ class Giraf.View.Expert extends Giraf.View._base
   _selector_project = "#expert_project > .panel-container"
   _selector_composition = "#expert_composition > .panel-container"
   _selector_effect = "#expert_effect > .panel-container"
-  _selector_tool = "#expert_tool > .panel-container"
   _selector_node = "#expert_node > .panel-container"
 
   constructor: (@app, @$expert) ->
     @project = new Giraf.View.Expert.Project app, $expert.find _selector_project
     @composition = new Giraf.View.Expert.Composition app, $expert.find _selector_composition
+    @effect = new Giraf.View.Expert.Effect app, $expert.find _selector_effect
     @node = new Giraf.View.Expert.Node app, $expert.find _selector_node
     @droparea = new Giraf.View.Expert.Droparea app, $expert
 
@@ -1226,6 +1227,62 @@ class Giraf.View.Expert.Droparea extends Giraf.View.Expert._base
   hide: ->
     isActive = false
     do $(".droparea").remove
+
+# js/giraf/view/expert/effect.coffee
+
+class Giraf.View.Expert.Effect extends Giraf.View.Expert._base
+  constructor: (@app, @$effect) ->
+    template = _.template """
+                          <div class="effect-content hidden" data-effect-content="property"><%= property %></div>
+                          <div class="effect-content hidden" data-effect-content="script"><%= script %></div>
+                          <div class="effect-content hidden" data-effect-content="crop"><%= crop %></div>
+                          <div class="effect-content hidden" data-effect-content="keying"><%= keying %></div>
+                          <div class="effect-content hidden" data-effect-content="color"><%= color %></div>
+                          <div class="effect-content hidden" data-effect-content="text"><%= text %></div>
+                          <div class="effect-tab layer"></div>
+                          <ul class="effect-tab">
+                            <li class="effect-tab-menu girafont" data-change-effect-tab="property">parameter</li>
+                            <li class="effect-tab-menu girafont" data-change-effect-tab="script">magic</li>
+                            <li class="effect-tab-menu girafont" data-change-effect-tab="crop">crop</li>
+                            <li class="effect-tab-menu girafont" data-change-effect-tab="keying">keying</li>
+                            <li class="effect-tab-menu girafont" data-change-effect-tab="color">palette</li>
+                            <li class="effect-tab-menu girafont" data-change-effect-tab="text">text</li>
+                          </ul>
+                          """
+    @$effect.append template
+      property: """
+                <a>ぷろぱてぃ</a>
+                """
+      script:   """
+                <a>すくりぷと</a>
+                """
+      crop:     """
+                <a>くろっぷ</a>
+                """
+      keying:   """
+                <a>きーいんぐ</a>
+                """
+      color:    """
+                <a>からー</a>
+                """
+      text:     """
+                <a>てきすと</a>
+                """
+    self = @
+    $("li.effect-tab-menu").on "click", ->
+      self.changeTab ($(@).attr "data-change-effect-tab")
+    @changeTab "property"
+
+  changeTab: (name) ->
+    $("li.effect-tab-menu").each ->
+      $(@).removeClass "selected"
+    $("li.effect-tab-menu[data-change-effect-tab=#{name}]")
+      .addClass "selected"
+
+    $(".effect-content").each ->
+      $(@).addClass "hidden"
+    $(".effect-content[data-effect-content=#{name}]")
+      .removeClass "hidden"
 
 # js/giraf/view/expert/node.coffee
 

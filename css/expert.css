@@ -118,12 +118,17 @@
 
 #expert_composition > .panel-container {
     position: relative;
+    overflow: hidden;
 }
 
 #expert_composition .composition-window {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin-bottom: 14px;
 }
 
 #expert_composition .composition-window > * {
@@ -136,6 +141,7 @@
 }
 
 #expert_composition .composition-window-placeholder {
+    overflow: auto;
     padding: 12px;
 }
 
@@ -147,13 +153,14 @@
 }
 
 #expert_composition .composition-progress {
-    position: absolute;
-    width: 0;
-    height: 6px;
     bottom: 0;
-    left: 0;
-    background-color: #3f7dce;
-    opacity: .8;
+    position: absolute;
+    width: 100%;
+    height: 14px;
+}
+
+#expert_composition .composition-progress progress {
+    width: 100%;
 }
 
 /*
@@ -242,4 +249,38 @@
     right: 0;
     bottom: 0;
     padding-top: 42px;
+    font-size: 80%;
+}
+
+#expert_effect .effect-parameter-group {
+    padding: 6px 6px 10px 6px;
+    margin: 4px 4px 0 4px;
+    border-bottom: 1px solid #505050;
+}
+
+#expert_effect .effect-parameter-group:after {
+    content: " ";
+    visibility: hidden;
+    display: block;
+    clear: both;
+    height: 0;
+}
+
+#expert_effect .effect-parameter-group > * {
+    position: relative;
+    float: left;
+    width: 100%;
+    margin: 3px 0;
+}
+
+#expert_effect .effect-parameter-group > .half {
+    width: 50%;
+}
+
+#expert_effect .effect-parameter-group legend {
+    font-size: 130%;
+}
+
+fieldset {
+    border: none;
 }

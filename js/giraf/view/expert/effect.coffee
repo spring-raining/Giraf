@@ -19,22 +19,67 @@ class Giraf.View.Expert.Effect extends Giraf.View.Expert._base
                           """
     @$effect.append template
       property: """
-                <a>ぷろぱてぃ</a>
+                <form id="form_effect_property" name="effect_property">
+                  <fieldset class="effect-parameter-group">
+                    <label for="select_out_framerate" class="half">出力するフレームレート</label>
+                    <select name="out_framerate" id="select_out_framerate" class="half">
+                      <option value="1">1fps</option>
+                      <option value="2">2fps</option>
+                      <option value="3">3fps</option>
+                      <option value="4">4fps</option>
+                      <option value="6">6fps</option>
+                      <option value="8">8fps</option>
+                      <option value="12">12fps</option>
+                      <option value="15">15fps</option>
+                      <option value="24">24fps</option>
+                      <option value="30">30fps</option>
+                    </select>
+                  </fieldset>
+                  <fieldset class="effect-parameter-group">
+                    <label for="input_out_speed" class="half">出力するスピード</label>
+                    <input type="number" id="input_out_speed" class="half"/>
+                    <input type="range" min="0.1" max="4.0" step="0.1" value="1.0"/>
+                  </fieldset>
+                  <fieldset class="effect-parameter-group">
+                    <label for="input_out_size" class="half">出力する大きさ</label>
+                    <input type="number" id="input_out_size" class="half"/>
+                    <input type="range"/>
+                  </fieldset>
+                </form>
                 """
       script:   """
-                <a>すくりぷと</a>
+                <form id="form_effect_script" name="effect_script">
+                  <fieldset class="effect-parameter-group">
+                    <legend>効果を追加</legend>
+                    <label for="textarea_script" class="half">プリセット</label>
+                    <button class="half"><span class="girafont">lightning</span>プリセットを選択</button>
+                    <textarea name="script" id="textarea_script" cols="30" rows="10"></textarea>
+                  </fieldset>
+                </form>
                 """
       crop:     """
-                <a>くろっぷ</a>
+                <form id="form_effect_crop" name="effect_crop">
+                  <div class="effect-parameter-group">
+                  </div>
+                </form>
                 """
       keying:   """
-                <a>きーいんぐ</a>
+                <form id="form_effect_keying" name="effect_keying">
+                  <div class="effect-parameter-group">
+                  </div>
+                </form>
                 """
       color:    """
-                <a>からー</a>
+                <form id="form_effect_color" name="effect_color">
+                  <div class="effect-parameter-group">
+                  </div>
+                </form>
                 """
       text:     """
-                <a>てきすと</a>
+                <form id="form_effect_text" name="effect_text">
+                  <div class="effect-parameter-group">
+                  </div>
+                </form>
                 """
     self = @
     $("li.effect-tab-menu").on "click", ->

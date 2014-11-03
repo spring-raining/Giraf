@@ -9,7 +9,9 @@ class Giraf.View.Expert.Composition extends Giraf.View.Expert._base
                             <img class="composition-img hidden"/>
                             <video class="composition-video hidden" controls></video>
                           </div>
-                          <div class="composition-progress"></div>
+                          <div class="composition-progress">
+                            <progress value="0" max="100"></progress>
+                          </div>
                           """
     @$composition.append template {}
 

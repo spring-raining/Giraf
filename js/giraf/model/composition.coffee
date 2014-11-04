@@ -9,4 +9,22 @@ class Giraf.Model.Compositions extends Giraf.Model._base
     do d.promise
 
 class Giraf.Model.Composition extends Giraf.Model._base
+
   constructor: (@app, @uuid, @name) ->
+    @data =
+      uuid: ""
+      name: ""
+      tumnbnail: ""
+      effect:
+        property:
+          out_framerate: 12
+          out_speed: 1
+          out_size: 320
+        script:
+          script: ""
+        crop: null
+        keying: null
+        color: null
+        text: null
+    @data.uuid = uuid
+    @data.name = name

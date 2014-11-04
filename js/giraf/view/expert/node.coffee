@@ -47,7 +47,7 @@ class Giraf.View.Expert.Node extends Giraf.View.Expert._base
   select: (uuid) ->
     d = do $.Deferred
     _.each @svg.pieces, (v, k) =>
-      v.select (k == uuid)
+      v.select (k is uuid)
     do d.resolve
 
     do d.promise
@@ -301,6 +301,7 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
       @d3rect?.attr
         stroke: "orange"
         "stroke-width": 1
+      @app.view.expert.effect.changeTarget @referer_uuid
     else
       @d3rect?.attr
         "stroke-width": 0

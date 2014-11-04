@@ -19,7 +19,7 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
   select: (uuid) ->
     d = do $.Deferred
     _.each @pieces, (v, k) =>
-      v.select (k == uuid)
+      v.select (k is uuid)
     do d.resolve
 
     do d.promise
@@ -69,6 +69,7 @@ class Giraf.View.Expert.Project.Piece
     $target = $ ".project-piece[data-uuid=#{@uuid}]"
     if bool
       $target.addClass "selected"
+      @app.view.expert.effect.changeTarget @referer_uuid
     else
       $target.removeClass "selected"
 

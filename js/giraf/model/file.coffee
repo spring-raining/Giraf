@@ -19,7 +19,27 @@ class Giraf.Model.File extends Giraf.Model._base
   ###
 
   constructor: (@app, @uuid, @file, @content) ->
+    @data =
+      uuid: ""
+      name: ""
+      size: 0
+      type: ""
+      tumnbnail: ""
+      file: null
+      effect:
+        property:
+          in_time: -1
+          in_tumnbnail: ""
+          out_time: -1
+          out_thumbnail: ""
+          select_framerate: 12
+
     @status = if @content? then "normal" else "loading"
+    @data.uuid = uuid
+    @data.file = file
+    @data.name = file.name
+    @data.size = file.size
+    @data.type = file.type
 
   setContent: (content) ->
     @content = content

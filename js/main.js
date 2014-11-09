@@ -2785,7 +2785,7 @@ Giraf.View.Modal = (function(_super) {
 
   Modal.prototype.show = function(args) {
     var action, template;
-    template = _.template("<div class=\"modal\">\n  <div class=\"modal-dialog\">\n    <div class=\"modal-title\"><h3><%- title %></h3></div>\n    <div class=\"modal-content\"><%= content %></div>\n    <div class=\"modal-action\"><%= action %></div>\n  </div>\n</div>");
+    template = _.template("<div class=\"modal\">\n  <div class=\"modal-dialog\">\n    <div class=\"modal-scroll-area\">\n      <div class=\"modal-title\"><h3><%- title %></h3></div>\n      <div class=\"modal-content\"><%= content %></div>\n    </div>\n    <div class=\"modal-footer\">\n      <div class=\"modal-action\"><%= action %></div>\n    </div>\n  </div>\n</div>");
     if (args.title == null) {
       args.title = "";
     }
@@ -2798,6 +2798,7 @@ Giraf.View.Modal = (function(_super) {
       content: args.content,
       action: action
     }));
+    $(".modal-dialog").height($(".modal-title").height() + $(".modal-content").height() + 120);
     $(".modal").on({
       click: function(event) {
         var onEnd;
@@ -2812,7 +2813,7 @@ Giraf.View.Modal = (function(_super) {
     });
     return setTimeout(function() {
       return $(".modal").addClass("show");
-    }, 0);
+    }, 10);
   };
 
   createButtonDOM = function(data) {
@@ -2820,7 +2821,7 @@ Giraf.View.Modal = (function(_super) {
     arr = [];
     for (key in data) {
       value = data[key];
-      button = _.template("<button\n  <% if (primary === true) { print('class=\"button-primary\"'); } %>\n>\n  <%- text %>\n</button>");
+      button = _.template("<button class=\"flat<% if (primary === true) { print(' button-primary'); } %>\">\n  <%- text %>\n</button>");
       arr.push(button({
         primary: value.primary === true,
         text: value.text

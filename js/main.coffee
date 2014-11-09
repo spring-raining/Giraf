@@ -2113,9 +2113,13 @@ class Giraf.View.Modal extends Giraf.View._base
     template =  _.template """
                 <div class="modal">
                   <div class="modal-dialog">
-                    <div class="modal-title"><h3><%- title %></h3></div>
-                    <div class="modal-content"><%= content %></div>
-                    <div class="modal-action"><%= action %></div>
+                    <div class="modal-scroll-area">
+                      <div class="modal-title"><h3><%- title %></h3></div>
+                      <div class="modal-content"><%= content %></div>
+                    </div>
+                    <div class="modal-footer">
+                      <div class="modal-action"><%= action %></div>
+                    </div>
                   </div>
                 </div>
                 """
@@ -2126,6 +2130,8 @@ class Giraf.View.Modal extends Giraf.View._base
       title: args.title
       content: args.content
       action: action
+
+    $(".modal-dialog").height ($(".modal-title").height() + $(".modal-content").height() + 120)
 
     $(".modal").on
       click: (event) ->
@@ -2138,16 +2144,14 @@ class Giraf.View.Modal extends Giraf.View._base
 
     setTimeout ->
       $(".modal").addClass "show"
-    , 0
+    , 10
 
 
   createButtonDOM = (data) ->
     arr = []
     for key, value of data
       button = _.template """
-                          <button
-                            <% if (primary === true) { print('class="button-primary"'); } %>
-                          >
+                          <button class="flat<% if (primary === true) { print(' button-primary'); } %>">
                             <%- text %>
                           </button>
                           """

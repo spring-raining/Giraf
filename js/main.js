@@ -887,6 +887,27 @@ Giraf.Model._base = (function(_super) {
     return _base.__super__.constructor.apply(this, arguments);
   }
 
+  _base.data = {};
+
+  _base.prototype.update = function(key, value) {
+    var data, key_array, last_key;
+    data = this.data;
+    key_array = key.split(".");
+    last_key = key_array.pop();
+    _.each(key_array, (function(_this) {
+      return function(t) {
+        return data = data != null ? data[t] : void 0;
+      };
+    })(this));
+    if (data[last_key] != null) {
+      if (typeof data[last_key] === "number") {
+        return data[last_key] = Number(value);
+      } else {
+        return data[last_key] = value;
+      }
+    }
+  };
+
   return _base;
 
 })(Giraf._base);
@@ -926,7 +947,9 @@ Giraf.Model.Composition = (function(_super) {
         property: {
           out_framerate: 12,
           out_speed: 1,
-          out_size: 320
+          out_size: 320,
+          sample_check: true,
+          sample_radio: "soso"
         },
         script: {
           script: ""
@@ -1844,7 +1867,7 @@ Giraf.View.Expert.Effect = (function(_super) {
     this.$effect = $effect;
     template = _.template("<div class=\"effect-content hidden\" data-effect-content=\"property\"><%= property %></div>\n<div class=\"effect-content hidden\" data-effect-content=\"script\"><%= script %></div>\n<div class=\"effect-content hidden\" data-effect-content=\"crop\"><%= crop %></div>\n<div class=\"effect-content hidden\" data-effect-content=\"keying\"><%= keying %></div>\n<div class=\"effect-content hidden\" data-effect-content=\"color\"><%= color %></div>\n<div class=\"effect-content hidden\" data-effect-content=\"text\"><%= text %></div>\n<div class=\"effect-tab layer\"></div>\n<ul class=\"effect-tab\">\n  <li class=\"effect-tab-menu girafont\" data-change-effect-tab=\"property\">parameter</li>\n  <li class=\"effect-tab-menu girafont\" data-change-effect-tab=\"script\">magic</li>\n  <li class=\"effect-tab-menu girafont\" data-change-effect-tab=\"crop\">crop</li>\n  <li class=\"effect-tab-menu girafont\" data-change-effect-tab=\"keying\">keying</li>\n  <li class=\"effect-tab-menu girafont\" data-change-effect-tab=\"color\">palette</li>\n  <li class=\"effect-tab-menu girafont\" data-change-effect-tab=\"text\">text</li>\n</ul>");
     this.$effect.append(template({
-      property: "<form id=\"form_effect_property\" name=\"effect_property\">\n  <fieldset class=\"effect-parameter-group\">\n    <label for=\"select_out_framerate\" class=\"half\">出力するフレームレート</label>\n    <select name=\"out_framerate\" id=\"select_out_framerate\" class=\"half\" data-load=\"effect.property.out_framerate\">\n      <option value=\"1\">1fps</option>\n      <option value=\"2\">2fps</option>\n      <option value=\"3\">3fps</option>\n      <option value=\"4\">4fps</option>\n      <option value=\"6\">6fps</option>\n      <option value=\"8\">8fps</option>\n      <option value=\"12\">12fps</option>\n      <option value=\"15\">15fps</option>\n      <option value=\"24\">24fps</option>\n      <option value=\"30\">30fps</option>\n    </select>\n  </fieldset>\n  <fieldset class=\"effect-parameter-group\">\n    <label for=\"input_out_speed\" class=\"half\">出力するスピード</label>\n    <input type=\"number\" id=\"input_out_speed\" class=\"half\" data-load=\"effect.property.out_speed\"/>\n    <input type=\"range\" min=\"0.1\" max=\"4.0\" step=\"0.1\" data-load=\"effect.property.out_speed\"/>\n  </fieldset>\n  <fieldset class=\"effect-parameter-group\">\n    <label for=\"input_out_size\" class=\"half\">出力する大きさ</label>\n    <input type=\"number\" id=\"input_out_size\" class=\"half\" data-load=\"effect.property.out_speed\"/>\n    <input type=\"range\" min=\"40\" max=\"720\" data-load=\"effect.property.out_size\"/>\n  </fieldset>\n  <fieldset class=\"effect-parameter-group\">\n    <legend>切り取り位置を選択</legend>\n    <label for=\"\" class=\"half\">始点</label>\n    <label for=\"\" class=\"half\">終点</label>\n    <img src=\"\" class=\"half\"/>\n    <img src=\"\" class=\"half\"/>\n    <input type=\"hidden\" data-load=\"effect.property.in_time\"/>\n    <input type=\"hidden\" data-load=\"effect.property.out_time\"/>\n  </fieldset>\n  <fieldset class=\"effect-parameter-group\">\n    <label for=\"select_select_framerate\" class=\"half\">切り取りフレームレート</label>\n    <select name=\"select_framerate\" id=\"select_select_framerate\" class=\"half\" data-load=\"effect.property.select_framerate\">\n      <option value=\"1\">1fps</option>\n      <option value=\"2\">2fps</option>\n      <option value=\"3\">3fps</option>\n      <option value=\"4\">4fps</option>\n      <option value=\"6\">6fps</option>\n      <option value=\"8\">8fps</option>\n      <option value=\"12\">12fps</option>\n      <option value=\"15\">15fps</option>\n      <option value=\"24\">24fps</option>\n      <option value=\"30\">30fps</option>\n    </select>\n    <div class=\"half\"></div>\n    <button class=\"half\">動画からコンポジションを作成</button>\n  </fieldset>\n</form>",
+      property: "<form id=\"form_effect_property\" name=\"effect_property\">\n  <fieldset class=\"effect-parameter-group\">\n    <label for=\"select__out_framerate\" class=\"half\">出力するフレームレート</label>\n    <select name=\"out_framerate\"\n            id=\"select__out_framerate\"\n            class=\"half\"\n            data-load=\"effect.property.out_framerate\">\n      <option value=\"1\">1fps</option>\n      <option value=\"2\">2fps</option>\n      <option value=\"3\">3fps</option>\n      <option value=\"4\">4fps</option>\n      <option value=\"6\">6fps</option>\n      <option value=\"8\">8fps</option>\n      <option value=\"12\">12fps</option>\n      <option value=\"15\">15fps</option>\n      <option value=\"24\">24fps</option>\n      <option value=\"30\">30fps</option>\n    </select>\n    <label for=\"number__out_speed\">出力するスピード</label>\n    <div class=\"slider-group\">\n      <input type=\"range\"\n             min=\"0.1\" max=\"4.0\" step=\"0.1\"\n             data-load=\"effect.property.out_speed\"/>\n      <input type=\"number\"\n             min=\"0.1\" max=\"4.0\" step=\"0.1\"\n             id=\"number__out_speed\"\n             data-load=\"effect.property.out_speed\"/>\n    </div>\n    <label for=\"number__out_size\">出力する大きさ</label>\n    <div class=\"slider-group\">\n      <input type=\"range\"\n             min=\"40\" max=\"720\" step=\"10\"\n             data-load=\"effect.property.out_size\"/>\n      <input type=\"number\"\n             min=\"40\" max=\"720\" step=\"10\"\n             id=\"number__out_size\"\n             data-load=\"effect.property.out_size\"/>\n    </div>\n  </fieldset>" + "<fieldset class=\"effect-parameter-group\">\n  <legend>切り取り位置を選択</legend>\n  <label for=\"\" class=\"half\">始点</label>\n  <label for=\"\" class=\"half\">終点</label>\n  <img src=\"\" class=\"half\"/>\n  <img src=\"\" class=\"half\"/>\n  <input type=\"hidden\"\n         data-load=\"effect.property.in_time\"/>\n  <input type=\"hidden\"\n         data-load=\"effect.property.out_time\"/>\n  <label for=\"select_select_framerate\" class=\"half\">切り取りフレームレート</label>\n  <select name=\"select_framerate\"\n          id=\"select_select_framerate\"\n          class=\"half\"\n          data-load=\"effect.property.select_framerate\">\n    <option value=\"1\">1fps</option>\n    <option value=\"2\">2fps</option>\n    <option value=\"3\">3fps</option>\n    <option value=\"4\">4fps</option>\n    <option value=\"6\">6fps</option>\n    <option value=\"8\">8fps</option>\n    <option value=\"12\">12fps</option>\n    <option value=\"15\">15fps</option>\n    <option value=\"24\">24fps</option>\n    <option value=\"30\">30fps</option>\n  </select>\n  <div class=\"half\"></div>\n  <button class=\"half\">動画からコンポジションを作成</button>\n</fieldset>" + "  <fieldset class=\"effect-parameter-group\">\n    <legend>ほげほげ</legend>\n    <label class=\"half\" for=\"checkbox__sample_check\">チェック</label>\n    <input type=\"checkbox\"\n           name=\"sample_check\"\n           id=\"checkbox__sample_check\"\n           value=\"sample_check\"\n           class=\"half\"\n           data-load=\"effect.property.sample_check\"/>\n    <label class=\"half\">ラジオ</label>\n    <div class=\"half\">\n      <input type=\"radio\"\n             name=\"sample_radio\"\n             value=\"yes\"\n             id=\"radio__sample_radio__yes\"\n             class=\"half\"\n             data-load=\"effect.property.sample_radio\"/>\n      <label for=\"radio__sample_radio__yes\">Yes</label>\n    </div>\n    <div class=\"half\"></div>\n    <div class=\"half\">\n      <input type=\"radio\"\n             name=\"sample_radio\"\n             value=\"no\"\n             id=\"radio__sample_radio__no\"\n             class=\"half\"\n             data-load=\"effect.property.sample_radio\"/>\n      <label for=\"radio__sample_radio__no\">No</label>\n    </div>\n    <div class=\"half\"></div>\n    <div class=\"half\">\n      <input type=\"radio\"\n             name=\"sample_radio\"\n             value=\"soso\"\n             id=\"radio__sample_radio__soso\"\n             class=\"half\"\n             data-load=\"effect.property.sample_radio\"/>\n      <label for=\"radio__sample_radio__soso\">So-so</label>\n    </div>\n  </fieldset>\n</form>",
       script: "<form id=\"form_effect_script\" name=\"effect_script\">\n  <fieldset class=\"effect-parameter-group\">\n    <legend>効果を追加</legend>\n    <label for=\"textarea_script\" class=\"half\">プリセット</label>\n    <button class=\"half\"><span class=\"girafont\">lightning</span>プリセットを選択</button>\n    <textarea name=\"script\" id=\"textarea_script\" cols=\"30\" rows=\"10\" data-load=\"effect.script.script\"></textarea>\n  </fieldset>\n</form>",
       crop: "<form id=\"form_effect_crop\" name=\"effect_crop\">\n</form>",
       keying: "<form id=\"form_effect_keying\" name=\"effect_keying\">\n</form>",
@@ -1870,22 +1893,57 @@ Giraf.View.Expert.Effect = (function(_super) {
   };
 
   Effect.prototype.changeTarget = function(target_uuid) {
-    var self;
+    var changeVal, self, update;
     this.target_uuid = target_uuid;
+    changeVal = function($input, val) {
+      if ($input.get(0).tagName === "INPUT") {
+        if (($input.attr("type")) === "checkbox") {
+          return $input.prop("checked", val === true);
+        } else if (($input.attr("type")) === "radio") {
+          return $input.prop("checked", $input.val() === val);
+        } else {
+          return $input.val(val);
+        }
+      } else if ($input.get(0).tagName === "SELECT") {
+        return $input.val(val);
+      } else if ($input.get(0).tagName === "TEXTAREA") {
+        return $input.val(val);
+      }
+    };
+    update = function(model, $input) {
+      var data_load, val;
+      data_load = $input.attr("data-load");
+      if (($input.attr("type")) === "checkbox") {
+        val = $input.prop("checked");
+      } else {
+        val = $input.val();
+      }
+      model.update(data_load, val);
+      return $("[data-load=\"" + data_load + "\"]").each(function() {
+        return changeVal($(this), val);
+      });
+    };
     self = this;
-    return $("[data-load").each(function() {
-      var data;
-      data = self.app.model.get(target_uuid).data;
+    return $("[data-load]").each(function() {
+      var data, model;
+      model = self.app.model.get(target_uuid);
+      data = model.data;
       _.each($(this).attr("data-load").split("."), (function(_this) {
         return function(t) {
           return data = data != null ? data[t] : void 0;
         };
       })(this));
-      if (data) {
+      if (data != null) {
+        changeVal($(this), data);
         $(this).parents(".effect-parameter-group").removeClass("hidden");
-        return $(this).val(data);
+        return $(this).off("change").on("change", (function(_this) {
+          return function() {
+            return update(model, $(_this));
+          };
+        })(this));
       } else {
-        return $(this).parents(".effect-parameter-group").addClass("hidden");
+        $(this).parents(".effect-parameter-group").addClass("hidden");
+        return $(this).off("change");
       }
     });
   };

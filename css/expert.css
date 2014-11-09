@@ -270,7 +270,12 @@
     position: relative;
     float: left;
     width: 100%;
-    margin: 3px 0;
+    min-height: 18px;
+    margin: 6px 0;
+}
+
+#expert_effect .effect-parameter-group > input[type=checkbox] {
+    height: 18px;
 }
 
 #expert_effect .effect-parameter-group > .half {

@@ -20,6 +20,8 @@ class Giraf.Model.Composition extends Giraf.Model._base
           out_framerate: 12
           out_speed: 1
           out_size: 320
+          sample_check: true
+          sample_radio: "soso"
         script:
           script: ""
         crop: null

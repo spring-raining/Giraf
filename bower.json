@@ -1,0 +1,23 @@
+{
+  "name": "Giraf",
+  "version": "1.2.0",
+  "homepage": "https://github.com/spring-raining/Giraf",
+  "authors": [
+    "spring_raining <harusamex.com@gmail.com>"
+  ],
+  "description": "Make gif animations on the web.",
+  "main": "index.html",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "~2.1.1",
+    "underscore": "~1.7.0",
+    "d3": "~3.4.13",
+    "codemirror": "~4.7.0",
+    "jcrop": "~0.9.12",
+    "jquery-cookie": "~1.4.1"
+  },
+  "devDependencies": {
+    "mocha": "~2.0.1",
+    "chai": "~1.10.0"
+  }
+}

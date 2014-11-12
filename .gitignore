@@ -11,4 +11,5 @@ Session.vim
 *~
 \#*\#
 .idea/
-video/
+
+bower_components

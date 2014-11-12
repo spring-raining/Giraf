@@ -136,6 +136,10 @@ if (Giraf.View.Expert.Composition == null) {
   Giraf.View.Expert.Composition = {};
 }
 
+if (Giraf.View.Expert.Composition.Controller == null) {
+  Giraf.View.Expert.Composition.Controller = {};
+}
+
 if (Giraf.View.Expert.Droparea == null) {
   Giraf.View.Expert.Droparea = {};
 }
@@ -1739,8 +1743,14 @@ Giraf.View.Expert.Composition = (function(_super) {
     var template;
     this.app = app;
     this.$composition = $composition;
-    template = _.template("<div class=\"composition-window\">\n  <div class=\"composition-window-placeholder\">\n    <span>Composition</span>\n    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores corporis delectus, doloremque eligendi explicabo fugit harum iusto magnam minus natus non odit officia perspiciatis possimus provident quo similique, suscipit tempora!</p><p>Aut ea eveniet facere officia placeat qui quod soluta! A autem commodi culpa cum, dignissimos dolorum eveniet, explicabo minima nesciunt nisi, officia omnis optio quae quas quia reiciendis rem unde?</p><p>Assumenda consectetur corporis et magnam voluptate. Ab aut beatae corporis cum dolorem dolores eius est expedita fuga hic, ipsum nobis quasi quibusdam quo recusandae soluta temporibus ut veniam vitae voluptatem?</p><p>Cupiditate dignissimos dolore dolorum ducimus enim, et explicabo fugit illo ipsa ipsam itaque laborum maiores nemo obcaecati quas quia quis similique! Autem consectetur dignissimos laudantium magni odit tenetur veniam vero.</p><p>Ab amet debitis dolorem est eveniet explicabo illum incidunt libero, magni minima, natus numquam omnis placeat porro quisquam saepe tempora voluptate! Aliquam eius error facere, maiores numquam vel veniam voluptatum.</p><p>Aliquid, assumenda consectetur cum cumque deserunt distinctio expedita fugit harum impedit magnam nemo nihil nobis perspiciatis ratione repellat sed, suscipit. At atque eos in molestias, nesciunt quas reiciendis. Consequuntur, ipsum.</p>\n  </div>\n  <img class=\"composition-img hidden\"/>\n  <video class=\"composition-video hidden\" controls></video>\n</div>\n<div class=\"composition-progress\">\n  <progress value=\"0\" max=\"100\"></progress>\n</div>");
+    template = _.template("<div class=\"composition-window\">\n  <div class=\"composition-window-placeholder\">\n    <span>Composition</span>\n    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores corporis delectus, doloremque eligendi explicabo fugit harum iusto magnam minus natus non odit officia perspiciatis possimus provident quo similique, suscipit tempora!</p><p>Aut ea eveniet facere officia placeat qui quod soluta! A autem commodi culpa cum, dignissimos dolorum eveniet, explicabo minima nesciunt nisi, officia omnis optio quae quas quia reiciendis rem unde?</p><p>Assumenda consectetur corporis et magnam voluptate. Ab aut beatae corporis cum dolorem dolores eius est expedita fuga hic, ipsum nobis quasi quibusdam quo recusandae soluta temporibus ut veniam vitae voluptatem?</p><p>Cupiditate dignissimos dolore dolorum ducimus enim, et explicabo fugit illo ipsa ipsam itaque laborum maiores nemo obcaecati quas quia quis similique! Autem consectetur dignissimos laudantium magni odit tenetur veniam vero.</p><p>Ab amet debitis dolorem est eveniet explicabo illum incidunt libero, magni minima, natus numquam omnis placeat porro quisquam saepe tempora voluptate! Aliquam eius error facere, maiores numquam vel veniam voluptatum.</p><p>Aliquid, assumenda consectetur cum cumque deserunt distinctio expedita fugit harum impedit magnam nemo nihil nobis perspiciatis ratione repellat sed, suscipit. At atque eos in molestias, nesciunt quas reiciendis. Consequuntur, ipsum.</p>\n  </div>\n  <img class=\"composition-img hidden\"/>\n  <video class=\"composition-video hidden\"></video>\n</div>\n<div class=\"composition-controller\"></div>\n<div class=\"composition-progress\">\n  <progress value=\"0\" max=\"100\"></progress>\n</div>");
     this.$composition.append(template({}));
+    this.controller = new Giraf.View.Expert.Composition.Controller({
+      app: app,
+      $controller: $(".composition-controller"),
+      $img: $("img.composition-img"),
+      $video: $("video.composition-video")
+    });
   }
 
   Composition.prototype.refresh = function(type, content_url) {
@@ -1755,9 +1765,11 @@ Giraf.View.Expert.Composition = (function(_super) {
         $(".composition-window").children().each(function() {
           return $(this).addClass("hidden");
         });
+        this.controller.changeMode("none");
         $video.removeClass("hidden").attr("src", content_url).one("canplay", function() {
           return d.resolve();
         });
+        this.controller.changeMode("video");
         break;
       case "img":
         $img = $("img.composition-img");
@@ -1767,11 +1779,13 @@ Giraf.View.Expert.Composition = (function(_super) {
         $(".composition-window").children().each(function() {
           return $(this).addClass("hidden");
         });
+        this.controller.changeMode("none");
         $img.removeClass("hidden").attr("src", content_url);
         d.resolve();
         break;
       default:
         console.log("Type '" + type + "' is not defined.");
+        this.controller.changeMode("none");
         d.resolve();
     }
     return d.promise();
@@ -1780,6 +1794,67 @@ Giraf.View.Expert.Composition = (function(_super) {
   return Composition;
 
 })(Giraf.View.Expert._base);
+
+Giraf.View.Expert.Composition.Controller = (function(_super) {
+  __extends(Controller, _super);
+
+  function Controller(args) {
+    this.app = args.app;
+    this.$controller = args.$controller;
+    this.$img = args.$img;
+    this.$video = args.$video;
+    this.mode = "none";
+    this.frame = 1.0 / 12;
+    this.$controller.append("<div class=\"girafont composition-controller-previous\">previous</div>\n<div class=\"girafont composition-controller-play\">play</div>\n<div class=\"girafont composition-controller-next\">next</div>\n<div class=\"composition-controller-seek\">\n  <div class=\"composition-controller-seek-handle\"></div>\n</div>\n<div class=\"composition-controller-timer\">00:00:00</div>\n<div class=\"compsitilon-controller-volume\">\n  <div class=\"composition-controller-volume-slider\"></div>\n  <div class=\"compsition-controller-volume-button\"></div>\n</div>");
+    this.$play = this.$controller.find(".composition-controller-play");
+    this.$seek = this.$controller.find(".composition-controller-seek");
+    this.$timer = this.$controller.find(".composition-controller-timer");
+    this.$volume = this.$controller.find(".composition-controller-volume");
+    this.$volumeSlider = this.$controller.find(".composition-controller-volume-slider");
+    this.$volumeButton = this.$controller.find(".composition-controller-volume-button");
+    console.log(this.$play.get(0));
+    this.$play.on("click", (function(_this) {
+      return function() {
+        return _this.play();
+      };
+    })(this));
+  }
+
+  Controller.prototype.play = function(bool) {
+    if (this.mode === "video") {
+      if (this.$video.get(0).paused || bool) {
+        this.$video.get(0).play();
+        return this.$play.text("pause");
+      } else if (!this.$video.get(0).paused || !bool) {
+        this.$video.get(0).pause();
+        return this.$play.text("play");
+      }
+    }
+  };
+
+  Controller.prototype.pause = function() {};
+
+  Controller.prototype.seek = function(timeOrFrame) {};
+
+  Controller.prototype.volume = function(value) {};
+
+  Controller.prototype.nextFrame = function(frame) {
+    this.frame = frame;
+  };
+
+  Controller.prototype.previousFrame = function(frame) {
+    this.frame = frame;
+  };
+
+  Controller.prototype.changeMode = function(mode) {
+    if (mode === "composition" || mode === "video" || mode === "image" || mode === "none") {
+      return this.mode = mode;
+    }
+  };
+
+  return Controller;
+
+})(Giraf.View._base);
 
 Giraf.View.Expert.Droparea = (function(_super) {
   var innerAcitve, isActive;

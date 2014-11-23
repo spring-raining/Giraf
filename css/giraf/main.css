@@ -398,288 +398,235 @@ nav .dropdown-menu {
   padding: 32px 0 0;
   width: 100%;
   height: 100%;
-  background-color: #333; }
-
-#expert_container {
-  position: relative;
-  width: 100%;
-  height: 100%; }
-
-#expert_container > * {
-  padding: 2px;
   background-color: #333;
-  color: #bbb;
-  position: absolute; }
-
-#expert_container .panel-container {
-  width: 100%;
-  height: 100%;
-  border: solid 1px #4d4d4d;
-  background-color: #404040;
-  overflow: scroll; }
-
-#expert_project {
-  top: 0%;
-  left: 0%;
-  width: 20%;
-  height: 100%; }
-
-#expert_composition {
-  top: 0%;
-  left: 50%;
-  width: 50%;
-  height: 55%; }
-
-#expert_effect {
-  top: 0%;
-  left: 20%;
-  width: 30%;
-  height: 55%; }
-
-#expert_node {
-  top: 55%;
-  left: 20%;
-  width: 80%;
-  height: 45%; }
-
-/*
- *  Composition.Controller
- */
-.composition-controller {
-  width: 100%;
-  height: 28px;
-  border-top: 1px solid #505050; }
-
-.composition-controller > * {
-  display: block;
-  float: left;
-  user-select: none;
-  height: 28px;
-  padding: 6px 8px;
-  font-size: 16px;
-  vertical-align: middle;
-  text-align: center;
-  cursor: pointer;
-  color: #888888; }
-
-.composition-controller > *:hover {
-  color: #dddddd; }
-
-.composition-controller-seek {
-  position: relative;
-  padding: 0;
-  width: 300px; }
-
-.composition-controller-seek:before {
-  content: " ";
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  margin: 12px;
-  background-color: #888888; }
-
-.composition-controller .composition-controller-timer {
-  font-size: 12px; }
-
-/*
- *  #expert_project
- */
-#expert_project .project-piece {
-  height: 42px;
-  border: solid 1px #363636; }
-
-#expert_project .project-piece.selected {
-  border: solid 1px orange; }
-
-#expert_project .project-piece.loading {
-  color: #888; }
-
-#expert_project .project-piece > *,
-#expert_project .project-piece-content > * {
-  float: left; }
-
-#expert_project .project-piece-tag {
-  width: 6px;
-  height: 40px; }
-
-#expert_project .project-piece[data-referer-type="file"] .project-piece-tag {
-  background-color: #a9dbd3; }
-
-#expert_project .project-piece[data-referer-type="composition"] .project-piece-tag {
-  background-color: #ccb39f; }
-
-#expert_project .project-piece-content {
-  position: relative;
-  height: 42px;
-  padding: 6px; }
-
-#expert_project img.project-piece-thumbnail {
-  position: absolute;
-  width: 40px;
-  height: 30px; }
-
-#expert_project .project-piece-title {
-  position: absolute;
-  left: 46px;
-  height: 30px;
-  padding: 4px;
-  overflow: hidden;
-  white-space: nowrap; }
-
-/*
- *  #expert_composition
- */
-#expert_composition > .panel-container {
-  position: relative;
-  overflow: hidden; }
-
-#expert_composition .composition-window {
-  position: absolute;
-  margin: auto;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  margin-bottom: 33px; }
-
-#expert_composition .composition-window > * {
-  position: absolute;
-  margin: auto;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0; }
-
-#expert_composition .composition-window-placeholder {
-  overflow: auto;
-  padding: 12px; }
-
-#expert_composition img.composition-img,
-#expert_composition video.composition-video {
-  background-color: #000;
-  max-width: 100%;
-  max-height: 100%; }
-
-#expert_composition .composition-controller {
-  position: absolute;
-  bottom: 5px; }
-
-#expert_composition .composition-progress {
-  bottom: 0;
-  position: absolute;
-  width: 100%;
-  height: 5px; }
-
-#expert_composition .composition-progress progress {
-  position: absolute;
-  width: 100%;
-  height: 5px;
-  /*-webkit-appearance: none;
-  appearance: none;*/ }
-
-/*
- *  #expert_node
- */
-#expert_node > .panel-container {
-  position: relative; }
-
-#expert_node .node-corkboard-container {
-  scroll: auto; }
-
-#expert_node #node_corkboard_svg {
-  position: absolute; }
-
-#expert_node .node-piece-composition {
-  width: 100px;
-  position: absolute !important;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  background-color: #938cff;
-  color: #000; }
-
-#expert_node .node-piece-composition-title {
-  font-size: 11px; }
-
-/*
- *  #expert_effect
- */
-#expert_effect > .panel-container {
-  position: relative; }
-
-#expert_effect .effect-tab {
-  position: absolute;
-  list-style: none;
-  height: 42px;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  display: table; }
-
-#expert_effect .effect-tab.layer {
-  background-color: #404040;
-  opacity: 0.85;
-  border-bottom: 1px solid #505050; }
-
-#expert_effect .effect-tab-menu {
-  display: table-cell;
-  height: 42px;
-  font-size: 140%;
-  vertical-align: middle;
-  text-align: center;
-  cursor: pointer;
-  color: #888888; }
-
-#expert_effect .effect-tab-menu:hover {
-  color: #dddddd; }
-
-#expert_effect .effect-tab-menu.selected {
-  color: #53b0ff; }
-
-#expert_effect .effect-tab-menu a {
-  height: 100%; }
-
-#expert_effect .effect-content {
-  position: absolute;
-  overflow: auto;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding-top: 42px;
-  font-size: 80%; }
-
-#expert_effect .effect-parameter-group {
-  padding: 6px 6px 10px 6px;
-  margin: 4px 4px 0 4px;
-  border-bottom: 1px solid #505050; }
-
-#expert_effect .effect-parameter-group:after {
-  content: " ";
-  visibility: hidden;
-  display: block;
-  clear: both;
-  height: 0; }
-
-#expert_effect .effect-parameter-group > * {
-  position: relative;
-  float: left;
-  width: 100%;
-  min-height: 18px;
-  margin: 6px 0; }
-
-#expert_effect .effect-parameter-group > input[type=checkbox] {
-  height: 18px; }
-
-#expert_effect .effect-parameter-group > .half {
-  width: 50%; }
-
-#expert_effect .effect-parameter-group legend {
-  font-size: 130%; }
-
-fieldset {
-  border: none; }
+  /*
+   *  Composition.Controller
+   */
+  /*
+   *  #expert_project
+   */
+  /*
+   *  #expert_composition
+   */
+  /*
+   *  #expert_node
+   */
+  /*
+   *  #expert_effect
+   */ }
+  #expert #expert_container {
+    position: relative;
+    width: 100%;
+    height: 100%; }
+    #expert #expert_container > * {
+      padding: 2px;
+      background-color: #333;
+      color: #bbb;
+      position: absolute; }
+    #expert #expert_container .panel-container {
+      width: 100%;
+      height: 100%;
+      border: solid 1px #4d4d4d;
+      background-color: #404040;
+      overflow: scroll; }
+  #expert #expert_project {
+    top: 0%;
+    left: 0%;
+    width: 20%;
+    height: 100%; }
+  #expert #expert_composition {
+    top: 0%;
+    left: 50%;
+    width: 50%;
+    height: 55%; }
+  #expert #expert_effect {
+    top: 0%;
+    left: 20%;
+    width: 30%;
+    height: 55%; }
+  #expert #expert_node {
+    top: 55%;
+    left: 20%;
+    width: 80%;
+    height: 45%; }
+  #expert .composition-controller {
+    width: 100%;
+    height: 28px;
+    border-top: 1px solid #505050; }
+    #expert .composition-controller > * {
+      display: block;
+      float: left;
+      user-select: none;
+      height: 28px;
+      padding: 6px 8px;
+      font-size: 16px;
+      vertical-align: middle;
+      text-align: center;
+      cursor: pointer;
+      color: #888888; }
+      #expert .composition-controller > *:hover {
+        color: #dddddd; }
+    #expert .composition-controller .composition-controller-seek {
+      position: relative;
+      padding: 0;
+      width: 300px; }
+      #expert .composition-controller .composition-controller-seek:before {
+        content: " ";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        margin: 12px;
+        background-color: #888888; }
+    #expert .composition-controller .composition-controller-timer {
+      font-size: 12px; }
+  #expert #expert_project .project-piece {
+    height: 42px;
+    border: solid 1px #363636; }
+    #expert #expert_project .project-piece.selected {
+      border: solid 1px orange; }
+    #expert #expert_project .project-piece.loading {
+      color: #888; }
+  #expert #expert_project .project-piece > *,
+  #expert #expert_project .project-piece-content > * {
+    float: left; }
+  #expert #expert_project .project-piece-tag {
+    width: 6px;
+    height: 40px; }
+  #expert #expert_project .project-piece[data-referer-type="file"] .project-piece-tag {
+    background-color: #a9dbd3; }
+  #expert #expert_project .project-piece[data-referer-type="composition"] .project-piece-tag {
+    background-color: #ccb39f; }
+  #expert #expert_project .project-piece-content {
+    position: relative;
+    height: 42px;
+    padding: 6px; }
+  #expert #expert_project img.project-piece-thumbnail {
+    position: absolute;
+    width: 40px;
+    height: 30px; }
+  #expert #expert_project .project-piece-title {
+    position: absolute;
+    left: 46px;
+    height: 30px;
+    padding: 4px;
+    overflow: hidden;
+    white-space: nowrap; }
+  #expert #expert_composition > .panel-container {
+    position: relative;
+    overflow: hidden; }
+  #expert #expert_composition .composition-window {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin-bottom: 33px; }
+    #expert #expert_composition .composition-window > * {
+      position: absolute;
+      margin: auto;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 0; }
+  #expert #expert_composition .composition-window-placeholder {
+    overflow: auto;
+    padding: 12px; }
+  #expert #expert_composition img.composition-img,
+  #expert #expert_composition video.composition-video {
+    background-color: #000;
+    max-width: 100%;
+    max-height: 100%; }
+  #expert #expert_composition .composition-controller {
+    position: absolute;
+    bottom: 5px; }
+  #expert #expert_composition .composition-progress {
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+    height: 5px; }
+    #expert #expert_composition .composition-progress progress {
+      position: absolute;
+      width: 100%;
+      height: 5px;
+      /*-webkit-appearance: none;
+      appearance: none;*/ }
+  #expert #expert_node > .panel-container {
+    position: relative; }
+  #expert #expert_node .node-corkboard-container {
+    scroll: auto; }
+  #expert #expert_node #node_corkboard_svg {
+    position: absolute; }
+  #expert #expert_node .node-piece-composition {
+    width: 100px;
+    position: absolute !important;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    background-color: #938cff;
+    color: #000; }
+  #expert #expert_node .node-piece-composition-title {
+    font-size: 11px; }
+  #expert #expert_effect > .panel-container {
+    position: relative; }
+  #expert #expert_effect .effect-tab {
+    position: absolute;
+    list-style: none;
+    height: 42px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    display: table; }
+  #expert #expert_effect .effect-tab.layer {
+    background-color: #404040;
+    opacity: 0.85;
+    border-bottom: 1px solid #505050; }
+  #expert #expert_effect .effect-tab-menu {
+    display: table-cell;
+    height: 42px;
+    font-size: 140%;
+    vertical-align: middle;
+    text-align: center;
+    cursor: pointer;
+    color: #888888; }
+    #expert #expert_effect .effect-tab-menu:hover {
+      color: #dddddd; }
+    #expert #expert_effect .effect-tab-menu.selected {
+      color: #53b0ff; }
+    #expert #expert_effect .effect-tab-menu a {
+      height: 100%; }
+  #expert #expert_effect .effect-content {
+    position: absolute;
+    overflow: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-top: 42px;
+    font-size: 80%; }
+  #expert #expert_effect .effect-parameter-group {
+    padding: 6px 6px 10px 6px;
+    margin: 4px 4px 0 4px;
+    border-bottom: 1px solid #505050; }
+    #expert #expert_effect .effect-parameter-group:after {
+      content: " ";
+      visibility: hidden;
+      display: block;
+      clear: both;
+      height: 0; }
+    #expert #expert_effect .effect-parameter-group > * {
+      position: relative;
+      float: left;
+      width: 100%;
+      min-height: 18px;
+      margin: 6px 0; }
+    #expert #expert_effect .effect-parameter-group > input[type=checkbox] {
+      height: 18px; }
+    #expert #expert_effect .effect-parameter-group > .half {
+      width: 50%; }
+    #expert #expert_effect .effect-parameter-group legend {
+      font-size: 130%; }
 
 .droparea {
   top: 0;

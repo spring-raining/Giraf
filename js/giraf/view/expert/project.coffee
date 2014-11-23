@@ -1,3 +1,9 @@
+# ### Giraf.View.Expert.Project
+# ```
+# app: appオブジェクト
+# $project: 自身の表示場所のjQueryオブジェクト
+# pieces: Project.Pieceオブジェクトのハッシュ(キーはUUID)
+# ```
 class Giraf.View.Expert.Project extends Giraf.View.Expert._base
 
   constructor: (@app, @$project) ->
@@ -25,13 +31,14 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
     do d.promise
 
 
-###
-            File                  Composition
-  referer   Model.File            Model.Composition
-  type      "file"                "composition"
-  title     referer.file.name     referer.name
-###
-
+# ### Giraf.View.Expert.Project.Piece
+# ```
+# app: appオブジェクト
+# uuid: 一意のUUID
+# type: 参照しているオブジェクトのタイプ("file", "composition")
+# title: 参照しているオブジェクトの名前
+# referer_uuid: 参照しているオブジェクトのUUID
+# ```
 class Giraf.View.Expert.Project.Piece
   constructor: (@app, @uuid, referer, @type, @title) ->
     @referer_uuid = referer.uuid
@@ -74,6 +81,7 @@ class Giraf.View.Expert.Project.Piece
       $target.removeClass "selected"
 
 
+# ### Giraf.View.Expert.Project.Piece.File
 class Giraf.View.Expert.Project.Piece.File extends Giraf.View.Expert.Project.Piece
   constructor: (@app, @uuid, referer) ->
     super app, uuid, referer, "file", referer.file.name
@@ -84,6 +92,7 @@ class Giraf.View.Expert.Project.Piece.File extends Giraf.View.Expert.Project.Pie
       $rtn.addClass "loading"
     return $rtn.get(0)
 
+# ### Giraf.View.Expert.Project.Piece.Composition
 class Giraf.View.Expert.Project.Piece.Composition extends Giraf.View.Expert.Project.Piece
   constructor: (@app, @uuid, referer) ->
     super app, uuid, referer, "composition", referer.name

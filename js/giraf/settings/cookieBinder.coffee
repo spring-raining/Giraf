@@ -1,3 +1,4 @@
+# ### Giraf.Settings.CookieBinder
 class Giraf.Settings.CookieBinder extends Giraf.Settings._base
 
   constructor: (@app) ->

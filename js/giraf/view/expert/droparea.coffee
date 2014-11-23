@@ -1,3 +1,8 @@
+# ### Giraf.View.Expert.Droparea
+# ```
+# app: appオブジェクト
+# $droparea: 自身の表示場所のjQueryオブジェクト
+# ```
 class Giraf.View.Expert.Droparea extends Giraf.View.Expert._base
   isActive = false
   innerAcitve = 0

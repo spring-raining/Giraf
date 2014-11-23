@@ -1,7 +1,22 @@
+# ### Giraf.View.Modal
 class Giraf.View.Modal extends Giraf.View._base
 
   constructor: ->
 
+  #
+  # 引数`args`は以下の通りのハッシュにする
+  # ```
+  # args:
+  #   title: Modalのタイトル(文字列)
+  #   content: Modalの内容(HTML)
+  #   action:
+  #     (任意のキー名):
+  #       text: ボタンに表示する文字列
+  #       [primary: true] (プライマリ要素にするときに追加)
+  #     (任意のキー名):
+  #         :
+  #         :
+  # ```
   show: (args) ->
     template =  _.template """
                 <div class="modal">

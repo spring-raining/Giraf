@@ -1,4 +1,7 @@
+# ### Giraf.Task.FileLoader
 class Giraf.Task.FileLoader extends Giraf.Task._base
+
+  # 新しいファイルを読み込む
   run: (app, files) ->
     d = do $.Deferred
     tasks = []

@@ -1,4 +1,7 @@
+# ### Giraf.Task.CreateNewComposition
 class Giraf.Task.CreateNewComposition
+
+  # 新しいコンポジションを作成する
   run: (app) ->
     d = do $.Deferred
     uuid = null

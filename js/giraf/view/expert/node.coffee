@@ -1,7 +1,14 @@
+# ### Giraf.View.Expert.Node
+# ```
+# app: appオブジェクト
+# $node: 自身の表示場所のjQueryオブジェクト
+# corkboardWidth: SVG領域の幅
+# corkboardHeight: SVG領域の高さ
+# svg: Node.SVGオブジェクト
+# ```
 class Giraf.View.Expert.Node extends Giraf.View.Expert._base
 
   constructor: (@app, @$node) ->
-    @pieces = {}
     @corkboardWidth = 3000
     @corkboardHeight = 3000
 
@@ -53,6 +60,20 @@ class Giraf.View.Expert.Node extends Giraf.View.Expert._base
     do d.promise
 
 
+# ### Giraf.View.Expert.Node.SVG
+# ```
+# app: appオブジェクト
+# width: SVG領域の幅
+# height: SVG領域の高さ
+# D3:
+#   svg:
+#     defs: SVG定義部分のD3オブジェクト
+#     nodeLayer: SVGノード表示グループのD3オブジェクト
+#     contentLayer: SVGコンテント表示グループのD3オブジェクト
+#     overLayer: SVGオーバーレイ表示グループのD3オブジェクト
+# piece: Node.Pieceオブジェクトのハッシュ（キーはUUID）
+# hoveredContent: マウスの下にあるコンテントのUUID
+# ```
 class Giraf.View.Expert.Node.SVG extends Giraf.View.Expert._base
   @D3 = {}
   @pieces = {}
@@ -140,11 +161,13 @@ class Giraf.View.Expert.Node.SVG extends Giraf.View.Expert._base
     return cdn
 
 
+# ### Giraf.View.Expert.Node.Piece
 class Giraf.View.Expert.Node.Piece extends Giraf.View.Expert._base
   @x = 0
   @y = 0
 
 
+# ### Giraf.View.Expert.Node.Piece.Content
 class Giraf.View.Expert.Node.Piece.Content extends Giraf.View.Expert.Node.Piece
   constructor: (@svg) ->
     @controllable = true
@@ -158,10 +181,22 @@ class Giraf.View.Expert.Node.Piece.Content extends Giraf.View.Expert.Node.Piece
   target: (bool) ->
 
 
+# ### Giraf.View.Expert.Node.Piece.Over
 class Giraf.View.Expert.Node.Piece.Over extends Giraf.View.Expert.Node.Piece
   constructor: (@svg) ->
 
 
+# ### Giraf.View.Expert.Node.Piece.Composition
+# ```
+# x: x位置
+# y: y位置
+# destination: 映像出力先のPieceオブジェクトのUUID
+# svg: Node.SVGオブジェクト
+# uuid: 一意のUUID
+# app: appオブジェクト
+# referer_uuid: 参照しているModel.CompositionオブジェクトのUUID
+# d3svg: SVGのD3オブジェクト
+# ```
 class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Piece.Content
   @destination = null
 
@@ -193,6 +228,14 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
     @d3composition?.attr "transform", "translate(#{@x}, #{@y})"
     return @
 
+  # draw後は以下の要素が追加される
+  # ```
+  # d3composition: D3オブジェクト (contentLayer)
+  # d3rect: D3オブジェクト (d3composition)
+  # d3text: D3オブジェクト (d3composition)
+  # d3circleDot: D3オブジェクト (d3composition)
+  # d3circleHook: D3オブジェクト (d3composition)
+  # ```
   draw: ->
     $ =>
       d3compositionEventHandler =
@@ -308,6 +351,15 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
     return @
 
 
+# ### Giraf.View.Expert.Node.Piece.Point
+# ```
+# x: x位置
+# y: y位置
+# source: 映像入力元のPieceオブジェクトのUUID
+# svg: Node.SVGオブジェクト
+# uuid: 一意のUUID
+# d3svg: SVGのD3オブジェクト
+# ```
 class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Content
   @source = null
 
@@ -331,6 +383,13 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
     @d3point?.attr "transform", "translate(#{@x}, #{@y})"
     return @
 
+  # draw後は以下の要素が追加される
+  # ```
+  # d3point: D3オブジェクト (contentLayer)
+  # d3rect: D3オブジェクト (d3point)
+  # d3circleDot: D3オブジェクト (d3point)
+  # d3circleHook: D3オブジェクト (d3point)
+  # ```
   draw: ->
     $ =>
       d3pointEventHandler =
@@ -434,6 +493,16 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
     return @
 
 
+# ### Giraf.View.Expert.Node.Piece.Arrow
+# ```
+# x1: 始点のx位置
+# x2: 終点のx位置
+# y1: 始点のy位置
+# y2: 終点のy位置
+# svg: Node.SVGオブジェクト
+# uuid: 一意のUUID
+# d3svg: SVGのD3オブジェクト
+# ```
 class Giraf.View.Expert.Node.Piece.Arrow extends Giraf.View.Expert.Node.Piece.Over
   @x1 = 0
   @y1 = 0
@@ -453,6 +522,12 @@ class Giraf.View.Expert.Node.Piece.Arrow extends Giraf.View.Expert.Node.Piece.Ov
       y2: @y2
     return @
 
+  # draw後は以下の要素が追加される
+  # ```
+  # d3arrowTail: D3オブジェクト (defs)
+  # d3arrowHead: D3オブジェクト (defs)
+  # d3arrow: D3オブジェクト (overLayer)
+  # ```
   draw: ->
     $ =>
       @d3arrowTail = @d3svg.defs.append "marker"

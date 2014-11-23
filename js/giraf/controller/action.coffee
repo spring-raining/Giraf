@@ -1,3 +1,4 @@
+# ### Giraf.Controller.Action
 class Giraf.Controller.Action extends Giraf.Controller._base
   constructor: (app, action, args) ->
     switch action

@@ -1,3 +1,8 @@
+# ### Giraf.View.Expert
+# ```
+# app: appオブジェクト
+# $expert: 自身の表示場所のjQueryオブジェクト
+# ```
 class Giraf.View.Expert extends Giraf.View._base
   _selector_container = "#expert_container"
   _selector_project = "#expert_project > .panel-container"

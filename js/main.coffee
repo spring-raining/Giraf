@@ -1,11 +1,9 @@
 Giraf = {} unless Giraf?
 Giraf._base = {} unless Giraf._base?
-Giraf._settings = {} unless Giraf._settings?
 Giraf.App = {} unless Giraf.App?
 Giraf.Controller = {} unless Giraf.Controller?
 Giraf.Controller._base = {} unless Giraf.Controller._base?
 Giraf.Controller.Action = {} unless Giraf.Controller.Action?
-Giraf.FileHandler = {} unless Giraf.FileHandler?
 Giraf.History = {} unless Giraf.History?
 Giraf.Model = {} unless Giraf.Model?
 Giraf.Model._base = {} unless Giraf.Model._base?
@@ -21,10 +19,6 @@ Giraf.Task.CreateNewComposition = {} unless Giraf.Task.CreateNewComposition?
 Giraf.Task.FileLoader = {} unless Giraf.Task.FileLoader?
 Giraf.Task.RefreshComposition = {} unless Giraf.Task.RefreshComposition?
 Giraf.Task.SelectFile = {} unless Giraf.Task.SelectFile?
-Giraf.Thumbnail = {} unless Giraf.Thumbnail?
-Giraf.Thumbnails = {} unless Giraf.Thumbnails?
-Giraf.Timeline = {} unless Giraf.Timeline?
-Giraf.Timelines = {} unless Giraf.Timelines?
 Giraf.Tools = {} unless Giraf.Tools?
 Giraf.View = {} unless Giraf.View?
 Giraf.View._base = {} unless Giraf.View._base?
@@ -42,169 +36,16 @@ Giraf.View.Quick = {} unless Giraf.View.Quick?
 Giraf.View.Quick._base = {} unless Giraf.View.Quick._base?
 
 
-# js/giraf/_base.coffee
-
+# Giraf._base
 class Giraf._base
-  # Giraf._base
 
-# js/giraf/_settings.coffee
 
-class Giraf._settings
-  captureFrameValues = [1, 2, 3, 4, 6, 8, 12, 15, 24, 30]
-  gifSpeedValues = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 5]
-  gifSizeValues = [40, 80, 120, 240, 320, 480, 640, 720]
-
-  constructor: (@$video) ->
-    @$captureFrame = $("#form_capture_frame")
-    @$gifSpeed = $("#form_gif_speed")
-    @$gifSize = $("#form_gif_size")
-    @event = {}
-
-    @$captureFrame.append "<option value=#{i}>#{i}fps</option>" for i in captureFrameValues
-    @$gifSpeed.append "<option value=#{i}>x#{i}</option>" for i in gifSpeedValues
-    @$gifSize.append "<option value=-1>元サイズに合わせる</option>"
-    @$gifSize.append "<option value=#{i}>#{i}px</option>" for i in gifSizeValues
-
-    @captureFrameVal = 12
-    @gifSpeedVal = 1
-    @gifSizeVal = -1
-    @effectScript = ""
-    @crop = false
-
-    @$captureFrame.val @captureFrameVal
-    @$gifSpeed.val @gifSpeedVal
-    @$gifSize.val @gifSizeVal
-
-    @initJcrop()
-    @initCodeMirror()
-
-    ###@$captureFrame.bind "change", =>
-      if "change" in @event then @event["change"]()
-    @$gifSpeed.bind "change", =>
-      if "change" in @event then @event["change"]()
-    @$gifSize.bind "change", =>
-      if "change" in @event then @event["change"]()###
-
-    # modal_capture_frame
-    $("#modal_capture_frame").on "hidden.bs.modal", =>
-      @$captureFrame.val @captureFrameVal
-
-    $("#modal_capture_frame_save").bind "click", =>
-      @captureFrameVal = @$captureFrame.val()
-      $("#modal_capture_frame").modal "hide"
-      for type, fn of @event
-        if type is "change" then do fn
-
-    # modal_gif_size
-    $("#modal_gif_size").on "hidden.bs.modal", =>
-      @$gifSize.val @gifSizeVal
-
-    $("#modal_gif_size_save").bind "click", =>
-      @gifSizeVal = @$gifSize.val()
-      $("#modal_gif_size").modal "hide"
-
-    # modal_gif_speed
-    $("#modal_gif_speed").on "hidden.bs.modal", =>
-      @$gifSpeed.val @gifSpeedVal
-
-    $("#modal_gif_speed_save").bind "click", =>
-      @gifSpeedVal = @$gifSpeed.val()
-      $("#modal_gif_speed").modal "hide"
-
-    # modal_effect
-    $("#modal_effect").on "hide.bs.modal", =>
-      @codeMirrorApi.setValue @effectScript
-
-    $("#modal_effect_save").bind "click", =>
-      @effectScript = @codeMirrorApi.getValue()
-      $("#modal_effect").modal "hide"
-
-    $(".modal-effect-preset").bind "click", self:@, (event) ->
-      event.data.self.codeMirrorApi.setValue preset[parseInt ($(@).attr "data-value"), 10]
-
-    # modal_crop
-    $("#modal_crop").on "shown.bs.modal", =>
-      canvas = $("<canvas>").get(0)
-      ctx = canvas.getContext("2d")
-      video = @$video.get(0)
-      canvas.width = video.videoWidth
-      canvas.height = video.videoHeight
-      ctx.drawImage video, 0, 0, video.videoWidth, video.videoHeight
-      $("#modal_crop_img").get(0).onload = =>
-        @initJcrop()
-      $("#modal_crop_img").attr "src", canvas.toDataURL()
-
-    $("#modal_crop").on "hidden.bs.modal", =>
-      $("#form_crop").prop "checked", @crop
-      @jcropApi.destroy()
-      $("#modal_crop_img").attr "src", ""
-
-    $("#modal_crop_save").bind "click", =>
-      @crop = $("#form_crop").prop "checked"
-      $("#modal_crop").modal "hide"
-
-    $("#form_crop").bind "change", =>
-      if $("#form_crop").prop "checked"
-        @jcropApi.enable()
-        @jcropApi.setSelect [0, 0, 50, 50]
-      else
-        @jcropApi.release()
-        @jcropApi.disable()
-
-    _ = @
-    $(".modal-crop-aspect").bind "click", ->
-      aspect = [0, 1, 4/3, 8/5, 3/4, 5/8]
-      _.jcropApi.setOptions
-        aspectRatio: aspect[parseInt ($(@).attr "data-value"), 10]
-
-  initJcrop: ->
-    @jcropApi = $.Jcrop "#modal_crop_img"
-    $("#modal_crop_img").Jcrop
-      onChange: (c) =>
-        @cropCoords = c
-      onSelect: (c) =>
-        @cropCoords = c
-    if @crop
-      @jcropApi.setSelect [@cropCoords.x, @cropCoords.y, @cropCoords.x2, @cropCoords.y2]
-    else
-      @jcropApi.release()
-      @jcropApi.disable()
-
-  initCodeMirror: ->
-    @codeMirrorApi = CodeMirror $("#form_effect_holder").get(0),
-      mode: "javascript"
-      indentUnit: 4
-      lineNumbers: true
-      styleActiveLine: true
-      matchBrackets: true
-      autoCloseBrackets: true
-
-  bind: (type, fn) ->
-    @event[type] = fn
-
-  getCaptureFrame: ->
-    @captureFrameVal
-
-  getGifSpeed: ->
-    @gifSpeedVal
-
-  getGifSize: (size) ->
-    if parseInt(@$gifSize.val(), 10) is -1 then size else @$gifSize.val()
-
-  getEffectScript: ->
-    @effectScript
-
-  isCrop: ->
-    @crop
-
-  getCropCoord: ->
-    @cropCoords
-
-  disable: (bool) ->
-    if bool then $("#config").addClass "disabled" else $("#config").removeClass "disabled"
-
-# js/giraf/app.coffee
-
+# ### Giraf.App
+# ```
+# model: Modelオブジェクト
+# view: Viewオブジェクト
+# settings: Settingsオブジェクト
+# ```
 class Giraf.App extends Giraf._base
 
   run: =>
@@ -214,282 +55,12 @@ class Giraf.App extends Giraf._base
       @view = new Giraf.View @
       @settings = new Giraf.Settings @
 
-  _run: ->
-    $video = $("#video")
-    $backVideo = $("<video>")
-    gifjsWorkerDist = "js/lib/gif.js/dist/gif.worker.js"
 
-    preset = ["""
-    var imageData = context.getImageData(0, 0, resultWidth, resultHeight);
-    var data = imageData.data;
-
-    for (i=0; i < data.length; i+=4) {
-        var black = 0.34*data[i] + 0.5*data[i+1] + 0.16*data[i+2];
-        data[i] = black;
-        data[i+1] = black;
-        data[i+2] = black;
-    }
-    context.putImageData(imageData, 0, 0);
-    ""","""
-    var imageData = context.getImageData(0, 0, resultWidth, resultHeight);
-    var data = imageData.data;
-    var gain = 5; //数字が大きくなるとコントラストが強くなる
-
-    for (i=0; i < data.length; i++) {
-        data[i] = 255 / (1 + Math.exp((128 - data[i]) / 128.0 * gain));
-    }
-    context.putImageData(imageData, 0, 0);
-    ""","""
-    var imageData = context.getImageData(0, 0, resultWidth, resultHeight);
-    var data = imageData.data;
-    var diff = 30; //数字が大きくなるとより明るくなる
-
-    for (i=0; i < data.length; i++) {
-        data[i] += diff;
-    }
-    context.putImageData(imageData, 0, 0);
-    ""","""
-    var imageData = context.getImageData(0, 0, resultWidth, resultHeight);
-    var data = imageData.data;
-    var temp = 1.3; //1より大きくなると赤っぽく、小さくなると青っぽくなる
-
-    for (i=0; i < data.length; i+=4) {
-        data[i] *= temp;    // red
-        data[i+2] /= temp;  // blue
-    }
-    context.putImageData(imageData, 0, 0);
-    ""","""
-    var text = "ちくわ大明神";
-    var x = 0;
-    var y = resultHeight / 2;
-
-    context.font = "bold 48px sans-serif";
-    context.fillStyle = "rgba(255, 131, 0, 0.7)";
-    context.fillText(text, x, y);
-    """]
-
-    $ ->
-      rendering = false
-      fileHandler = new Giraf.FileHandler
-        $container: $("#drop_here")
-        $file_input: $("#form_video")
-      settings = new Giraf.Settings $video
-
-      $(fileHandler)
-      .on 'enter', ->
-        $('#drop_here').addClass 'active'
-      .on 'leave', ->
-        $('#drop_here').removeClass 'active'
-      .on 'data_url_prepared', ->
-        $('#drop_here').removeClass 'active'
-        $('#drop_here').remove()
-
-      loadVideo = (url) ->
-        deferred = $.Deferred()
-        $video.attr "src", url
-        $backVideo.attr "src", url
-        $video.one 'canplay', ->
-          $video.removeClass "hidden"
-          deferred.resolve $video
-        $video.one 'error', (error) ->
-          deferred.fail error
-
-        deferred.promise()
-
-      timelines = new Giraf.Timelines $video
-
-      $("#timeline_holder").sortable
-        axis: "x"
-        update: ->
-          timelines.updateOrder()
-
-      $(fileHandler).bind "data_url_prepared", (event, urls) ->
-        (loadVideo urls[0]).done (image_url) ->
-          # --- video loaded ---
-          thumbnails = new Giraf.Thumbnails @, $video, $backVideo
-          settings.disable false
-          $("#capture").removeClass "disabled"
-
-          #$(".thumbnail").each ->
-            #c = $(this).get(0)
-            #c.width = video.videoWidth
-            #c.height = video.videoHeight
-
-          #thumbnails.push(new Thumbnail urls[0], i) for i in [1..5]
-
-          renderThumbnail = ->
-            if not rendering
-              thumbnails.update settings
-            #for i in [0...5]
-            #time = video.currentTime + (i - 2) * (1.0 / settings.getCaptureFrame())
-            #thumbnails[i].update(time)
-            #video.pause()
-
-          toggleVideoPlay = ->
-            video = $video.get(0)
-            if video.paused
-              video.play()
-            else
-              video.pause()
-          renderThumbnail()
-
-          $video.bind "pause", =>
-            renderThumbnail()
-
-          $video.bind "seeked", =>
-            renderThumbnail()
-
-          settings.bind "change", =>
-            renderThumbnail()
-
-          $video.bind "click", ->
-            #toggleVideoPlay()
-
-          $("#start").click ->
-            time = $video.get(0).currentTime
-            timelines.setStartTime time
-            timelines.updateMakeButton()
-
-          $("#stop").click ->
-            time = $video.get(0).currentTime
-            timelines.setStopTime time
-            timelines.updateMakeButton()
-
-          $("#refresh").click ->
-            renderThumbnail()
-
-          finalize = =>
-            $video.get(0).controls = true
-            rendering = false
-            settings.disable false
-            timelines.updateMakeButton()
-            $("#capture").removeClass "disabled"
-
-          $("#make").click ->
-            video = $video.get(0)
-            cropCoord = settings.getCropCoord()
-            sourceWidth = if settings.isCrop() then cropCoord.w else video.videoWidth
-            sourceHeight = if settings.isCrop() then cropCoord.h else video.videoHeight
-            ratio = (settings.getGifSize sourceWidth) / sourceWidth
-            resultWidth = settings.getGifSize sourceWidth
-            resultHeight = sourceHeight * ratio
-
-            gif = new GIF
-              workers: 4
-              workerScript: gifjsWorkerDist
-              quality: 10
-              width: resultWidth
-              height: resultHeight
-              dither: false
-              pattern: true
-              globalPalette: true
-
-            gif.on "progress", (p) ->
-              $("#progress_2").css "width", p*100 + "%"
-              $("#progress_1").css "width", (1-p)*100 + "%"
-
-            gif.on "finished", (blob) ->
-              img = $("#result_image").get(0)
-              img.src = URL.createObjectURL blob
-              $("#result_status").text "Rendering finished : Filesize " +
-              if (blob.size >= 1000000) then "#{ (blob.size / 1000000).toFixed 2 }MB"
-              else "#{ (blob.size / 1000).toFixed 2 }KB"
-              finalize()
-
-            video.controls = false
-            video.pause()
-            $("#make").addClass "disabled"
-            $("#capture").addClass "disabled"
-
-            canvas = $("<canvas>").get(0)
-            context = canvas.getContext("2d")
-
-            canvas.width = resultWidth
-            canvas.height = resultHeight
-
-            rendering = true
-            settings.disable true
-
-            arr = timelines.getFrameList settings
-            frameNumber = arr.length
-            firstTime = arr[0]
-            $("#progress_1").css "width", "0"
-            $("#progress_2").css "width", "0"
-
-            if frameNumber < 2
-              finalize()
-              return
-
-            deferred = $.Deferred()
-            deferred
-            .then ->
-              # timeupdate trigger
-              if video.currentTime is arr[0]
-                _deferred = $.Deferred()
-                $video.on "timeupdate", =>
-                  $video.off "timeupdate"
-                  _deferred.resolve()
-                video.currentTime = arr[1]
-                _deferred
-            .then ->
-              $video.on "timeupdate", =>
-                drawDeferred = $.Deferred()
-                if arr.length is 0
-                  $video.off "timeupdate"
-                  gif.render()
-                  return
-                $("#progress_1").css "width", (frameNumber - arr.length)/frameNumber*100 + "%"
-                if settings.isCrop() then context.drawImage video,
-                  cropCoord.x, cropCoord.y, cropCoord.w, cropCoord.h, # source
-                  0, 0, resultWidth, resultHeight                     # dest
-                else context.drawImage video,
-                  0, 0, resultWidth, resultHeight
-                if settings.getEffectScript() isnt ""
-                  eval settings.getEffectScript()
-                gif.addFrame canvas,
-                    copy: true
-                    delay: 1000.0 / settings.getCaptureFrame() / settings.getGifSpeed()
-                if arr.length is 1
-                  arr.shift()
-                  video.currentTime = firstTime
-                else
-                  arr.shift()
-                  video.currentTime = arr[0]
-              video.currentTime = arr[0]
-
-            deferred.resolve()
-
-          $("#capture").click ->
-            video = $video.get(0)
-            cropCoord = settings.getCropCoord()
-            sourceWidth = if settings.isCrop() then cropCoord.w else video.videoWidth
-            sourceHeight = if settings.isCrop() then cropCoord.h else video.videoHeight
-            ratio = (settings.getGifSize sourceWidth) / sourceWidth
-            resultWidth = settings.getGifSize sourceWidth
-            resultHeight = sourceHeight * ratio
-
-            canvas = $("<canvas>").get(0)
-            context = canvas.getContext("2d")
-            canvas.width = resultWidth
-            canvas.height = resultHeight
-
-            if settings.isCrop() then context.drawImage video,
-              cropCoord.x, cropCoord.y, cropCoord.w, cropCoord.h, # source
-              0, 0, resultWidth, resultHeight                     # dest
-            else context.drawImage video,
-              0, 0, resultWidth, resultHeight
-            if settings.getEffectScript() isnt ""
-              eval settings.getEffectScript()
-            $("#result_image").attr "src", canvas.toDataURL()
-
-
-# js/giraf/controller/_base.coffee
-
+# ### Giraf.Controller._base
 class Giraf.Controller._base extends Giraf._base
-  # Giraf.Controller._base 
 
-# js/giraf/controller/action.coffee
 
+# ### Giraf.Controller.Action
 class Giraf.Controller.Action extends Giraf.Controller._base
   constructor: (app, action, args) ->
     switch action
@@ -552,82 +123,11 @@ class Giraf.Controller.Action extends Giraf.Controller._base
       else
           console.log "Action '#{action}' is not defined."
 
-# js/giraf/fileHandler.coffee
-
-# hitode909/rokuga
-# https://github.com/hitode909/rokuga
-class Giraf.FileHandler
-  constructor: (args) ->
-    @$container = args.$container
-    throw "$container required" unless @$container
-    @$file_input = args.$file_input
-    @bindEvents()
-
-  bindEvents: ->
-    @$container
-    .on 'dragstart', =>
-        true
-    .on 'dragover', =>
-        false
-    .on 'dragenter', (event) =>
-        if @$container.is event.target
-          ($ this).trigger 'enter'
-        false
-    .on 'dragleave', (event) =>
-        if @$container.is event.target
-          ($ this).trigger 'leave'
-    .on 'drop', (jquery_event) =>
-        event = jquery_event.originalEvent
-        files = event.dataTransfer.files
-        if files.length > 0
-          ($ this).trigger 'drop', [files]
-
-          (@readFiles files).done (contents) =>
-            ($ this).trigger 'data_url_prepared', [contents]
-
-        false
-
-    @$file_input.on 'change', (jquery_event) =>
-      (@readFiles (@$file_input.get 0 ).files).done (contents) =>
-        ($ this).trigger 'data_url_prepared', [contents]
-
-  readFiles: (files) ->
-    read_all = do $.Deferred
-    contents = []
-    i = 0
-
-    role = =>
-      if files.length <= i
-        read_all.resolve contents
-      else
-        file = files[i++]
-        (@readFile file).done (content) ->
-          contents.push content
-        .always ->
-            do role
-
-    do role
-
-    do read_all.promise
-
-  readFile: (file) ->
-    read = do $.Deferred
-    reader = new FileReader
-    reader.onload = ->
-      read.resolve reader.result
-    reader.onerror = (error) ->
-      read.reject error
-    reader.readAsDataURL file
-
-    do read.promise
-
-# js/giraf/history.coffee
-
+# ### Giraf.History
 class Giraf.History extends Giraf._base
 
 
-# js/giraf/model.coffee
-
+# ### Giraf.Model
 class Giraf.Model extends Giraf._base
   constructor: ->
     @models = {}
@@ -638,8 +138,7 @@ class Giraf.Model extends Giraf._base
   get: (uuid) ->
     return @models[uuid]
 
-# js/giraf/model/_base.coffee
-
+# ### Giraf.Model._base
 class Giraf.Model._base extends Giraf._base
 
   @data = {}
@@ -656,8 +155,7 @@ class Giraf.Model._base extends Giraf._base
       else
         data[last_key] = value
 
-# js/giraf/model/composition.coffee
-
+# ### Giraf.Model.Compositions
 class Giraf.Model.Compositions extends Giraf.Model._base
 
   @append: (app, name) ->
@@ -668,6 +166,24 @@ class Giraf.Model.Compositions extends Giraf.Model._base
     d.resolve uuid
     do d.promise
 
+# ## Giraf.Model.Composition
+# ```
+# data:
+#   uuid: 一意のUUID
+#   name: コンポジション名
+#   tumnbnail: コンポジションサムネイルのblob
+#   effect:
+#     property:
+#       out_framerate: 出力するフレームレート
+#       out_speed: 出力するスピード
+#       out_size: 出力する大きさ
+#     script:
+#       script: 効果スクリプトの文字列
+#     crop:
+#     keying:
+#     color:
+#     text:
+# ```
 class Giraf.Model.Composition extends Giraf.Model._base
 
   constructor: (@app, @uuid, @name) ->
@@ -691,10 +207,9 @@ class Giraf.Model.Composition extends Giraf.Model._base
     @data.uuid = uuid
     @data.name = name
 
-# js/giraf/model/file.coffee
-
+# ### Giraf.Model.Files
 class Giraf.Model.Files extends Giraf.Model._base
-#
+
   @append: (app, file, content) ->
     d = new $.Deferred
     uuid = do Giraf.Tools.uuid
@@ -704,14 +219,29 @@ class Giraf.Model.Files extends Giraf.Model._base
     do d.promise
 
 
+# ## Giraf.Model.File
+# ```
+# data:
+#   uuid: 一意のUUID
+#   name: ファイル名
+#   size: ファイルサイズ
+#   type: ファイルのタイプ
+#   tumnbnail: ファイルサムネイルのblob
+#   effect:
+#     property:
+#       in_time: 切り取り開始地点の時間
+#       in_tumnbnail: 切り取り開始始点のサムネイルのblob
+#       out_time: 切り取り終了地点の時間
+#       out_thumbnail: 切り取り終了地点のサムネイルのblob
+#       select_framerate: 切り取り選択を行う時のフレームレート
+# ```
+#
+#  `status`が変更されるときに`statusChanged`が発火される
+#  - `null`
+#  - `loading`  ロード中（@contentがセットされていない）
+#  - `normal`   ロード完了・通常状態（@contentがセットされている）
+#  - `dying`    削除されるときに発火
 class Giraf.Model.File extends Giraf.Model._base
-  ###
-    statusが変更されるときにstatusChangedが発火される
-    null
-    loading   ロード中（@contentがセットされていない）
-    normal    ロード完了・通常状態（@contentがセットされている）
-    dying     削除されるときに発火
-  ###
 
   constructor: (@app, @uuid, @file, @content) ->
     @data =
@@ -744,20 +274,17 @@ class Giraf.Model.File extends Giraf.Model._base
   getContent: ->
     return @content
 
-# js/giraf/settings.coffee
-
+# ### Giraf.Settings
 class Giraf.Settings extends Giraf._base
 
   constructor: (@app) ->
-    cookieBinder = new Giraf.Settings.CookieBinder()
+    @cookieBinder = new Giraf.Settings.CookieBinder()
 
-# js/giraf/settings/_base.coffee
-
+# ### Giraf.Settings._base
 class Giraf.Settings._base extends Giraf._base
-  # Giraf.Settings._base
 
-# js/giraf/settings/cookieBinder.coffee
 
+# ### Giraf.Settings.CookieBinder
 class Giraf.Settings.CookieBinder extends Giraf.Settings._base
 
   constructor: (@app) ->
@@ -774,14 +301,14 @@ class Giraf.Settings.CookieBinder extends Giraf.Settings._base
   clear: ->
     $.removeCookie 'giraf'
 
-# js/giraf/task/_base.coffee
-
+# ### Giraf.Task._base
 class Giraf.Task._base extends Giraf._base
-  # Giraf.Task._base
 
-# js/giraf/task/changeSelected.coffee
 
+# ## Giraf.Task.ChangeSelected
 class Giraf.Task.ChangeSelected
+
+  # view上の項目を選択する
   run: (app, uuid) ->
     d = do $.Deferred
 
@@ -792,9 +319,10 @@ class Giraf.Task.ChangeSelected
 
     do d.promise
 
-# js/giraf/task/createNewComposition.coffee
-
+# ### Giraf.Task.CreateNewComposition
 class Giraf.Task.CreateNewComposition
+
+  # 新しいコンポジションを作成する
   run: (app) ->
     d = do $.Deferred
     uuid = null
@@ -808,9 +336,10 @@ class Giraf.Task.CreateNewComposition
 
     do d.promise
 
-# js/giraf/task/fileLoader.coffee
-
+# ### Giraf.Task.FileLoader
 class Giraf.Task.FileLoader extends Giraf.Task._base
+
+  # 新しいファイルを読み込む
   run: (app, files) ->
     d = do $.Deferred
     tasks = []
@@ -861,9 +390,10 @@ class Giraf.Task.FileLoader extends Giraf.Task._base
 
     do d.promise
 
-# js/giraf/task/refreshComposition.coffee
-
+# ### Giraf.Task.RefreshComposition
 class Giraf.Task.RefreshComposition
+
+  # 指定したファイルorコンポジションをView.Expert.Compositionに表示する
   run: (app, uuid) ->
     d = do $.Deferred
     model = app.model.get uuid
@@ -892,9 +422,10 @@ class Giraf.Task.RefreshComposition
 
     do d.promise
 
-# js/giraf/task/selectFile.coffee
-
+# ### Giraf.Task.SelectFile
 class Giraf.Task.SelectFile extends Giraf.Task._base
+
+  # ファイル選択ウィンドウを開く
   run: (app) ->
     d = new $.Deferred
     inputId = "SelectFile"
@@ -912,193 +443,21 @@ class Giraf.Task.SelectFile extends Giraf.Task._base
     $input.trigger "click"
     do d.promise
 
-# js/giraf/thumbnail.coffee
-
-class Giraf.Thumbnail
-  constructor: (@app, @id, @$canvas, @$video, @$backVideo) ->
-    # @$video = $backVideo #$("<video>")
-    @canvas = $canvas.get(0)
-    @context = @canvas.getContext("2d")
-
-    #@$video.attr "src", url
-    #@canvas.width = 100
-    #@canvas.height = 100
-
-    #$backVideo.bind "timeupdate", =>
-    #  $("#thumbnail_" + @id).removeClass "loading"
-    #  @context.drawImage $backVideo.get(0), 0, 0, 320, 160
-
-    @canvas.addEventListener "click", =>
-      #$video.get(0).pause()
-      @$video.get(0).currentTime = @time
-
-  update: (@time) ->
-    if time >= 0 or time <= @$video.duration
-      $("#thumbnail_" + @id).addClass "loading"
-      #$backVideo.get(0).currentTime = time
-
-  draw: ->
-    $("#thumbnail_" + @id).removeClass "loading"
-    @context.drawImage @$backVideo.get(0), 0, 0, 320, 160
-
-# js/giraf/thumbnails.coffee
-
-class Giraf.Thumbnails
-  constructor: (@app, @$video, @$backVideo) ->
-    @thumbs = []
-    @thumbs.push new Giraf.Thumbnail(@app, i, $("#thumbnail_#{i}"), @$video, @$backVideo) for i in [1..5]
-
-  update: (settings) ->
-    for i in [0...5]
-      time = @$video.get(0).currentTime + (i - 2) * (1.0 / settings.getCaptureFrame())
-      @thumbs[i].update(time)
-
-    i = 0
-    @$backVideo.on "timeupdate", =>
-      if i >= 5
-        @$backVideo.off "timeupdate"
-      else
-        @thumbs[i].draw()
-        i++
-        @$backVideo.get(0).currentTime = @$video.get(0).currentTime + (i - 2) * (1.0 / settings.getCaptureFrame())
-    @$backVideo.get(0).currentTime = @$video.get(0).currentTime - 2 * (1.0 / settings.getCaptureFrame())
-
-# js/giraf/timeline.coffee
-
-class Giraf.Timeline
-  constructor: (@timelines, @number, @$video) ->
-    @start = null
-    @stop = null
-    @selected = false
-
-    @$timeline = $("#timeline_skeleton").clone()
-    @$timeline.attr "id", number
-    @$timeline.appendTo $("#timeline_holder")
-
-    @startCanvas = @$timeline.find(".timeline-start").get(0)
-    @stopCanvas = @$timeline.find(".timeline-stop").get(0)
-
-    @$timeline.bind "click", =>
-      timelines.setSelected @
-
-    @$timeline.find(".close").bind "click", =>
-      @.remove()
-
-  setStartTime: (time) ->
-    @start = time
-    ctx = @startCanvas.getContext("2d")
-    ctx.drawImage @$video.get(0), 0, 0, 320, 160
-
-  setStopTime: (time) ->
-    @stop = time
-    ctx = @stopCanvas.getContext("2d")
-    ctx.drawImage @$video.get(0), 0, 0, 320, 160
-
-  isValidTime: ->
-    if @start? and @stop? then true else false
-
-  setSelected: (bool) ->
-    @selected = bool
-    if bool
-      @$timeline.css "border-color", "red"
-    else
-      @$timeline.css "border-color", ""
-
-  getNumber: ->
-    return @$timeline.attr "id"
-
-  getSelected: ->
-    return @selected
-
-  getFrameList: (settings) ->
-    if not @.isValidTime()
-      throw "start and stop time must fill"
-    arr = []
-    i = 0
-    time = @start
-
-    while (@start <= @stop and time <= @stop)or(@start > @stop and time >= @stop)
-      arr.push(time)
-      i++
-      diff = i / settings.getCaptureFrame()
-      if @start <= @stop then time = @start + diff
-      else time = @start - diff
-
-    return arr
-
-  remove: ->
-    @timelines.removeTimeline @
-    @$timeline.remove()
-
-# js/giraf/timelines.coffee
-
-class Giraf.Timelines
-  constructor: (@$video) ->
-    @tls = []
-    @number = 1
-
-    $("#add_timeline").bind "click", =>
-      @tls.push new Giraf.Timeline @, @number, @$video
-      @number++
-      @.updateMakeButton()
-    .trigger "click"
-    @tls[0].setSelected true
-
-  setStartTime: (time) ->
-    tl = @.getSelected()
-    if tl? then tl.setStartTime time
-
-  setStopTime: (time) ->
-    tl = @.getSelected()
-    if tl? then tl.setStopTime time
-
-  setSelected: (tl) ->
-    for i in @tls
-      i.setSelected false
-    tl.setSelected true
-
-  getSelected: ->
-    for i in @tls
-      if i.getSelected()
-        return i
-
-  getFrameList: (settings) ->
-    arr = []
-    for tl in @tls
-      arr.push(i) for i in tl.getFrameList settings
-    return arr
-
-  removeTimeline: (tl) ->
-    for k, v of @tls
-      if v is tl
-        @tls.splice(k, 1)
-    @updateMakeButton()
-
-  updateOrder: ->
-    arr = []
-    num = $("#timeline_holder").sortable("toArray")
-    for i in num
-      for tl in @tls
-        if tl.getNumber() is i then arr.push tl
-    @tls = arr
-
-  updateMakeButton: ->
-    a = true
-    for tl in @tls
-      a = a and tl.isValidTime()
-    if a and @tls.length > 0 then $("#make").removeClass "disabled" else $("#make").addClass "disabled"
-
-# js/giraf/tools.coffee
-
+# ### Giraf.Tools
 class Giraf.Tools extends Giraf._base
+
+  # UUIDを生成する(staticメソッド)
   @uuid: ->
     # http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
     s4 = ->
       return `(((1+Math.random())*0x10000)|0).toString(16).substring(1)`
     return `s4()+s4()+'-'+s4()+'-'+s4()+'-'+s4()+'-'+ s4()+s4()+s4()`
 
-# js/giraf/view.coffee
-
+# ### Giraf.View
+# ```
+# nav: View.Navオブジェクト
+# expert.View.Expertオブジェクト
+# ```
 class Giraf.View extends Giraf._base
   _selector_nav = "nav"
   _selector_quick = "#quick"
@@ -1108,6 +467,11 @@ class Giraf.View extends Giraf._base
     @nav = new Giraf.View.Nav app, $(_selector_nav)
     @expert = new Giraf.View.Expert app, $(_selector_expert)
 
+    # HTML属性に次の属性があった場合、イベントに応じてActionが実行される
+    # - `data-action`,`data-action-click`: クリックされた際に実行
+    # - `data-action-weak`, `data-action-click-weak`: クリックされた際に実行(子要素は対象外)
+    # - `data-action-dblclick`: ダブルクリックされた際に実行
+    # - `data-action-dblclick-weak`: ダブルクリックされた際に実行(子要素は対象外)
     $(document).on "click", (event) =>
       $t = $ event.target
       if $t.attr("data-action")?
@@ -1152,13 +516,15 @@ class Giraf.View extends Giraf._base
           Giraf.Controller.Action app, action,
             element: @
 
-# js/giraf/view/_base.coffee
-
+# ### Giraf.View._base
 class Giraf.View._base extends Giraf._base
-  # Giraf.View._base
 
-# js/giraf/view/expert.coffee
 
+# ### Giraf.View.Expert
+# ```
+# app: appオブジェクト
+# $expert: 自身の表示場所のjQueryオブジェクト
+# ```
 class Giraf.View.Expert extends Giraf.View._base
   _selector_container = "#expert_container"
   _selector_project = "#expert_project > .panel-container"
@@ -1175,14 +541,19 @@ class Giraf.View.Expert extends Giraf.View._base
 
 
 
-# js/giraf/view/expert/_base.coffee
-
+# ### Giraf.View.Expert._base
 class Giraf.View.Expert._base extends Giraf.View._base
-  # Giraf.View.Expert._base
 
-# js/giraf/view/expert/composition.coffee
+
+# ### Giraf.View.Expert.Composition
+# ```
+# app: appオブジェクト
+# $composition: 自身の表示場所のjQueryオブジェクト
+# controller: Controllerオブジェクト
+# ```
 
 class Giraf.View.Expert.Composition extends Giraf.View.Expert._base
+
   constructor: (@app, @$composition) ->
     template = _.template """
                           <div class="composition-window">
@@ -1235,8 +606,16 @@ class Giraf.View.Expert.Composition extends Giraf.View.Expert._base
 
     do d.promise
 
-# js/giraf/view/expert/composition.controller.coffee
-
+# ### Giraf.View.Expert.Composition.Controller
+# ```
+# app: appオブジェクト
+# $controller: 自身の表示場所のjQueryオブジェクト
+# $img: ?
+# $video: ?
+# type: 現在プレビュー中のタイプを表す
+#   [composition, video, image, none]
+# frame: ?
+# ```
 class Giraf.View.Expert.Composition.Controller extends Giraf.View._base
   constructor: (args) ->
     @app = args.app
@@ -1244,7 +623,7 @@ class Giraf.View.Expert.Composition.Controller extends Giraf.View._base
     @$img = args.$img
     @$video = args.$video
 
-    @mode = "none"
+    @type = "none"
     @frame = 1.0 / 12
 
     @$controller.append """
@@ -1268,13 +647,12 @@ class Giraf.View.Expert.Composition.Controller extends Giraf.View._base
     @$volumeSlider = @$controller.find ".composition-controller-volume-slider"
     @$volumeButton = @$controller.find ".composition-controller-volume-button"
 
-    console.log @$play.get(0)
     @$play.on "click", =>
       do @play
 
 
   play: (bool) ->
-    if @mode is "video"
+    if @type is "video"
       if @$video.get(0).paused or bool
         do @$video.get(0).play
         @$play.text "pause"
@@ -1292,14 +670,17 @@ class Giraf.View.Expert.Composition.Controller extends Giraf.View._base
 
   previousFrame: (@frame) ->
 
-  changeMode: (mode) ->
-    @mode = mode if mode is "composition" \
-                 or mode is "video" \
-                 or mode is "image" \
-                 or mode is "none"
+  changeType: (type) ->
+    @type = type if type is "composition" \
+                 or type is "video" \
+                 or type is "image" \
+                 or type is "none"
 
-# js/giraf/view/expert/droparea.coffee
-
+# ### Giraf.View.Expert.Droparea
+# ```
+# app: appオブジェクト
+# $droparea: 自身の表示場所のjQueryオブジェクト
+# ```
 class Giraf.View.Expert.Droparea extends Giraf.View.Expert._base
   isActive = false
   innerAcitve = 0
@@ -1356,8 +737,11 @@ class Giraf.View.Expert.Droparea extends Giraf.View.Expert._base
     isActive = false
     do $(".droparea").remove
 
-# js/giraf/view/expert/effect.coffee
-
+# ### Giraf.View.Expert.Effect
+# ```
+# app: appオブジェクト
+# $effect: 自身の表示場所のjQueryオブジェクト
+# ```
 class Giraf.View.Expert.Effect extends Giraf.View.Expert._base
   constructor: (@app, @$effect) ->
     template = _.template """
@@ -1578,12 +962,17 @@ class Giraf.View.Expert.Effect extends Giraf.View.Expert._base
             .addClass "hidden"
         $(@).off "change"
 
-# js/giraf/view/expert/node.coffee
-
+# ### Giraf.View.Expert.Node
+# ```
+# app: appオブジェクト
+# $node: 自身の表示場所のjQueryオブジェクト
+# corkboardWidth: SVG領域の幅
+# corkboardHeight: SVG領域の高さ
+# svg: Node.SVGオブジェクト
+# ```
 class Giraf.View.Expert.Node extends Giraf.View.Expert._base
 
   constructor: (@app, @$node) ->
-    @pieces = {}
     @corkboardWidth = 3000
     @corkboardHeight = 3000
 
@@ -1635,6 +1024,20 @@ class Giraf.View.Expert.Node extends Giraf.View.Expert._base
     do d.promise
 
 
+# ### Giraf.View.Expert.Node.SVG
+# ```
+# app: appオブジェクト
+# width: SVG領域の幅
+# height: SVG領域の高さ
+# D3:
+#   svg:
+#     defs: SVG定義部分のD3オブジェクト
+#     nodeLayer: SVGノード表示グループのD3オブジェクト
+#     contentLayer: SVGコンテント表示グループのD3オブジェクト
+#     overLayer: SVGオーバーレイ表示グループのD3オブジェクト
+# piece: Node.Pieceオブジェクトのハッシュ（キーはUUID）
+# hoveredContent: マウスの下にあるコンテントのUUID
+# ```
 class Giraf.View.Expert.Node.SVG extends Giraf.View.Expert._base
   @D3 = {}
   @pieces = {}
@@ -1722,11 +1125,13 @@ class Giraf.View.Expert.Node.SVG extends Giraf.View.Expert._base
     return cdn
 
 
+# ### Giraf.View.Expert.Node.Piece
 class Giraf.View.Expert.Node.Piece extends Giraf.View.Expert._base
   @x = 0
   @y = 0
 
 
+# ### Giraf.View.Expert.Node.Piece.Content
 class Giraf.View.Expert.Node.Piece.Content extends Giraf.View.Expert.Node.Piece
   constructor: (@svg) ->
     @controllable = true
@@ -1740,10 +1145,22 @@ class Giraf.View.Expert.Node.Piece.Content extends Giraf.View.Expert.Node.Piece
   target: (bool) ->
 
 
+# ### Giraf.View.Expert.Node.Piece.Over
 class Giraf.View.Expert.Node.Piece.Over extends Giraf.View.Expert.Node.Piece
   constructor: (@svg) ->
 
 
+# ### Giraf.View.Expert.Node.Piece.Composition
+# ```
+# x: x位置
+# y: y位置
+# destination: 映像出力先のPieceオブジェクトのUUID
+# svg: Node.SVGオブジェクト
+# uuid: 一意のUUID
+# app: appオブジェクト
+# referer_uuid: 参照しているModel.CompositionオブジェクトのUUID
+# d3svg: SVGのD3オブジェクト
+# ```
 class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Piece.Content
   @destination = null
 
@@ -1775,6 +1192,14 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
     @d3composition?.attr "transform", "translate(#{@x}, #{@y})"
     return @
 
+  # draw後は以下の要素が追加される
+  # ```
+  # d3composition: D3オブジェクト (contentLayer)
+  # d3rect: D3オブジェクト (d3composition)
+  # d3text: D3オブジェクト (d3composition)
+  # d3circleDot: D3オブジェクト (d3composition)
+  # d3circleHook: D3オブジェクト (d3composition)
+  # ```
   draw: ->
     $ =>
       d3compositionEventHandler =
@@ -1890,6 +1315,15 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
     return @
 
 
+# ### Giraf.View.Expert.Node.Piece.Point
+# ```
+# x: x位置
+# y: y位置
+# source: 映像入力元のPieceオブジェクトのUUID
+# svg: Node.SVGオブジェクト
+# uuid: 一意のUUID
+# d3svg: SVGのD3オブジェクト
+# ```
 class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Content
   @source = null
 
@@ -1913,6 +1347,13 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
     @d3point?.attr "transform", "translate(#{@x}, #{@y})"
     return @
 
+  # draw後は以下の要素が追加される
+  # ```
+  # d3point: D3オブジェクト (contentLayer)
+  # d3rect: D3オブジェクト (d3point)
+  # d3circleDot: D3オブジェクト (d3point)
+  # d3circleHook: D3オブジェクト (d3point)
+  # ```
   draw: ->
     $ =>
       d3pointEventHandler =
@@ -2016,6 +1457,16 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
     return @
 
 
+# ### Giraf.View.Expert.Node.Piece.Arrow
+# ```
+# x1: 始点のx位置
+# x2: 終点のx位置
+# y1: 始点のy位置
+# y2: 終点のy位置
+# svg: Node.SVGオブジェクト
+# uuid: 一意のUUID
+# d3svg: SVGのD3オブジェクト
+# ```
 class Giraf.View.Expert.Node.Piece.Arrow extends Giraf.View.Expert.Node.Piece.Over
   @x1 = 0
   @y1 = 0
@@ -2035,6 +1486,12 @@ class Giraf.View.Expert.Node.Piece.Arrow extends Giraf.View.Expert.Node.Piece.Ov
       y2: @y2
     return @
 
+  # draw後は以下の要素が追加される
+  # ```
+  # d3arrowTail: D3オブジェクト (defs)
+  # d3arrowHead: D3オブジェクト (defs)
+  # d3arrow: D3オブジェクト (overLayer)
+  # ```
   draw: ->
     $ =>
       @d3arrowTail = @d3svg.defs.append "marker"
@@ -2085,8 +1542,12 @@ class Giraf.View.Expert.Node.Piece.Arrow extends Giraf.View.Expert.Node.Piece.Ov
 
 
 
-# js/giraf/view/expert/project.coffee
-
+# ### Giraf.View.Expert.Project
+# ```
+# app: appオブジェクト
+# $project: 自身の表示場所のjQueryオブジェクト
+# pieces: Project.Pieceオブジェクトのハッシュ(キーはUUID)
+# ```
 class Giraf.View.Expert.Project extends Giraf.View.Expert._base
 
   constructor: (@app, @$project) ->
@@ -2114,13 +1575,14 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
     do d.promise
 
 
-###
-            File                  Composition
-  referer   Model.File            Model.Composition
-  type      "file"                "composition"
-  title     referer.file.name     referer.name
-###
-
+# ### Giraf.View.Expert.Project.Piece
+# ```
+# app: appオブジェクト
+# uuid: 一意のUUID
+# type: 参照しているオブジェクトのタイプ("file", "composition")
+# title: 参照しているオブジェクトの名前
+# referer_uuid: 参照しているオブジェクトのUUID
+# ```
 class Giraf.View.Expert.Project.Piece
   constructor: (@app, @uuid, referer, @type, @title) ->
     @referer_uuid = referer.uuid
@@ -2163,6 +1625,7 @@ class Giraf.View.Expert.Project.Piece
       $target.removeClass "selected"
 
 
+# ### Giraf.View.Expert.Project.Piece.File
 class Giraf.View.Expert.Project.Piece.File extends Giraf.View.Expert.Project.Piece
   constructor: (@app, @uuid, referer) ->
     super app, uuid, referer, "file", referer.file.name
@@ -2173,16 +1636,30 @@ class Giraf.View.Expert.Project.Piece.File extends Giraf.View.Expert.Project.Pie
       $rtn.addClass "loading"
     return $rtn.get(0)
 
+# ### Giraf.View.Expert.Project.Piece.Composition
 class Giraf.View.Expert.Project.Piece.Composition extends Giraf.View.Expert.Project.Piece
   constructor: (@app, @uuid, referer) ->
     super app, uuid, referer, "composition", referer.name
 
-# js/giraf/view/modal.coffee
-
+# ### Giraf.View.Modal
 class Giraf.View.Modal extends Giraf.View._base
 
   constructor: ->
 
+  #
+  # 引数`args`は以下の通りのハッシュにする
+  # ```
+  # args:
+  #   title: Modalのタイトル(文字列)
+  #   content: Modalの内容(HTML)
+  #   action:
+  #     (任意のキー名):
+  #       text: ボタンに表示する文字列
+  #       [primary: true] (プライマリ要素にするときに追加)
+  #     (任意のキー名):
+  #         :
+  #         :
+  # ```
   show: (args) ->
     template =  _.template """
                 <div class="modal">
@@ -2235,8 +1712,7 @@ class Giraf.View.Modal extends Giraf.View._base
     return arr.join ""
 
 
-# js/giraf/view/nav.coffee
-
+# ### Giraf.View.Nav
 class Giraf.View.Nav extends Giraf.View._base
   _selector_dropdown = "li.dropdown"
 
@@ -2286,8 +1762,7 @@ class Giraf.View.Nav extends Giraf.View._base
   isActive: ->
     return isActive
 
-# js/giraf/view/quick.coffee
-
+# ### Giraf.View.Quick
 class Giraf.View.Quick extends Giraf.View._base
   selector_preview = "#quick_preview"
   selector_thumbnail = "#quick_thumbnail"
@@ -2296,10 +1771,9 @@ class Giraf.View.Quick extends Giraf.View._base
 
   constructor: (@$quick) ->
 
-# js/giraf/view/quick/_base.coffee
-
+# ### Giraf.View.Quick._base
 class Giraf.View.Quick._base extends Giraf.View._base
-  # Giraf.View.Quick._base
+
 
 app = new Giraf.App
 app.run()

@@ -39,12 +39,18 @@ option "-m", "--map", "generate source map and save as .map files"
 #
 
 task 'build', 'compile source', (options) ->
-  build false, (-> log "Compile successful :-)", green), useMapping: useMapping = options.map
+  build false, (-> document -> log "Compile successful :-)", green), useMapping: useMapping = options.map
 
 task 'watch', 'compile and watch', (options) ->
   watchAndBuild (-> log ":-)", green), useMapping: useMapping = options.map
 
 task 'test', 'run tests', -> build -> test -> log "Compile and Test successful :)", green
+
+task 'document', 'make a document', ->
+  document -> log "Make a document successful :-)", green
+
+task 'doc', 'make a document', ->
+  document -> log "Make a document successful :-)", green
 
 #
 # Internal Functions
@@ -139,7 +145,7 @@ build = (watch, callback, {useMapping} = {}) ->
 
     for filename in enumerateFiles(coffees, jsDir)
       buf = fs.readFileSync filename
-      fs.appendFileSync "#{destFile}.coffee", "\n\n# #{filename}\n\n" + buf
+      fs.appendFileSync "#{destFile}.coffee", "\n\n" + buf
     fs.appendFileSync "#{destFile}.coffee", "\n\n" + tailScript
 
     useMapping ?= false
@@ -160,7 +166,7 @@ watchAndBuild = (callback, {useMapping} = {}) ->
           or path.join(jsDir, filename) is "#{destFile}.coffee"\
           or path.join(jsDir, filename) is "#{destFile}.js"
     log "File changed", bold, path.join(jsDir, filename)
-    build false, (-> log "Compile successful :-)", green), useMapping: useMapping
+    build false, (-> document -> log "Compile successful :-)", green), useMapping: useMapping
 
 test = (callback) ->
   options = []
@@ -168,3 +174,8 @@ test = (callback) ->
   options.push 'test.html'
 
   launch 'phantomjs', options, callback
+
+document = (callback) ->
+  options = []
+  options.push "#{destFile}.coffee"
+  launch 'docco', options, callback

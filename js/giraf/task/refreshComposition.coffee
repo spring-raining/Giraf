@@ -1,4 +1,7 @@
+# ### Giraf.Task.RefreshComposition
 class Giraf.Task.RefreshComposition
+
+  # 指定したファイルorコンポジションをView.Expert.Compositionに表示する
   run: (app, uuid) ->
     d = do $.Deferred
     model = app.model.get uuid

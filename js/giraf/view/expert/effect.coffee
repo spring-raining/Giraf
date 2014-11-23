@@ -1,3 +1,8 @@
+# ### Giraf.View.Expert.Effect
+# ```
+# app: appオブジェクト
+# $effect: 自身の表示場所のjQueryオブジェクト
+# ```
 class Giraf.View.Expert.Effect extends Giraf.View.Expert._base
   constructor: (@app, @$effect) ->
     template = _.template """

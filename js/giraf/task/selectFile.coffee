@@ -1,4 +1,7 @@
+# ### Giraf.Task.SelectFile
 class Giraf.Task.SelectFile extends Giraf.Task._base
+
+  # ファイル選択ウィンドウを開く
   run: (app) ->
     d = new $.Deferred
     inputId = "SelectFile"

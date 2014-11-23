@@ -1,3 +1,13 @@
+# ### Giraf.View.Expert.Composition.Controller
+# ```
+# app: appオブジェクト
+# $controller: 自身の表示場所のjQueryオブジェクト
+# $img: ?
+# $video: ?
+# type: 現在プレビュー中のタイプを表す
+#   [composition, video, image, none]
+# frame: ?
+# ```
 class Giraf.View.Expert.Composition.Controller extends Giraf.View._base
   constructor: (args) ->
     @app = args.app
@@ -5,7 +15,7 @@ class Giraf.View.Expert.Composition.Controller extends Giraf.View._base
     @$img = args.$img
     @$video = args.$video
 
-    @mode = "none"
+    @type = "none"
     @frame = 1.0 / 12
 
     @$controller.append """
@@ -29,13 +39,12 @@ class Giraf.View.Expert.Composition.Controller extends Giraf.View._base
     @$volumeSlider = @$controller.find ".composition-controller-volume-slider"
     @$volumeButton = @$controller.find ".composition-controller-volume-button"
 
-    console.log @$play.get(0)
     @$play.on "click", =>
       do @play
 
 
   play: (bool) ->
-    if @mode is "video"
+    if @type is "video"
       if @$video.get(0).paused or bool
         do @$video.get(0).play
         @$play.text "pause"
@@ -53,8 +62,8 @@ class Giraf.View.Expert.Composition.Controller extends Giraf.View._base
 
   previousFrame: (@frame) ->
 
-  changeMode: (mode) ->
-    @mode = mode if mode is "composition" \
-                 or mode is "video" \
-                 or mode is "image" \
-                 or mode is "none"
+  changeType: (type) ->
+    @type = type if type is "composition" \
+                 or type is "video" \
+                 or type is "image" \
+                 or type is "none"

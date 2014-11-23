@@ -1,3 +1,4 @@
+# ### Giraf.Model
 class Giraf.Model extends Giraf._base
   constructor: ->
     @models = {}

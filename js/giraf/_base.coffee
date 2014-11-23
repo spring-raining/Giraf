@@ -1,2 +1,2 @@
+# Giraf._base
 class Giraf._base
-  # Giraf._base

@@ -1,4 +1,12 @@
+# ### Giraf.View.Expert.Composition
+# ```
+# app: appオブジェクト
+# $composition: 自身の表示場所のjQueryオブジェクト
+# controller: Controllerオブジェクト
+# ```
+
 class Giraf.View.Expert.Composition extends Giraf.View.Expert._base
+
   constructor: (@app, @$composition) ->
     template = _.template """
                           <div class="composition-window">

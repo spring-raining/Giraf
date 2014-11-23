@@ -1,3 +1,4 @@
+# ### Giraf.View.Nav
 class Giraf.View.Nav extends Giraf.View._base
   _selector_dropdown = "li.dropdown"
 

@@ -1,3 +1,5 @@
+@import "../defs";
+
 nav {
     position: absolute;
     display: block;
@@ -54,7 +56,7 @@ nav > ul > li.open > a {
 nav > ul > li.brand {
     display: block;
     float: left;
-    background: url(../static/logo.png) no-repeat left center;
+    background: url(../../../static/logo.png) no-repeat left center;
     background-size: 32px;
     width: 32px;
     height: 32px;

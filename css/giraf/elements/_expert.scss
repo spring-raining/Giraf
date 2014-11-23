@@ -1,3 +1,5 @@
+@import "../defs";
+
 #expert {
     position: absolute;
     margin: 0;
@@ -230,10 +232,6 @@
 
 #expert_node .node-corkboard-container {
     scroll: auto;
-}
-
-#expert_node .node-corkboard {
-    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAHUlEQVQYV2NkYGDwAeItQIwXMBJSAJMfVUidcAQAnagBC/F0hK8AAAAASUVORK5CYII=) repeat;
 }
 
 #expert_node #node_corkboard_svg {

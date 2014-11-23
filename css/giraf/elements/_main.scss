@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 html, body {
     min-width: 900px;
     max-width: none !important;
@@ -195,12 +197,12 @@ span.glyphicon-cog {
  */
 @font-face {
     font-family: 'girafont';
-    src: url('../fonts/girafont.eot');
-    src: url('../fonts/girafont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/girafont.woff') format('woff'),
-         url('../fonts/girafont.ttf') format('truetype'),
-         url('../fonts/girafont.svg#girafont') format('svg');
-    src: url('../fonts/girafont.ttf') format('truetype');
+    src: url('../../../fonts/girafont.eot');
+    src: url('../../../fonts/girafont.eot?#iefix') format('embedded-opentype'),
+         url('../../../fonts/girafont.woff') format('woff'),
+         url('../../../fonts/girafont.ttf') format('truetype'),
+         url('../../../fonts/girafont.svg#girafont') format('svg');
+    src: url('../../../fonts/girafont.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }

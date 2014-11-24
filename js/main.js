@@ -1840,9 +1840,12 @@ Giraf.View.Expert.Project = (function(_super) {
   __extends(Project, _super);
 
   function Project(app, $project) {
+    var template;
     this.app = app;
     this.$project = $project;
     this.pieces = {};
+    template = _.template("<div class=\"project-header\">\n</div>");
+    $project.append(template());
   }
 
   Project.prototype.append = function(referer) {
@@ -1903,7 +1906,7 @@ Giraf.View.Expert.Project.Piece = (function() {
 
   Piece.prototype.html = function() {
     var $rtn, template, _ref, _ref1, _ref2;
-    template = _.template("<div class=\"project-piece\" draggable=\"true\" data-referer-type=\"<%- type %>\" data-uuid=\"<%- uuid %>\"\n data-action-click=\"expert__change_target\" data-action-dblclick=\"expert__project__refresh_composition\">\n  <div class=\"project-piece-tag\"></div>\n  <div class=\"project-piece-content\">\n    <img class=\"project-piece-thumbnail\"/>\n    <div class=\"project-piece-title\"><%- title %></div>\n  </div>\n</div>");
+    template = _.template("<div class=\"project-piece\" draggable=\"true\" data-referer-type=\"<%- type %>\" data-uuid=\"<%- uuid %>\"\n data-action-click=\"expert__change_target\" data-action-dblclick=\"expert__project__refresh_composition\">\n  <div class=\"project-piece-content\">\n    <div class=\"project-piece-title\"><%- title %></div>\n  </div>\n  <div class=\"project-piece-thumbnail-container\">\n    <img class=\"project-piece-thumbnail\"/>\n  </div>\n</div>");
     $rtn = $(template({
       type: (_ref = this.type) != null ? _ref : "",
       uuid: (_ref1 = this.uuid) != null ? _ref1 : "",

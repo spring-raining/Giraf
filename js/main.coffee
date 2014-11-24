@@ -1553,6 +1553,12 @@ class Giraf.View.Expert.Project extends Giraf.View.Expert._base
   constructor: (@app, @$project) ->
     @pieces = {}
 
+    template = _.template """
+                          <div class="project-header">
+                          </div>
+                          """
+    $project.append template()
+
   append: (referer) ->
     piece = null
     uuid = do Giraf.Tools.uuid
@@ -1601,10 +1607,11 @@ class Giraf.View.Expert.Project.Piece
     template = _.template """
                           <div class="project-piece" draggable="true" data-referer-type="<%- type %>" data-uuid="<%- uuid %>"
                            data-action-click="expert__change_target" data-action-dblclick="expert__project__refresh_composition">
-                            <div class="project-piece-tag"></div>
                             <div class="project-piece-content">
-                              <img class="project-piece-thumbnail"/>
                               <div class="project-piece-title"><%- title %></div>
+                            </div>
+                            <div class="project-piece-thumbnail-container">
+                              <img class="project-piece-thumbnail"/>
                             </div>
                           </div>
                           """

@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 @import "../defs";
 
 nav {
@@ -19,9 +21,6 @@ nav > .header {
 
 nav > ul {
   display: block;
-  -webkit-margin-before: 0;
-  -webkit-margin-after: 0;
-  -webkit-padding-start: 0;
   list-style: none;
   float: left;
 }

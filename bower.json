@@ -14,7 +14,9 @@
     "d3": "~3.4.13",
     "codemirror": "~4.7.0",
     "jcrop": "~0.9.12",
-    "jquery-cookie": "~1.4.1"
+    "jquery-cookie": "~1.4.1",
+    "bourbon": "~4.0.2",
+    "normalize.css": "~3.0.2"
   },
   "devDependencies": {
     "mocha": "~2.0.1",

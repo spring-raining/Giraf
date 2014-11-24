@@ -1,5 +1,28 @@
 @charset "UTF-8";
 
+@import "../defs";
+
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+  margin:0;
+  padding:0;
+  border:0;
+  outline:0;
+  font-size:100%;
+  vertical-align:baseline;
+  background:transparent;
+}
+
 html, body {
   min-width: 900px;
   max-width: none !important;
@@ -9,39 +32,33 @@ html, body {
   color: #333;
 }
 
-* {
-  box-sizing: border-box;
+article,aside,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section {
+  display:block;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content:'';
+  content:none;
 }
 
 a {
-  color: #428bca;
+  color: $color-a;
   text-decoration: none;
-}
 
-a:active, a:hover {
-  outline: 0;
-}
+  &:active, &:hover {
+    outline: 0;
+  }
 
-a:hover, a:focus {
-  color: #2a6496;
-  text-decoration: underline;
-}
-
-ol ul, ul ol, ul ul, ol ol {
-  -webkit-margin-before: 0px;
-  -webkit-margin-after: 0px;
+  &:hover, &:focus {
+    color: darken($color-a, 20%);
+    text-decoration: underline;
+  }
 }
 
 button {
-  color: #333;
-  background-color: #fff;
-  border: 0;
-  border-radius: 2px;
-  box-shadow: rgba(0, 0, 0, .3) 0 1px 2px 1px;
-  text-align: center;
-  font-size: 14px;
-  padding: 9px 18px;
-  vertical-align: middle;
+  @include giraf-button();
 }
 
 button.button-default {

@@ -14,3 +14,4 @@ Session.vim
 
 bower_components
 docs/
+.sass-cache/

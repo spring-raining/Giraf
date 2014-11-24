@@ -8,25 +8,22 @@
   padding: 32px 0 0;
   width: 100%;
   height: 100%;
-  background-color: #333;
 
   #expert_container {
     position: relative;
     width: 100%;
     height: 100%;
+    background-color: $color-effect-bg;
 
     & > * {
-      padding: 2px;
-      background-color: #333;
-      color: #bbb;
+      padding: 0;
+      color: $color-white;
       position: absolute;
     }
 
     .panel-container {
       width: 100%;
       height: 100%;
-      border: solid 1px #4d4d4d;
-      background-color: #404040;
       overflow: scroll;
     }
   }
@@ -36,27 +33,31 @@
     left: 0%;
     width: 20%;
     height: 100%;
+    background-color: $color-project-bg;
   }
 
   #expert_composition {
     top: 0%;
     left: 50%;
     width: 50%;
-    height: 55%;
+    height: 50%;
+    background-color: $color-composition-bg;
   }
 
   #expert_effect {
     top: 0%;
     left: 20%;
     width: 30%;
-    height: 55%;
+    height: 50%;
+    background-color: $color-effect-bg;
   }
 
   #expert_node {
-    top: 55%;
+    top: 50%;
     left: 20%;
     width: 80%;
-    height: 45%;
+    height: 50%;
+    background-color: $color-node-bg;
   }
 
   /*

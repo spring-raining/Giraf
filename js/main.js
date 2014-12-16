@@ -84,6 +84,10 @@ if (Giraf.Task.RefreshComposition == null) {
   Giraf.Task.RefreshComposition = {};
 }
 
+if (Giraf.Task.RenderComposition == null) {
+  Giraf.Task.RenderComposition = {};
+}
+
 if (Giraf.Task.SelectFile == null) {
   Giraf.Task.SelectFile = {};
 }
@@ -198,27 +202,27 @@ Giraf.Controller.Action = (function(_super) {
         fileList = args.fileList;
         task = new Giraf.Task.FileLoader;
         task.run(app, fileList).fail(function() {
-          return console.log("failed");
+          return console.log("failed : " + action);
         });
         break;
       case "expert__project__refresh_composition":
         piece = app.view.expert.project.pieces[$(args.element).attr("data-uuid")];
         task = new Giraf.Task.RefreshComposition;
         task.run(app, piece.referer_uuid).fail(function() {
-          return console.log("failed");
+          return console.log("failed : " + action);
         });
         break;
       case "nav__append_point":
         app.view.nav.inactive().then(function() {
           return app.view.expert.node.appendPoint();
         }).fail(function() {
-          return console.log("failed");
+          return console.log("failed : " + action);
         });
         break;
       case "expert__change_target":
         task = new Giraf.Task.ChangeSelected;
         task.run(app, $(args.element).attr("data-uuid")).fail(function() {
-          return console.log("failed");
+          return console.log("failed : " + action);
         });
         break;
       case "nav__import_file":
@@ -229,7 +233,7 @@ Giraf.Controller.Action = (function(_super) {
           task = new Giraf.Task.FileLoader;
           return task.run(app, fileList);
         }).fail(function() {
-          return console.log("failed");
+          return console.log("failed : " + action);
         });
         break;
       case "nav__new_composition":
@@ -237,7 +241,7 @@ Giraf.Controller.Action = (function(_super) {
           task = new Giraf.Task.CreateNewComposition;
           return task.run(app);
         }).fail(function() {
-          return console.log("failed");
+          return console.log("failed : " + action);
         });
         break;
       case "nav__hoge":
@@ -257,6 +261,16 @@ Giraf.Controller.Action = (function(_super) {
               }
             }
           });
+        });
+        break;
+      case "nav__render_composition":
+        app.view.nav.inactive().then(function() {
+          return app.view.expert.getSelected();
+        }).then(function(selected) {
+          task = new Giraf.Task.RenderComposition;
+          return task.run(selected.referer_uuid);
+        }).fail(function() {
+          return console.log("failed : " + action);
         });
         break;
       default:
@@ -520,7 +534,7 @@ Giraf.Task.ChangeSelected = (function() {
   ChangeSelected.prototype.run = function(app, uuid) {
     var d;
     d = $.Deferred();
-    $.when(app.view.expert.project.select(uuid), app.view.expert.node.select(uuid)).done((function(_this) {
+    app.view.expert.select(uuid).done((function(_this) {
       return function() {
         return d.resolve();
       };
@@ -661,6 +675,21 @@ Giraf.Task.RefreshComposition = (function() {
   return RefreshComposition;
 
 })();
+
+Giraf.Task.RenderComposition = (function(_super) {
+  __extends(RenderComposition, _super);
+
+  function RenderComposition() {
+    return RenderComposition.__super__.constructor.apply(this, arguments);
+  }
+
+  RenderComposition.prototype.run = function(uuid) {
+    return console.log(uuid);
+  };
+
+  return RenderComposition;
+
+})(Giraf.Task._base);
 
 Giraf.Task.SelectFile = (function(_super) {
   __extends(SelectFile, _super);
@@ -846,6 +875,35 @@ Giraf.View.Expert = (function(_super) {
     this.node = new Giraf.View.Expert.Node(app, $expert.find(_selector_node));
     this.droparea = new Giraf.View.Expert.Droparea(app, $expert);
   }
+
+  Expert.prototype.select = function(uuid) {
+    var d;
+    d = $.Deferred();
+    $.when(this.project.select(uuid), this.node.select(uuid)).done((function(_this) {
+      return function() {
+        _this.selectedUUID = uuid;
+        return d.resolve();
+      };
+    })(this));
+    return d.promise();
+  };
+
+  Expert.prototype.getSelected = function() {
+    var d, selected;
+    d = $.Deferred();
+    if (!this.selectedUUID) {
+      d.reject();
+    }
+    selected = null;
+    if (selected == null) {
+      selected = this.project.pieces[this.selectedUUID];
+    }
+    if (selected == null) {
+      selected = this.node.pieces[this.selectedUUID];
+    }
+    d.resolve(selected);
+    return d.promise();
+  };
 
   return Expert;
 
@@ -1162,6 +1220,7 @@ Giraf.View.Expert.Node = (function(_super) {
     this.corkboardWidth = 3000;
     this.corkboardHeight = 3000;
     this.svg = new Giraf.View.Expert.Node.SVG(app, this.corkboardWidth, this.corkboardHeight);
+    this.pieces = this.svg.pieces;
     template = _.template("<div class=\"node-corkboard-container\">\n  <div class=\"node-corkboard\">\n    <div id=\"node_corkboard_svg\"></div>\n  </div>\n</div>");
     $node.append(template());
     $node.find(".node-corkboard").css("width", "" + this.corkboardWidth + "px").css("height", "" + this.corkboardHeight + "px");

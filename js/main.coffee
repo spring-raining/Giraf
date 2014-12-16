@@ -18,6 +18,7 @@ Giraf.Task.ChangeSelected = {} unless Giraf.Task.ChangeSelected?
 Giraf.Task.CreateNewComposition = {} unless Giraf.Task.CreateNewComposition?
 Giraf.Task.FileLoader = {} unless Giraf.Task.FileLoader?
 Giraf.Task.RefreshComposition = {} unless Giraf.Task.RefreshComposition?
+Giraf.Task.RenderComposition = {} unless Giraf.Task.RenderComposition?
 Giraf.Task.SelectFile = {} unless Giraf.Task.SelectFile?
 Giraf.Tools = {} unless Giraf.Tools?
 Giraf.View = {} unless Giraf.View?
@@ -64,29 +65,33 @@ class Giraf.Controller._base extends Giraf._base
 class Giraf.Controller.Action extends Giraf.Controller._base
   constructor: (app, action, args) ->
     switch action
+      # #### 命名規則
+      # `[アクション実行が呼び出された場所]__[実行内容]`
+      # 例1：`nav__import_file`
+      # 例2：`expert__project__refresh_composition`
       when "drop__import_file"
           fileList = args.fileList
           task = new Giraf.Task.FileLoader
           task.run app, fileList
           .fail ->
-            console.log "failed"
+            console.log "failed : #{action}"
       when "expert__project__refresh_composition"
           piece = app.view.expert.project.pieces[$(args.element).attr "data-uuid"]
           task = new Giraf.Task.RefreshComposition
           task.run app, piece.referer_uuid
           .fail ->
-            console.log "failed"
+            console.log "failed : #{action}"
       when "nav__append_point"
           app.view.nav.inactive()
           .then ->
             app.view.expert.node.appendPoint()
           .fail ->
-            console.log "failed"
+            console.log "failed : #{action}"
       when "expert__change_target"
           task = new Giraf.Task.ChangeSelected
           task.run app, ($(args.element).attr "data-uuid")
           .fail ->
-            console.log "failed"
+            console.log "failed : #{action}"
       when "nav__import_file"
           app.view.nav.inactive()
           .then ->
@@ -96,14 +101,14 @@ class Giraf.Controller.Action extends Giraf.Controller._base
             task = new Giraf.Task.FileLoader
             task.run app, fileList
           .fail ->
-            console.log "failed"
+            console.log "failed : #{action}"
       when "nav__new_composition"
           app.view.nav.inactive()
           .then ->
             task = new Giraf.Task.CreateNewComposition
             task.run app
           .fail ->
-            console.log "failed"
+            console.log "failed : #{action}"
       when "nav__hoge"
           app.view.nav.inactive()
           .then ->
@@ -119,6 +124,15 @@ class Giraf.Controller.Action extends Giraf.Controller._base
                   primary: true
                 no:
                   text: "いいえ"
+      when "nav__render_composition"
+          app.view.nav.inactive()
+          .then ->
+            app.view.expert.getSelected()
+          .then (selected) ->
+            task = new Giraf.Task.RenderComposition
+            task.run selected.referer_uuid
+          .fail ->
+            console.log "failed : #{action}"
 
       else
           console.log "Action '#{action}' is not defined."
@@ -312,8 +326,7 @@ class Giraf.Task.ChangeSelected
   run: (app, uuid) ->
     d = do $.Deferred
 
-    $.when (app.view.expert.project.select uuid),
-           (app.view.expert.node.select uuid)
+    app.view.expert.select uuid
     .done =>
       do d.resolve
 
@@ -421,6 +434,13 @@ class Giraf.Task.RefreshComposition
         do d.reject
 
     do d.promise
+
+# ### Giraf.Task.RenderComposition
+class Giraf.Task.RenderComposition extends Giraf.Task._base
+
+  # コンポジションのレンダリング
+  run: (uuid) ->
+    console.log uuid
 
 # ### Giraf.Task.SelectFile
 class Giraf.Task.SelectFile extends Giraf.Task._base
@@ -539,7 +559,25 @@ class Giraf.View.Expert extends Giraf.View._base
     @node = new Giraf.View.Expert.Node app, $expert.find _selector_node
     @droparea = new Giraf.View.Expert.Droparea app, $expert
 
+  # 項目の選択を行う
+  select: (uuid) ->
+    d = $.Deferred()
+    $.when (@project.select uuid),
+      (@node.select uuid)
+    .done =>
+      @selectedUUID = uuid
+      d.resolve()
+    d.promise()
 
+  # 選択された項目を返す
+  getSelected: ->
+    d = $.Deferred()
+    d.reject() unless @selectedUUID
+    selected = null
+    selected ?= @project.pieces[@selectedUUID]
+    selected ?= @node.pieces[@selectedUUID]
+    d.resolve(selected)
+    d.promise()
 
 # ### Giraf.View.Expert._base
 class Giraf.View.Expert._base extends Giraf.View._base
@@ -969,6 +1007,7 @@ class Giraf.View.Expert.Effect extends Giraf.View.Expert._base
 # corkboardWidth: SVG領域の幅
 # corkboardHeight: SVG領域の高さ
 # svg: Node.SVGオブジェクト
+# pieces: Node.Pieceオブジェクトのハッシュ（キーはUUID）
 # ```
 class Giraf.View.Expert.Node extends Giraf.View.Expert._base
 
@@ -977,6 +1016,7 @@ class Giraf.View.Expert.Node extends Giraf.View.Expert._base
     @corkboardHeight = 3000
 
     @svg = new Giraf.View.Expert.Node.SVG app, @corkboardWidth, @corkboardHeight
+    @pieces = @svg.pieces
 
     template = _.template """
                           <div class="node-corkboard-container">

@@ -17,3 +17,22 @@ class Giraf.View.Expert extends Giraf.View._base
     @node = new Giraf.View.Expert.Node app, $expert.find _selector_node
     @droparea = new Giraf.View.Expert.Droparea app, $expert
 
+  # 項目の選択を行う
+  select: (uuid) ->
+    d = $.Deferred()
+    $.when (@project.select uuid),
+      (@node.select uuid)
+    .done =>
+      @selectedUUID = uuid
+      d.resolve()
+    d.promise()
+
+  # 選択された項目を返す
+  getSelected: ->
+    d = $.Deferred()
+    d.reject() unless @selectedUUID
+    selected = null
+    selected ?= @project.pieces[@selectedUUID]
+    selected ?= @node.pieces[@selectedUUID]
+    d.resolve(selected)
+    d.promise()

@@ -5,8 +5,7 @@ class Giraf.Task.ChangeSelected
   run: (app, uuid) ->
     d = do $.Deferred
 
-    $.when (app.view.expert.project.select uuid),
-           (app.view.expert.node.select uuid)
+    app.view.expert.select uuid
     .done =>
       do d.resolve
 

@@ -5,6 +5,7 @@
 # corkboardWidth: SVG領域の幅
 # corkboardHeight: SVG領域の高さ
 # svg: Node.SVGオブジェクト
+# pieces: Node.Pieceオブジェクトのハッシュ（キーはUUID）
 # ```
 class Giraf.View.Expert.Node extends Giraf.View.Expert._base
 
@@ -13,6 +14,7 @@ class Giraf.View.Expert.Node extends Giraf.View.Expert._base
     @corkboardHeight = 3000
 
     @svg = new Giraf.View.Expert.Node.SVG app, @corkboardWidth, @corkboardHeight
+    @pieces = @svg.pieces
 
     template = _.template """
                           <div class="node-corkboard-container">

@@ -1340,6 +1340,36 @@ Giraf.View.Expert.Node.SVG = (function(_super) {
     return cdn;
   };
 
+  SVG.prototype.getShadowFilterId = function() {
+    var idName;
+    idName = "shadow";
+    if (this.d3shadow != null) {
+      return idName;
+    }
+    this.d3shadow = this.D3.svg.defs.append("filter").attr({
+      id: idName,
+      width: "200%",
+      height: "200%"
+    });
+    this.d3shadow.append("feOffset").attr({
+      "in": "SourceAlpha",
+      dx: 0,
+      dy: 5,
+      result: "offset"
+    });
+    this.d3shadow.append("feGaussianBlur").attr({
+      "in": "offset",
+      result: "blur",
+      stdDeviation: 4
+    });
+    this.d3shadow.append("feBlend").attr({
+      "in": "SourceGraphic",
+      in2: "blur",
+      mode: "normal"
+    });
+    return idName;
+  };
+
   return SVG;
 
 })(Giraf.View.Expert._base);
@@ -1354,6 +1384,13 @@ Giraf.View.Expert.Node.Piece = (function(_super) {
   Piece.x = 0;
 
   Piece.y = 0;
+
+  Piece.color = {
+    body: "#ebebeb",
+    line: "#ebebeb",
+    composition_bg: "#577354",
+    point_bg: "#ab6e49"
+  };
 
   return Piece;
 
@@ -1392,29 +1429,41 @@ Giraf.View.Expert.Node.Piece.Over = (function(_super) {
 })(Giraf.View.Expert.Node.Piece);
 
 Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
-  var data;
+  var style;
 
   __extends(Composition, _super);
 
   Composition.destination = null;
 
-  data = {
+  style = {
     width: 120,
-    height: 80,
+    height: 25 + 70 + 4,
     rect: {
-      radius: 6,
-      color: "#3E90BA"
+      radius: 4,
+      color: Composition.color.composition_bg
     },
     text: {
-      x: 0,
-      y: -25,
+      x: 60,
+      y: 13,
       fontSize: 11,
       fontWeight: 20,
-      color: "white"
+      color: Composition.color.body
+    },
+    image: {
+      x: 0,
+      y: 25,
+      width: 120,
+      height: 70
     },
     hook: {
-      x: 45,
-      y: 0
+      x: 120,
+      y: 13,
+      r: 5,
+      color: Composition.color.line
+    },
+    target: {
+      width: 2,
+      color: Composition.color.line
     }
   };
 
@@ -1458,7 +1507,7 @@ Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
           });
           _this.d3svg.attr("cursor", "none");
           _this.arrow = new Giraf.View.Expert.Node.Piece.Arrow(_this.svg);
-          return _this.arrow.draw().move(_this.x + data.hook.x, _this.y + data.hook.y, _this.x + data.hook.x, _this.y + data.hook.y);
+          return _this.arrow.draw().move(_this.x + (-style.width / 2) + style.hook.x, _this.y + (-style.height / 2) + style.hook.y, _this.x + (-style.width / 2) + style.hook.x, _this.y + (-style.height / 2) + style.hook.y);
         }).on("drag", function() {
           _.each(_this.svg.pieces, function(v, k) {
             if (_this.svg.hoveredContent === k && k !== _this.uuid) {
@@ -1467,7 +1516,7 @@ Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
               return v.target(false);
             }
           });
-          return _this.arrow.move(_this.x + data.hook.x, _this.y + data.hook.y, _this.x + d3.event.x, _this.y + d3.event.y);
+          return _this.arrow.move(_this.x + (-style.width / 2) + style.hook.x, _this.y + (-style.height / 2) + style.hook.y, _this.x + d3.event.x, _this.y + d3.event.y);
         }).on("dragend", function() {
           _this.d3svg.attr("cursor", null);
           _.each(_this.svg.pieces, function(v) {
@@ -1479,44 +1528,36 @@ Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
         _this.d3composition = _this.d3svg.contentLayer.append("g").attr({
           "data-uuid": _this.uuid,
           "data-action-dblclick": "expert__change_target"
-        }).call(d3compositionEventHandler);
+        }).style("filter", "url(#" + (_this.svg.getShadowFilterId()) + ")").call(d3compositionEventHandler);
         _this.d3rect = _this.d3composition.append("rect").attr({
-          x: -data.width / 2,
-          y: -data.height / 2,
-          width: data.width,
-          height: data.height,
-          rx: data.rect.radius,
-          ry: data.rect.radius,
-          fill: data.rect.color
+          x: -style.width / 2,
+          y: -style.height / 2,
+          width: style.width,
+          height: style.height,
+          rx: style.rect.radius,
+          ry: style.rect.radius,
+          fill: style.rect.color
         });
         _this.d3text = _this.d3composition.append("text").text((_ref = _this.app.model.get(_this.referer_uuid)) != null ? _ref.name : void 0).attr({
-          x: data.text.x,
-          y: data.text.y,
-          "font-size": data.text.fontSize,
-          "font-weight": data.text.fontWeight,
+          x: (-style.width / 2) + style.text.x,
+          y: (-style.height / 2) + style.text.y,
+          "font-size": style.text.fontSize,
+          "font-weight": style.text.fontWeight,
           "text-anchor": "middle",
-          "fill": data.text.color
+          "dominant-baseline": "middle",
+          "fill": style.text.color
         });
-        _this.d3circleDot = _this.d3composition.append("circle").attr({
-          cx: data.hook.x,
-          cy: data.hook.y,
-          r: 3.5,
-          fill: "white",
-          opacity: 0
+        _this.d3image = _this.d3composition.append("image").attr({
+          x: (-style.width / 2) + style.image.x,
+          y: (-style.height / 2) + style.image.y,
+          width: style.image.width,
+          height: style.image.height
         });
         return _this.d3circleHook = _this.d3composition.append("circle").attr({
-          cx: data.hook.x,
-          cy: data.hook.y,
-          r: 6,
-          stroke: "white",
-          "stroke-width": 1.5,
-          fill: "transparent"
-        }).on("mouseover", function() {
-          if (_this.controllable) {
-            return _this.d3circleDot.attr("opacity", 1);
-          }
-        }).on("mouseout", function() {
-          return _this.d3circleDot.attr("opacity", 0);
+          cx: (-style.width / 2) + style.hook.x,
+          cy: (-style.height / 2) + style.hook.y,
+          r: style.hook.r,
+          fill: style.hook.color
         }).call(d3hookEventHandler);
       };
     })(this));
@@ -1529,15 +1570,15 @@ Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
     if (bool) {
       if (this.d3hover == null) {
         this.d3hover = this.d3composition.append("rect").attr({
-          x: -data.width / 2,
-          y: -data.height / 2,
-          width: data.width,
-          height: data.height,
-          rx: data.rect.radius,
-          ry: data.rect.radius,
+          x: -style.width / 2,
+          y: -style.height / 2,
+          width: style.width,
+          height: style.height,
+          rx: style.rect.radius,
+          ry: style.rect.radius,
           fill: "transparent",
-          stroke: "white",
-          "stroke-width": 2
+          stroke: style.target.color,
+          "stroke-width": style.target.width
         });
       }
     } else {
@@ -1575,22 +1616,28 @@ Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
 })(Giraf.View.Expert.Node.Piece.Content);
 
 Giraf.View.Expert.Node.Piece.Point = (function(_super) {
-  var data;
+  var style;
 
   __extends(Point, _super);
 
   Point.source = null;
 
-  data = {
-    width: 40,
-    height: 40,
+  style = {
+    width: 32,
+    height: 32,
     rect: {
-      radius: 6,
-      color: "#D59B0A"
+      radius: 4,
+      color: Point.color.point_bg
     },
     hook: {
-      x: 0,
-      y: 0
+      x: 32 / 2,
+      y: 32 / 2,
+      r: 5,
+      color: Point.color.line
+    },
+    target: {
+      width: 2,
+      color: Point.color.line
     }
   };
 
@@ -1632,7 +1679,7 @@ Giraf.View.Expert.Node.Piece.Point = (function(_super) {
           });
           _this.d3svg.attr("cursor", "none");
           _this.arrow = new Giraf.View.Expert.Node.Piece.Arrow(_this.svg);
-          return _this.arrow.draw().move(_this.x + data.hook.x, _this.y + data.hook.y, _this.x + data.hook.y, _this.y + data.hook.y);
+          return _this.arrow.draw().move(_this.x + (-style.width / 2) + style.hook.x, _this.y + (-style.height / 2) + style.hook.y, _this.x + (-style.width / 2) + style.hook.y, _this.y + (-style.height / 2) + style.hook.y);
         }).on("drag", function() {
           _.each(_this.svg.pieces, function(v, k) {
             if (_this.svg.hoveredContent === k && k !== _this.uuid) {
@@ -1641,7 +1688,7 @@ Giraf.View.Expert.Node.Piece.Point = (function(_super) {
               return v.target(false);
             }
           });
-          return _this.arrow.move(_this.x + data.hook.x, _this.y + data.hook.y, _this.x + d3.event.x, _this.y + d3.event.y);
+          return _this.arrow.move(_this.x + (-style.width / 2) + style.hook.x, _this.y + (-style.height / 2) + style.hook.y, _this.x + d3.event.x, _this.y + d3.event.y);
         }).on("dragend", function() {
           _this.d3svg.attr("cursor", null);
           _.each(_this.svg.pieces, function(v) {
@@ -1652,36 +1699,21 @@ Giraf.View.Expert.Node.Piece.Point = (function(_super) {
         });
         _this.d3point = _this.d3svg.contentLayer.append("g").attr({
           "data-uuid": _this.uuid
-        }).call(d3pointEventHandler);
+        }).style("filter", "url(#" + (_this.svg.getShadowFilterId()) + ")").call(d3pointEventHandler);
         _this.d3rect = _this.d3point.append("rect").attr({
-          x: -data.width / 2,
-          y: -data.height / 2,
-          width: data.width,
-          height: data.height,
-          rx: data.rect.radius,
-          ry: data.rect.radius,
-          fill: data.rect.color
-        });
-        _this.d3circleDot = _this.d3point.append("circle").attr({
-          cx: data.hook.x,
-          cy: data.hook.y,
-          r: 3.5,
-          fill: "white",
-          opacity: 0
+          x: -style.width / 2,
+          y: -style.height / 2,
+          width: style.width,
+          height: style.height,
+          rx: style.rect.radius,
+          ry: style.rect.radius,
+          fill: style.rect.color
         });
         return _this.d3circleHook = _this.d3point.append("circle").attr({
-          cx: data.hook.x,
-          cy: data.hook.y,
-          r: 6,
-          stroke: "white",
-          "stroke-width": 1.5,
-          fill: "transparent"
-        }).on("mouseover", function() {
-          if (_this.controllable) {
-            return _this.d3circleDot.attr("opacity", 1);
-          }
-        }).on("mouseout", function() {
-          return _this.d3circleDot.attr("opacity", 0);
+          cx: (-style.width / 2) + style.hook.x,
+          cy: (-style.height / 2) + style.hook.y,
+          r: style.hook.r,
+          fill: style.hook.color
         }).call(d3hookEventHandler);
       };
     })(this));
@@ -1694,15 +1726,15 @@ Giraf.View.Expert.Node.Piece.Point = (function(_super) {
     if (bool) {
       if (this.d3hover == null) {
         this.d3hover = (_ref = this.d3point) != null ? _ref.append("rect").attr({
-          x: -data.width / 2,
-          y: -data.height / 2,
-          width: data.width,
-          height: data.height,
-          rx: data.rect.radius,
-          ry: data.rect.radius,
+          x: -style.width / 2,
+          y: -style.height / 2,
+          width: style.width,
+          height: style.height,
+          rx: style.rect.radius,
+          ry: style.rect.radius,
           fill: "transparent",
-          stroke: "white",
-          "stroke-width": 2
+          stroke: style.target.color,
+          "stroke-width": style.target.width
         }) : void 0;
       }
     } else {
@@ -1739,6 +1771,8 @@ Giraf.View.Expert.Node.Piece.Point = (function(_super) {
 })(Giraf.View.Expert.Node.Piece.Content);
 
 Giraf.View.Expert.Node.Piece.Arrow = (function(_super) {
+  var style;
+
   __extends(Arrow, _super);
 
   Arrow.x1 = 0;
@@ -1748,6 +1782,26 @@ Giraf.View.Expert.Node.Piece.Arrow = (function(_super) {
   Arrow.x2 = 0;
 
   Arrow.y2 = 0;
+
+  style = {
+    tail: {
+      r: 5,
+      color: Arrow.color.line
+    },
+    head: {
+      refX: 0,
+      refY: 3,
+      markerWidth: 6,
+      markerHeight: 6,
+      d: "M0,0 V6 L6,3 Z",
+      color: Arrow.color.line
+    },
+    stroke: {
+      width: 2,
+      dasharray: "7, 5",
+      color: Arrow.color.line
+    }
+  };
 
   function Arrow(svg) {
     this.svg = svg;
@@ -1778,38 +1832,38 @@ Giraf.View.Expert.Node.Piece.Arrow = (function(_super) {
       return function() {
         _this.d3arrowTail = _this.d3svg.defs.append("marker").attr({
           id: "" + _this.uuid + "_arrow_tail",
-          refX: 2,
-          refY: 2,
-          markerWidth: 4,
-          markerHeight: 4,
+          refX: style.tail.r / 2,
+          refY: style.tail.r / 2,
+          markerWidth: style.tail.r,
+          markerHeight: style.tail.r,
           orient: "auto"
         });
         _this.d3arrowTail.append("circle").attr({
-          cx: 2,
-          cy: 2,
-          r: 1.75,
-          fill: "white"
+          cx: style.tail.r / 2,
+          cy: style.tail.r / 2,
+          r: style.tail.r / 2,
+          fill: style.tail.color
         });
         _this.d3arrowHead = _this.d3svg.defs.append("marker").attr({
           id: "" + _this.uuid + "_arrow_head",
-          refX: 0,
-          refY: 3,
-          markerWidth: 6,
-          markerHeight: 6,
+          refX: style.head.refX,
+          refY: style.head.refY,
+          markerWidth: style.head.markerWidth,
+          markerHeight: style.head.markerHeight,
           orient: "auto"
         });
         _this.d3arrowHead.append("path").attr({
-          d: "M0,0 V6 L6,3 Z",
-          fill: "white"
+          d: style.head.d,
+          fill: style.head.color
         });
         return _this.d3arrow = _this.d3svg.overLayer.append("line").attr({
           x1: _this.x1,
           y1: _this.y1,
           x2: _this.x2,
           y2: _this.y2,
-          stroke: "white",
-          "stroke-width": 2,
-          "stroke-dasharray": "7,5",
+          stroke: style.stroke.color,
+          "stroke-width": style.stroke.width,
+          "stroke-dasharray": style.stroke.dasharray,
           "marker-start": "url(#" + _this.uuid + "_arrow_tail)",
           "marker-end": "url(#" + _this.uuid + "_arrow_head)"
         });

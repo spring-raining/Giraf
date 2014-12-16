@@ -160,11 +160,44 @@ class Giraf.View.Expert.Node.SVG extends Giraf.View.Expert._base
       cdn.y2 = to.y
     return cdn
 
+  getShadowFilterId: ->
+    idName = "shadow"
+    return idName if @d3shadow?
+
+    @d3shadow = @D3.svg.defs.append "filter"
+    .attr
+      id: idName
+      width: "200%"
+      height: "200%"
+    @d3shadow.append "feOffset"
+    .attr
+      "in": "SourceAlpha"
+      dx: 0
+      dy: 5
+      result: "offset"
+    @d3shadow.append "feGaussianBlur"
+    .attr
+      "in": "offset"
+      result: "blur"
+      stdDeviation: 4
+    @d3shadow.append "feBlend"
+    .attr
+      "in": "SourceGraphic"
+      in2: "blur"
+      mode: "normal"
+    return idName
+
 
 # ### Giraf.View.Expert.Node.Piece
 class Giraf.View.Expert.Node.Piece extends Giraf.View.Expert._base
   @x = 0
   @y = 0
+
+  @color =
+    body: "#ebebeb"
+    line: "#ebebeb"
+    composition_bg: "#577354"
+    point_bg: "#ab6e49"
 
 
 # ### Giraf.View.Expert.Node.Piece.Content
@@ -200,21 +233,31 @@ class Giraf.View.Expert.Node.Piece.Over extends Giraf.View.Expert.Node.Piece
 class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Piece.Content
   @destination = null
 
-  data =
+  style =
     width: 120
-    height: 80
+    height: 25 + 70 + 4
     rect:
-      radius: 6
-      color: "#3E90BA"
+      radius: 4
+      color: @color.composition_bg
     text:
-      x: 0
-      y: -25
+      x: 60
+      y: 13
       fontSize: 11
       fontWeight: 20
-      color: "white"
+      color: @color.body
+    image:
+      x: 0
+      y: 25
+      width: 120
+      height: 70
     hook:
-      x: 45
-      y: 0
+      x: 120
+      y: 13
+      r: 5
+      color: @color.line
+    target:
+      width: 2
+      color: @color.line
 
   constructor: (@svg, @uuid, referer) ->
     super svg
@@ -230,10 +273,11 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
 
   # draw後は以下の要素が追加される
   # ```
+  # d3shadow: D3オブジェクト (nodeLayer)
   # d3composition: D3オブジェクト (contentLayer)
   # d3rect: D3オブジェクト (d3composition)
   # d3text: D3オブジェクト (d3composition)
-  # d3circleDot: D3オブジェクト (d3composition)
+  # deimage: D3オブジェクト (d3composition)
   # d3circleHook: D3オブジェクト (d3composition)
   # ```
   draw: ->
@@ -257,15 +301,15 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
             @d3svg.attr "cursor", "none"
             @arrow = new Giraf.View.Expert.Node.Piece.Arrow @svg
             @arrow.draw()
-              .move  @x + data.hook.x, @y + data.hook.y,
-                     @x + data.hook.x, @y + data.hook.y
+              .move  @x + (-style.width / 2) + style.hook.x, @y + (-style.height / 2) + style.hook.y,
+                     @x + (-style.width / 2) + style.hook.x, @y + (-style.height / 2) + style.hook.y
           .on "drag", =>
             _.each @svg.pieces, (v, k) =>
               if @svg.hoveredContent is k and k isnt @uuid
                 v.target true
               else
                 v.target false
-            @arrow.move @x + data.hook.x, @y + data.hook.y,
+            @arrow.move @x + (-style.width / 2) + style.hook.x, @y + (-style.height / 2) + style.hook.y,
                         @x + d3.event.x,  @y + d3.event.y
           .on "dragend", =>
             @d3svg.attr "cursor", null
@@ -279,42 +323,40 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
         .attr
           "data-uuid": @uuid
           "data-action-dblclick": "expert__change_target"
+        .style "filter", "url(##{@svg.getShadowFilterId()})"
         .call d3compositionEventHandler
       @d3rect = @d3composition.append "rect"
         .attr
-          x: (-data.width / 2)
-          y: (-data.height / 2)
-          width: data.width
-          height: data.height
-          rx: data.rect.radius
-          ry: data.rect.radius
-          fill: data.rect.color
+          x: (-style.width / 2)
+          y: (-style.height / 2)
+          width: style.width
+          height: style.height
+          rx: style.rect.radius
+          ry: style.rect.radius
+          fill: style.rect.color
       @d3text = @d3composition.append "text"
         .text (@app.model.get @referer_uuid)?.name
         .attr
-          x: data.text.x
-          y: data.text.y
-          "font-size": data.text.fontSize
-          "font-weight": data.text.fontWeight
+          x: (-style.width / 2)  + style.text.x
+          y: (-style.height / 2) + style.text.y
+          "font-size": style.text.fontSize
+          "font-weight": style.text.fontWeight
           "text-anchor": "middle"
-          "fill": data.text.color
-      @d3circleDot = @d3composition.append "circle"
+          "dominant-baseline": "middle"
+          "fill": style.text.color
+      @d3image = @d3composition.append "image"
         .attr
-          cx: data.hook.x
-          cy: data.hook.y
-          r: 3.5
-          fill: "white"
-          opacity: 0
+          x: (-style.width / 2)  + style.image.x
+          y: (-style.height / 2) + style.image.y
+          width: style.image.width
+          height: style.image.height
+          #"xlink:href": "url()"
       @d3circleHook = @d3composition.append "circle"
         .attr
-          cx: data.hook.x
-          cy: data.hook.y
-          r: 6
-          stroke: "white"
-          "stroke-width": 1.5
-          fill: "transparent"
-        .on "mouseover", => @d3circleDot.attr "opacity", 1 if @controllable
-        .on "mouseout", => @d3circleDot.attr "opacity", 0
+          cx: (-style.width / 2)  + style.hook.x
+          cy: (-style.height / 2) + style.hook.y
+          r: style.hook.r
+          fill: style.hook.color
         .call d3hookEventHandler
 
     return @
@@ -324,15 +366,15 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
     if bool
       @d3hover ?= @d3composition.append "rect"
         .attr
-          x: (-data.width / 2)
-          y: (-data.height / 2)
-          width: data.width
-          height: data.height
-          rx: data.rect.radius
-          ry: data.rect.radius
+          x: (-style.width / 2)
+          y: (-style.height / 2)
+          width: style.width
+          height: style.height
+          rx: style.rect.radius
+          ry: style.rect.radius
           fill: "transparent"
-          stroke: "white"
-          "stroke-width": 2
+          stroke: style.target.color
+          "stroke-width": style.target.width
     else
       do @d3hover?.remove
       @d3hover = null
@@ -363,15 +405,20 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
 class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Content
   @source = null
 
-  data =
-    width: 40
-    height: 40
+  style =
+    width: 32
+    height: 32
     rect:
-      radius: 6
-      color: "#D59B0A"
+      radius: 4
+      color: @color.point_bg
     hook:
-      x: 0
-      y: 0
+      x: 32 / 2
+      y: 32 / 2
+      r: 5
+      color: @color.line
+    target:
+      width: 2
+      color: @color.line
 
   constructor: (@svg, @uuid) ->
     super svg
@@ -411,15 +458,15 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
             @d3svg.attr "cursor", "none"
             @arrow = new Giraf.View.Expert.Node.Piece.Arrow @svg
             @arrow.draw()
-              .move  @x + data.hook.x, @y + data.hook.y,
-                     @x + data.hook.y, @y + data.hook.y
+              .move  @x + (-style.width / 2) + style.hook.x, @y + (-style.height / 2) + style.hook.y,
+                     @x + (-style.width / 2) + style.hook.y, @y + (-style.height / 2) + style.hook.y
           .on "drag", =>
             _.each @svg.pieces, (v, k) =>
               if @svg.hoveredContent is k and k isnt @uuid
                 v.target true
               else
                 v.target false
-            @arrow.move @x + data.hook.x, @y + data.hook.y,
+            @arrow.move @x + (-style.width / 2) + style.hook.x, @y + (-style.height / 2) + style.hook.y,
                         @x + d3.event.x,  @y + d3.event.y
           .on "dragend", =>
             @d3svg.attr "cursor", null
@@ -428,36 +475,27 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
                .controll true
             do @arrow.remove
             @arrow = null
+
       @d3point = @d3svg.contentLayer.append "g"
         .attr
           "data-uuid": @uuid
+        .style "filter", "url(##{@svg.getShadowFilterId()})"
         .call d3pointEventHandler
       @d3rect = @d3point.append "rect"
         .attr
-          x: (-data.width / 2)
-          y: (-data.height / 2)
-          width: data.width
-          height: data.height
-          rx: data.rect.radius
-          ry: data.rect.radius
-          fill: data.rect.color
-      @d3circleDot = @d3point.append "circle"
-        .attr
-          cx: data.hook.x
-          cy: data.hook.y
-          r: 3.5
-          fill: "white"
-          opacity: 0
+          x: (-style.width / 2)
+          y: (-style.height / 2)
+          width: style.width
+          height: style.height
+          rx: style.rect.radius
+          ry: style.rect.radius
+          fill: style.rect.color
       @d3circleHook = @d3point.append "circle"
         .attr
-          cx: data.hook.x
-          cy: data.hook.y
-          r: 6
-          stroke: "white"
-          "stroke-width": 1.5
-          fill: "transparent"
-        .on "mouseover", => @d3circleDot.attr "opacity", 1 if @controllable
-        .on "mouseout", => @d3circleDot.attr "opacity", 0
+          cx: (-style.width / 2) + style.hook.x
+          cy: (-style.height / 2) + style.hook.y
+          r: style.hook.r
+          fill: style.hook.color
         .call d3hookEventHandler
 
     return @
@@ -467,15 +505,15 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
     if bool
       @d3hover ?= @d3point?.append "rect"
         .attr
-          x: (-data.width / 2)
-          y: (-data.height / 2)
-          width: data.width
-          height: data.height
-          rx: data.rect.radius
-          ry: data.rect.radius
+          x: (-style.width / 2)
+          y: (-style.height / 2)
+          width: style.width
+          height: style.height
+          rx: style.rect.radius
+          ry: style.rect.radius
           fill: "transparent"
-          stroke: "white"
-          "stroke-width": 2
+          stroke: style.target.color
+          "stroke-width": style.target.width
     else
       do @d3hover?.remove
       @d3hover = null
@@ -509,6 +547,22 @@ class Giraf.View.Expert.Node.Piece.Arrow extends Giraf.View.Expert.Node.Piece.Ov
   @x2 = 0
   @y2 = 0
 
+  style =
+    tail:
+      r: 5
+      color: @color.line
+    head:
+      refX: 0
+      refY: 3
+      markerWidth: 6
+      markerHeight: 6
+      d: "M0,0 V6 L6,3 Z"
+      color: @color.line
+    stroke:
+      width: 2
+      dasharray: "7, 5"
+      color: @color.line
+
   constructor: (@svg) ->
     super svg
     @uuid = do Giraf.Tools.uuid
@@ -533,38 +587,38 @@ class Giraf.View.Expert.Node.Piece.Arrow extends Giraf.View.Expert.Node.Piece.Ov
       @d3arrowTail = @d3svg.defs.append "marker"
         .attr
           id: "#{@uuid}_arrow_tail"
-          refX: 2
-          refY: 2
-          markerWidth: 4
-          markerHeight: 4
+          refX: style.tail.r / 2
+          refY: style.tail.r / 2
+          markerWidth: style.tail.r
+          markerHeight: style.tail.r
           orient: "auto"
       @d3arrowTail.append "circle"
         .attr
-          cx: 2
-          cy: 2
-          r: 1.75
-          fill: "white"
+          cx: style.tail.r / 2
+          cy: style.tail.r / 2
+          r: style.tail.r / 2
+          fill: style.tail.color
       @d3arrowHead = @d3svg.defs.append "marker"
         .attr
           id: "#{@uuid}_arrow_head"
-          refX: 0
-          refY: 3
-          markerWidth: 6
-          markerHeight: 6
+          refX: style.head.refX
+          refY: style.head.refY
+          markerWidth: style.head.markerWidth
+          markerHeight: style.head.markerHeight
           orient: "auto"
       @d3arrowHead.append "path"
         .attr
-          d: "M0,0 V6 L6,3 Z"
-          fill: "white"
+          d: style.head.d
+          fill: style.head.color
       @d3arrow = @d3svg.overLayer.append "line"
         .attr
           x1: @x1
           y1: @y1
           x2: @x2
           y2: @y2
-          stroke: "white"
-          "stroke-width": 2
-          "stroke-dasharray": "7,5"
+          stroke: style.stroke.color
+          "stroke-width": style.stroke.width
+          "stroke-dasharray": style.stroke.dasharray
           "marker-start": "url(##{@uuid}_arrow_tail)"
           "marker-end": "url(##{@uuid}_arrow_head)"
 

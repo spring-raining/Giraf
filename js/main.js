@@ -1319,17 +1319,18 @@ Giraf.View.Expert.Node.SVG = (function(_super) {
   }
 
   SVG.prototype.addComposition = function(referer, x, y) {
-    var piece, uuid;
+    var composition, composition_uuid, timeline, timeline_uuid;
     x = Math.min(Math.max(x, 0), this.width);
     y = Math.min(Math.max(y, 0), this.height);
-    piece = null;
-    uuid = Giraf.Tools.uuid();
     if (referer instanceof Giraf.Model.Composition) {
-      piece = new Giraf.View.Expert.Node.Piece.Composition(this, uuid, referer);
-    }
-    if (piece != null) {
-      this.pieces[uuid] = piece;
-      return piece.draw().move(x, y);
+      timeline_uuid = Giraf.Tools.uuid();
+      composition_uuid = Giraf.Tools.uuid();
+      timeline = new Giraf.View.Expert.Node.Piece.Timeline(this, timeline_uuid);
+      composition = new Giraf.View.Expert.Node.Piece.Composition(this, composition_uuid, referer, timeline);
+      this.pieces[timeline_uuid] = timeline;
+      this.pieces[composition_uuid] = composition;
+      timeline.move(x, y);
+      return timeline.addComposition(composition);
     }
   };
 
@@ -1340,63 +1341,7 @@ Giraf.View.Expert.Node.SVG = (function(_super) {
     uuid = Giraf.Tools.uuid();
     piece = new Giraf.View.Expert.Node.Piece.Point(this, uuid);
     this.pieces[uuid] = piece;
-    return piece.draw().move(x, y);
-  };
-
-  SVG.prototype.addArrow = function(from, to) {
-    var arrow, cdn;
-    if ((from == null) && (to == null)) {
-      return;
-    }
-    arrow = {};
-    if (from != null) {
-      arrow.from = from;
-    }
-    if (to != null) {
-      arrow.to = to;
-    }
-    cdn = this.getLineCoordinate(from, to);
-    arrow.line = this.svg.line(cdn.x1, cdn.y1, cdn.x2, cdn.y2).stroke({
-      width: 2
-    });
-    return this.arrows.push(arrow);
-  };
-
-  SVG.prototype.updateArrow = function(moveObject) {
-    return this.arrows.forEach((function(_this) {
-      return function(arrow) {
-        var cdn, _ref, _ref1;
-        if ((moveObject == null) || (((_ref = arrow.from) != null ? _ref.uuid : void 0) === moveObject.uuid || ((_ref1 = arrow.to) != null ? _ref1.uuid : void 0) === moveObject.uuid)) {
-          cdn = _this.getLineCoordinate(arrow.from, arrow.to);
-          return arrow.line.plot(cdn.x1, cdn.y1, cdn.x2, cdn.y2);
-        }
-      };
-    })(this));
-  };
-
-  SVG.prototype.getLineCoordinate = function(from, to) {
-    var cdn;
-    if ((from == null) && (to == null)) {
-      return;
-    }
-    cdn = {};
-    if (from != null) {
-      cdn.x1 = from.x;
-      cdn.y1 = from.y;
-      if (to != null) {
-        cdn.x2 = to.x;
-        cdn.y2 = to.y;
-      } else {
-        cdn.x2 = from.x + 100;
-        cdn.y2 = from.y;
-      }
-    } else {
-      cdn.x1 = to.x - 100;
-      cdn.y1 = to.y;
-      cdn.x2 = to.x;
-      cdn.y2 = to.y;
-    }
-    return cdn;
+    return piece.move(x, y);
   };
 
   SVG.prototype.getShadowFilterId = function() {
@@ -1468,9 +1413,13 @@ Giraf.View.Expert.Node.Piece.Content = (function(_super) {
     return this;
   };
 
-  Content.prototype.select = function(bool) {};
+  Content.prototype.select = function(bool) {
+    return this;
+  };
 
-  Content.prototype.target = function(bool) {};
+  Content.prototype.target = function(bool) {
+    return this;
+  };
 
   return Content;
 
@@ -1514,25 +1463,21 @@ Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
       width: 120,
       height: 70
     },
-    hook: {
-      x: 120,
-      y: 13,
-      r: 5,
-      color: Composition.color.line
-    },
     target: {
       width: 2,
       color: Composition.color.line
     }
   };
 
-  function Composition(svg, uuid, referer) {
+  function Composition(svg, uuid, referer, timeline) {
     this.svg = svg;
     this.uuid = uuid;
+    this.timeline = timeline;
     Composition.__super__.constructor.call(this, svg);
     this.app = svg.app;
     this.referer_uuid = referer.uuid;
     this.d3svg = svg.D3.svg;
+    this.draw();
   }
 
   Composition.prototype.move = function(x, y) {
@@ -1548,46 +1493,11 @@ Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
   Composition.prototype.draw = function() {
     $((function(_this) {
       return function() {
-        var d3compositionEventHandler, d3hookEventHandler, _ref;
-        d3compositionEventHandler = d3.behavior.drag().on("dragstart", function() {
-          d3.event.sourceEvent.stopPropagation();
-          _this.controll(false);
-          return _this.d3svg.attr("cursor", "move");
-        }).on("drag", function() {
-          return _this.move(d3.event.x, d3.event.y);
-        }).on("dragend", function() {
-          _this.controll(true);
-          return _this.d3svg.attr("cursor", null);
-        });
-        d3hookEventHandler = d3.behavior.drag().on("dragstart", function() {
-          d3.event.sourceEvent.stopPropagation();
-          _.each(_this.svg.pieces, function(v) {
-            return v.controll(false);
-          });
-          _this.d3svg.attr("cursor", "none");
-          _this.arrow = new Giraf.View.Expert.Node.Piece.Arrow(_this.svg);
-          return _this.arrow.draw().move(_this.x + (-style.width / 2) + style.hook.x, _this.y + (-style.height / 2) + style.hook.y, _this.x + (-style.width / 2) + style.hook.x, _this.y + (-style.height / 2) + style.hook.y);
-        }).on("drag", function() {
-          _.each(_this.svg.pieces, function(v, k) {
-            if (_this.svg.hoveredContent === k && k !== _this.uuid) {
-              return v.target(true);
-            } else {
-              return v.target(false);
-            }
-          });
-          return _this.arrow.move(_this.x + (-style.width / 2) + style.hook.x, _this.y + (-style.height / 2) + style.hook.y, _this.x + d3.event.x, _this.y + d3.event.y);
-        }).on("dragend", function() {
-          _this.d3svg.attr("cursor", null);
-          _.each(_this.svg.pieces, function(v) {
-            return v.target(false).controll(true);
-          });
-          _this.arrow.remove();
-          return _this.arrow = null;
-        });
-        _this.d3composition = _this.d3svg.contentLayer.append("g").attr({
+        var _ref;
+        _this.d3composition = _this.timeline.d3timeline.insert("g", ":first-child").attr({
           "data-uuid": _this.uuid,
           "data-action-dblclick": "expert__change_target"
-        }).style("filter", "url(#" + (_this.svg.getShadowFilterId()) + ")").call(d3compositionEventHandler);
+        }).style("filter", "url(#" + (_this.svg.getShadowFilterId()) + ")");
         _this.d3rect = _this.d3composition.append("rect").attr({
           x: -style.width / 2,
           y: -style.height / 2,
@@ -1606,18 +1516,12 @@ Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
           "dominant-baseline": "middle",
           "fill": style.text.color
         });
-        _this.d3image = _this.d3composition.append("image").attr({
+        return _this.d3image = _this.d3composition.append("image").attr({
           x: (-style.width / 2) + style.image.x,
           y: (-style.height / 2) + style.image.y,
           width: style.image.width,
           height: style.image.height
         });
-        return _this.d3circleHook = _this.d3composition.append("circle").attr({
-          cx: (-style.width / 2) + style.hook.x,
-          cy: (-style.height / 2) + style.hook.y,
-          r: style.hook.r,
-          fill: style.hook.color
-        }).call(d3hookEventHandler);
       };
     })(this));
     return this;
@@ -1705,6 +1609,7 @@ Giraf.View.Expert.Node.Piece.Point = (function(_super) {
     this.uuid = uuid;
     Point.__super__.constructor.call(this, svg);
     this.d3svg = svg.D3.svg;
+    this.draw();
   }
 
   Point.prototype.move = function(x, y) {
@@ -1826,6 +1731,100 @@ Giraf.View.Expert.Node.Piece.Point = (function(_super) {
   };
 
   return Point;
+
+})(Giraf.View.Expert.Node.Piece.Content);
+
+Giraf.View.Expert.Node.Piece.Timeline = (function(_super) {
+  var style;
+
+  __extends(Timeline, _super);
+
+  Timeline.destination = null;
+
+  style = {
+    hook: {
+      x: 58,
+      y: -37,
+      r: 5,
+      color: Timeline.color.line
+    }
+  };
+
+  function Timeline(svg, uuid) {
+    this.svg = svg;
+    this.uuid = uuid;
+    Timeline.__super__.constructor.call(this, svg);
+    this.d3svg = svg.D3.svg;
+    this.compositions = [];
+    this.draw();
+  }
+
+  Timeline.prototype.draw = function() {
+    $((function(_this) {
+      return function() {
+        var d3hookEventHandler, d3timelineEventHandler;
+        d3timelineEventHandler = d3.behavior.drag().on("dragstart", function() {
+          d3.event.sourceEvent.stopPropagation();
+          return _this.d3svg.attr("cursor", "move");
+        }).on("drag", function() {
+          return _this.move(d3.event.x, d3.event.y);
+        }).on("dragend", function() {
+          return _this.d3svg.attr("cursor", null);
+        });
+        d3hookEventHandler = d3.behavior.drag().on("dragstart", function() {
+          d3.event.sourceEvent.stopPropagation();
+          _.each(_this.svg.pieces, function(v) {
+            return v.controll(false);
+          });
+          _this.d3svg.attr("cursor", "none");
+          _this.arrow = new Giraf.View.Expert.Node.Piece.Arrow(_this.svg);
+          return _this.arrow.draw().move(_this.x + style.hook.x, _this.y + style.hook.y, _this.x + style.hook.x, _this.y + style.hook.y);
+        }).on("drag", function() {
+          _.each(_this.svg.pieces, function(v, k) {
+            if (_this.svg.hoveredContent === k && !_.contains(_this.compositions, k)) {
+              return v.target(true);
+            } else {
+              return v.target(false);
+            }
+          });
+          return _this.arrow.move(_this.x + style.hook.x, _this.y + style.hook.y, _this.x + d3.event.x, _this.y + d3.event.y);
+        }).on("dragend", function() {
+          _this.d3svg.attr("cursor", null);
+          _.each(_this.svg.pieces, function(v) {
+            return v.target(false).controll(true);
+          });
+          _this.arrow.remove();
+          return _this.arrow = null;
+        });
+        _this.d3timeline = _this.d3svg.contentLayer.append("g").attr({
+          "data-uuid": _this.uuid
+        }).call(d3timelineEventHandler);
+        return _this.d3circleHook = _this.d3timeline.append("circle").attr({
+          cx: style.hook.x,
+          cy: style.hook.y,
+          r: style.hook.r,
+          fill: style.hook.color
+        }).call(d3hookEventHandler);
+      };
+    })(this));
+    return this;
+  };
+
+  Timeline.prototype.move = function(x, y) {
+    var _ref;
+    this.x = Math.min(Math.max(x, 0), this.svg.width);
+    this.y = Math.min(Math.max(y, 0), this.svg.height);
+    if ((_ref = this.d3timeline) != null) {
+      _ref.attr("transform", "translate(" + this.x + ", " + this.y + ")");
+    }
+    return this;
+  };
+
+  Timeline.prototype.addComposition = function(composition) {
+    return this.compositions.push(composition.uuid);
+  };
+
+  return Timeline;
 
 })(Giraf.View.Expert.Node.Piece.Content);
 

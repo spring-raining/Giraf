@@ -1110,14 +1110,15 @@ class Giraf.View.Expert.Node.SVG extends Giraf.View.Expert._base
   addComposition: (referer, x, y) ->
     x = Math.min (Math.max x, 0), @width
     y = Math.min (Math.max y, 0), @height
-    piece = null
-    uuid = do Giraf.Tools.uuid
     if referer instanceof Giraf.Model.Composition
-      piece = new Giraf.View.Expert.Node.Piece.Composition @, uuid, referer
-    if piece?
-      @pieces[uuid] = piece
-      piece.draw()
-        .move x, y
+      timeline_uuid = Giraf.Tools.uuid()
+      composition_uuid = Giraf.Tools.uuid()
+      timeline = new Giraf.View.Expert.Node.Piece.Timeline @, timeline_uuid
+      composition = new Giraf.View.Expert.Node.Piece.Composition @, composition_uuid, referer, timeline
+      @pieces[timeline_uuid] = timeline
+      @pieces[composition_uuid] = composition
+      timeline.move x, y
+      timeline.addComposition composition
 
   addPoint: (x, y) ->
     x = Math.min (Math.max x, 0), @width
@@ -1125,44 +1126,7 @@ class Giraf.View.Expert.Node.SVG extends Giraf.View.Expert._base
     uuid = do Giraf.Tools.uuid
     piece = new Giraf.View.Expert.Node.Piece.Point @, uuid
     @pieces[uuid] = piece
-    piece.draw().move x, y
-
-  addArrow: (from, to) ->
-    return if (not from?) and (not to?)
-    arrow = {}
-    arrow.from = from if from?
-    arrow.to = to if to?
-    cdn = @getLineCoordinate from, to
-    arrow.line = @svg.line cdn.x1, cdn.y1, cdn.x2, cdn.y2
-      .stroke
-        width: 2
-    @arrows.push arrow
-
-  updateArrow: (moveObject) ->
-    @arrows.forEach (arrow) =>
-      if not moveObject? \
-      or (arrow.from?.uuid is moveObject.uuid or arrow.to?.uuid is moveObject.uuid)
-        cdn = @getLineCoordinate arrow.from, arrow.to
-        arrow.line.plot cdn.x1, cdn.y1, cdn.x2, cdn.y2
-
-  getLineCoordinate: (from, to) ->
-    return if (not from?) and (not to?)
-    cdn = {}
-    if from?
-      cdn.x1 = from.x
-      cdn.y1 = from.y
-      if to?
-        cdn.x2 = to.x
-        cdn.y2 = to.y
-      else
-        cdn.x2 = from.x + 100
-        cdn.y2 = from.y
-    else
-      cdn.x1 = to.x - 100
-      cdn.y1 = to.y
-      cdn.x2 = to.x
-      cdn.y2 = to.y
-    return cdn
+    piece.move x, y
 
   getShadowFilterId: ->
     idName = "shadow"
@@ -1214,8 +1178,10 @@ class Giraf.View.Expert.Node.Piece.Content extends Giraf.View.Expert.Node.Piece
     return @
 
   select: (bool) ->
+    return @
 
   target: (bool) ->
+    return @
 
 
 # ### Giraf.View.Expert.Node.Piece.Over
@@ -1227,12 +1193,17 @@ class Giraf.View.Expert.Node.Piece.Over extends Giraf.View.Expert.Node.Piece
 # ```
 # x: x位置
 # y: y位置
-# destination: 映像出力先のPieceオブジェクトのUUID
 # svg: Node.SVGオブジェクト
 # uuid: 一意のUUID
 # app: appオブジェクト
 # referer_uuid: 参照しているModel.CompositionオブジェクトのUUID
 # d3svg: SVGのD3オブジェクト
+# d3shadow: D3オブジェクト (nodeLayer)
+# d3composition: D3オブジェクト (contentLayer)
+# d3rect: D3オブジェクト (d3composition)
+# d3text: D3オブジェクト (d3composition)
+# deimage: D3オブジェクト (d3composition)
+# d3circleHook: D3オブジェクト (d3composition)
 # ```
 class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Piece.Content
   @destination = null
@@ -1254,20 +1225,16 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
       y: 25
       width: 120
       height: 70
-    hook:
-      x: 120
-      y: 13
-      r: 5
-      color: @color.line
     target:
       width: 2
       color: @color.line
 
-  constructor: (@svg, @uuid, referer) ->
+  constructor: (@svg, @uuid, referer, @timeline) ->
     super svg
     @app = svg.app
     @referer_uuid = referer.uuid
     @d3svg = svg.D3.svg
+    @draw()
 
   move: (x, y) ->
     @x = Math.min (Math.max x, 0), @svg.width
@@ -1275,60 +1242,13 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
     @d3composition?.attr "transform", "translate(#{@x}, #{@y})"
     return @
 
-  # draw後は以下の要素が追加される
-  # ```
-  # d3shadow: D3オブジェクト (nodeLayer)
-  # d3composition: D3オブジェクト (contentLayer)
-  # d3rect: D3オブジェクト (d3composition)
-  # d3text: D3オブジェクト (d3composition)
-  # deimage: D3オブジェクト (d3composition)
-  # d3circleHook: D3オブジェクト (d3composition)
-  # ```
   draw: ->
     $ =>
-      d3compositionEventHandler =
-        d3.behavior.drag()
-          .on "dragstart", =>
-            d3.event.sourceEvent.stopPropagation()
-            @controll false
-            @d3svg.attr "cursor", "move"
-          .on "drag", =>
-            @move d3.event.x, d3.event.y
-          .on "dragend", =>
-            @controll true
-            @d3svg.attr "cursor", null
-      d3hookEventHandler =
-        d3.behavior.drag()
-          .on "dragstart", =>
-            d3.event.sourceEvent.stopPropagation()
-            _.each @svg.pieces, (v) => v.controll false
-            @d3svg.attr "cursor", "none"
-            @arrow = new Giraf.View.Expert.Node.Piece.Arrow @svg
-            @arrow.draw()
-              .move  @x + (-style.width / 2) + style.hook.x, @y + (-style.height / 2) + style.hook.y,
-                     @x + (-style.width / 2) + style.hook.x, @y + (-style.height / 2) + style.hook.y
-          .on "drag", =>
-            _.each @svg.pieces, (v, k) =>
-              if @svg.hoveredContent is k and k isnt @uuid
-                v.target true
-              else
-                v.target false
-            @arrow.move @x + (-style.width / 2) + style.hook.x, @y + (-style.height / 2) + style.hook.y,
-                        @x + d3.event.x,  @y + d3.event.y
-          .on "dragend", =>
-            @d3svg.attr "cursor", null
-            _.each @svg.pieces, (v) =>
-              v.target false
-               .controll true
-            do @arrow.remove
-            @arrow = null
-
-      @d3composition = @d3svg.contentLayer.append "g"
+      @d3composition = @timeline.d3timeline.insert "g", ":first-child"
         .attr
           "data-uuid": @uuid
           "data-action-dblclick": "expert__change_target"
         .style "filter", "url(##{@svg.getShadowFilterId()})"
-        .call d3compositionEventHandler
       @d3rect = @d3composition.append "rect"
         .attr
           x: (-style.width / 2)
@@ -1355,14 +1275,6 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
           width: style.image.width
           height: style.image.height
           #"xlink:href": "url()"
-      @d3circleHook = @d3composition.append "circle"
-        .attr
-          cx: (-style.width / 2)  + style.hook.x
-          cy: (-style.height / 2) + style.hook.y
-          r: style.hook.r
-          fill: style.hook.color
-        .call d3hookEventHandler
-
     return @
 
   target: (bool) ->
@@ -1405,6 +1317,10 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
 # svg: Node.SVGオブジェクト
 # uuid: 一意のUUID
 # d3svg: SVGのD3オブジェクト
+# d3point: D3オブジェクト (contentLayer)
+# d3rect: D3オブジェクト (d3point)
+# d3circleDot: D3オブジェクト (d3point)
+# d3circleHook: D3オブジェクト (d3point)
 # ```
 class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Content
   @source = null
@@ -1427,6 +1343,7 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
   constructor: (@svg, @uuid) ->
     super svg
     @d3svg = svg.D3.svg
+    @draw()
 
   move: (x, y) ->
     @x = Math.min (Math.max x, 0), @svg.width
@@ -1434,13 +1351,6 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
     @d3point?.attr "transform", "translate(#{@x}, #{@y})"
     return @
 
-  # draw後は以下の要素が追加される
-  # ```
-  # d3point: D3オブジェクト (contentLayer)
-  # d3rect: D3オブジェクト (d3point)
-  # d3circleDot: D3オブジェクト (d3point)
-  # d3circleHook: D3オブジェクト (d3point)
-  # ```
   draw: ->
     $ =>
       d3pointEventHandler =
@@ -1535,6 +1445,95 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
     return @
 
 
+# ### Giraf.View.Expert.Node.Piece.Timeline
+# ```
+# x: x位置
+# y: y位置
+# svg: Node.SVGオブジェクト
+# uuid: 一意のUUID
+# compositions: Node.Piece.Composition.uuidの配列
+# destination: 映像出力先のPieceオブジェクトのUUID
+# d3svg: SVGのD3オブジェクト
+# ```
+class Giraf.View.Expert.Node.Piece.Timeline extends Giraf.View.Expert.Node.Piece.Content
+  @destination = null
+
+  style =
+    hook:
+      x: 58
+      y: -37
+      r: 5
+      color: @color.line
+
+  constructor: (@svg, @uuid) ->
+    super svg
+    @d3svg = svg.D3.svg
+    @compositions = []
+    @draw()
+
+  draw: ->
+    $ =>
+      d3timelineEventHandler =
+        d3.behavior.drag()
+        .on "dragstart", =>
+          d3.event.sourceEvent.stopPropagation()
+          @d3svg.attr "cursor", "move"
+        .on "drag", =>
+          @move d3.event.x, d3.event.y
+        .on "dragend", =>
+          @d3svg.attr "cursor", null
+
+      d3hookEventHandler =
+        d3.behavior.drag()
+        .on "dragstart", =>
+          d3.event.sourceEvent.stopPropagation()
+          _.each @svg.pieces, (v) => v.controll false
+          @d3svg.attr "cursor", "none"
+          @arrow = new Giraf.View.Expert.Node.Piece.Arrow @svg
+          @arrow.draw()
+          .move @x + style.hook.x, @y + style.hook.y,
+            @x + style.hook.x, @y + style.hook.y
+        .on "drag", =>
+          _.each @svg.pieces, (v, k) =>
+            if @svg.hoveredContent is k and not _.contains(@compositions, k)
+              v.target true
+            else
+              v.target false
+          @arrow.move @x + style.hook.x, @y + style.hook.y,
+            @x + d3.event.x,  @y + d3.event.y
+        .on "dragend", =>
+          @d3svg.attr "cursor", null
+          _.each @svg.pieces, (v) =>
+            v.target false
+              .controll true
+          do @arrow.remove
+          @arrow = null
+
+      @d3timeline = @d3svg.contentLayer.append "g"
+        .attr
+          "data-uuid": @uuid
+        .call d3timelineEventHandler
+      @d3circleHook = @d3timeline.append "circle"
+        .attr
+          cx: style.hook.x
+          cy: style.hook.y
+          r: style.hook.r
+          fill: style.hook.color
+        .call d3hookEventHandler
+
+    return @
+
+  move: (x, y) ->
+    @x = Math.min (Math.max x, 0), @svg.width
+    @y = Math.min (Math.max y, 0), @svg.height
+    @d3timeline?.attr "transform", "translate(#{@x}, #{@y})"
+    return @
+
+  addComposition: (composition) ->
+    #@d3timeline.append composition.d3composition
+    @compositions.push composition.uuid
+
+
 # ### Giraf.View.Expert.Node.Piece.Arrow
 # ```
 # x1: 始点のx位置
@@ -1544,6 +1543,9 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
 # svg: Node.SVGオブジェクト
 # uuid: 一意のUUID
 # d3svg: SVGのD3オブジェクト
+# d3arrowTail: D3オブジェクト (defs)
+# d3arrowHead: D3オブジェクト (defs)
+# d3arrow: D3オブジェクト (overLayer)
 # ```
 class Giraf.View.Expert.Node.Piece.Arrow extends Giraf.View.Expert.Node.Piece.Over
   @x1 = 0
@@ -1580,12 +1582,6 @@ class Giraf.View.Expert.Node.Piece.Arrow extends Giraf.View.Expert.Node.Piece.Ov
       y2: @y2
     return @
 
-  # draw後は以下の要素が追加される
-  # ```
-  # d3arrowTail: D3オブジェクト (defs)
-  # d3arrowHead: D3オブジェクト (defs)
-  # d3arrow: D3オブジェクト (overLayer)
-  # ```
   draw: ->
     $ =>
       @d3arrowTail = @d3svg.defs.append "marker"

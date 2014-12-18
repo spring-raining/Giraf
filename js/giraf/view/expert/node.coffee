@@ -74,12 +74,12 @@ class Giraf.View.Expert.Node extends Giraf.View.Expert._base
 #     contentLayer: SVGコンテント表示グループのD3オブジェクト
 #     overLayer: SVGオーバーレイ表示グループのD3オブジェクト
 # piece: Node.Pieceオブジェクトのハッシュ（キーはUUID）
-# hoveredContent: マウスの下にあるコンテントのUUID
+# hoveredContents: マウスの下にあるコンテントのUUID配列
 # ```
 class Giraf.View.Expert.Node.SVG extends Giraf.View.Expert._base
   @D3 = {}
   @pieces = {}
-  @hoveredContent = null
+  @hoveredContents = []
 
   constructor: (@app, @width, @height) ->
     @D3 = {}
@@ -94,10 +94,14 @@ class Giraf.View.Expert.Node.SVG extends Giraf.View.Expert._base
       @D3.svg.contentLayer = @D3.svg.append "g"
         .on "mousemove", =>
           $node = $ d3.event.target
-          uuid = $node.parents("[data-uuid]")?.attr("data-uuid")
-          @hoveredContent = uuid ? null
+          @hoveredContents = []
+          @hoveredContents = $node.parents("[data-uuid]")
+            .map -> $(@).attr("data-uuid")
+          if $node.attr("data-uuid")?
+            @hoveredContents.push $node.attr("data-uuid")
       @D3.svg.contentLayer.append "rect"
         .attr
+          id: @getContentLayerBgId()
           x: 0
           y: 0
           width: width
@@ -127,7 +131,7 @@ class Giraf.View.Expert.Node.SVG extends Giraf.View.Expert._base
     piece.move x, y
 
   getShadowFilterId: ->
-    idName = "shadow"
+    idName = "defs_shadow"
     return idName if @d3shadow?
 
     @d3shadow = @D3.svg.defs.append "filter"
@@ -153,6 +157,8 @@ class Giraf.View.Expert.Node.SVG extends Giraf.View.Expert._base
       mode: "normal"
     return idName
 
+  getContentLayerBgId: -> "contentLayer_bg"
+
 
 # ### Giraf.View.Expert.Node.Piece
 class Giraf.View.Expert.Node.Piece extends Giraf.View.Expert._base
@@ -164,6 +170,7 @@ class Giraf.View.Expert.Node.Piece extends Giraf.View.Expert._base
     line: "#ebebeb"
     composition_bg: "#577354"
     point_bg: "#ab6e49"
+    giraf_color: "#e2c742"
 
 
 # ### Giraf.View.Expert.Node.Piece.Content
@@ -178,7 +185,7 @@ class Giraf.View.Expert.Node.Piece.Content extends Giraf.View.Expert.Node.Piece
   select: (bool) ->
     return @
 
-  target: (bool) ->
+  target: (bool, mode) ->
     return @
 
 
@@ -200,8 +207,7 @@ class Giraf.View.Expert.Node.Piece.Over extends Giraf.View.Expert.Node.Piece
 # d3composition: D3オブジェクト (contentLayer)
 # d3rect: D3オブジェクト (d3composition)
 # d3text: D3オブジェクト (d3composition)
-# deimage: D3オブジェクト (d3composition)
-# d3circleHook: D3オブジェクト (d3composition)
+# d3image: D3オブジェクト (d3composition)
 # ```
 class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Piece.Content
   @destination = null
@@ -225,7 +231,7 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
       height: 70
     target:
       width: 2
-      color: @color.line
+      color: @color.giraf_color
 
   constructor: (@svg, @uuid, referer, @timeline) ->
     super svg
@@ -273,25 +279,76 @@ class Giraf.View.Expert.Node.Piece.Composition extends Giraf.View.Expert.Node.Pi
           width: style.image.width
           height: style.image.height
           #"xlink:href": "url()"
-    return @
-
-  target: (bool) ->
-    super bool
-    if bool
-      @d3hover ?= @d3composition.append "rect"
+      @d3joinBeforeHoverArea = @d3composition.append "rect"
         .attr
+          "data-uuid": Giraf.Tools.uuid()
           x: (-style.width / 2)
           y: (-style.height / 2)
-          width: style.width
+          width: style.width / 2
           height: style.height
-          rx: style.rect.radius
-          ry: style.rect.radius
           fill: "transparent"
-          stroke: style.target.color
-          "stroke-width": style.target.width
-    else
-      do @d3hover?.remove
-      @d3hover = null
+      @d3joinAfterHoverArea = @d3composition.append "rect"
+        .attr
+          "data-uuid": Giraf.Tools.uuid()
+          x: 0
+          y: (-style.height / 2)
+          width: style.width / 2
+          height: style.height
+          fill: "transparent"
+    return @
+
+# ターゲットを選択すると以下の項目が追加される
+# ```
+# d3connectHover: D3オブジェクト (d3composition)
+# d3joinBeforeHover: D3オブジェクト (d3composition)
+# d3joinAfterHover: D3オブジェクト (d3composition)
+# ```
+  target: (bool, mode="connect") ->
+    super bool, mode
+    if mode is "connect"
+      if bool
+        @d3connectHover ?= @d3composition.append "rect"
+          .attr
+            x: -style.width / 2
+            y: -style.height / 2
+            width: style.width
+            height: style.height
+            rx: style.rect.radius
+            ry: style.rect.radius
+            fill: "transparent"
+            stroke: style.target.color
+            "stroke-width": style.target.width
+      else
+        do @d3connectHover?.remove
+        @d3connectHover = null
+    else if mode is "join"
+      if bool and _.contains @svg.hoveredContents, @d3joinBeforeHoverArea.attr("data-uuid")
+        @d3joinAfterHover?.remove()
+        @d3joinAfterHover = null
+        @d3joinBeforeHover ?= @d3composition.append "line"
+          .attr
+            x1: -style.width / 2
+            y1: -style.height / 2
+            x2: -style.width / 2
+            y2: style.height / 2
+            stroke: style.target.color
+            "stroke-width": style.target.width * 2
+      else if bool and  _.contains @svg.hoveredContents, @d3joinAfterHoverArea.attr("data-uuid")
+        @d3joinBeforeHover?.remove()
+        @d3joinBeforeHover = null
+        @d3joinAfterHover ?= @d3composition.append "line"
+          .attr
+            x1: style.width / 2
+            y1: -style.height / 2
+            x2: style.width / 2
+            y2: style.height / 2
+            stroke: style.target.color
+            "stroke-width": style.target.width * 2
+      else
+        @d3joinBeforeHover?.remove()
+        @d3joinAfterHover?.remove()
+        @d3joinBeforeHover = null
+        @d3joinAfterHover = null
     return @
 
   select: (bool) ->
@@ -336,7 +393,7 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
       color: @color.line
     target:
       width: 2
-      color: @color.line
+      color: @color.giraf_color
 
   constructor: (@svg, @uuid) ->
     super svg
@@ -374,7 +431,7 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
                      @x + (-style.width / 2) + style.hook.y, @y + (-style.height / 2) + style.hook.y
           .on "drag", =>
             _.each @svg.pieces, (v, k) =>
-              if @svg.hoveredContent is k and k isnt @uuid
+              if _.contains(@svg.hoveredContents, k) and k isnt @uuid
                 v.target true
               else
                 v.target false
@@ -412,23 +469,28 @@ class Giraf.View.Expert.Node.Piece.Point extends Giraf.View.Expert.Node.Piece.Co
 
     return @
 
-  target: (bool) ->
-    super bool
-    if bool
-      @d3hover ?= @d3point?.append "rect"
-        .attr
-          x: (-style.width / 2)
-          y: (-style.height / 2)
-          width: style.width
-          height: style.height
-          rx: style.rect.radius
-          ry: style.rect.radius
-          fill: "transparent"
-          stroke: style.target.color
-          "stroke-width": style.target.width
-    else
-      do @d3hover?.remove
-      @d3hover = null
+# ターゲットを選択すると以下の項目が追加される
+# ```
+# d3connectHover: D3オブジェクト (d3composition)
+# ```
+  target: (bool, mode="connect") ->
+    super bool, mode
+    if mode is "connect"
+      if bool
+        @d3connectHover ?= @d3point?.append "rect"
+          .attr
+            x: (-style.width / 2)
+            y: (-style.height / 2)
+            width: style.width
+            height: style.height
+            rx: style.rect.radius
+            ry: style.rect.radius
+            fill: "transparent"
+            stroke: style.target.color
+            "stroke-width": style.target.width
+      else
+        do @d3connectHover?.remove
+        @d3connectHover = null
     return @
 
   select: (bool) ->
@@ -476,9 +538,26 @@ class Giraf.View.Expert.Node.Piece.Timeline extends Giraf.View.Expert.Node.Piece
         .on "dragstart", =>
           d3.event.sourceEvent.stopPropagation()
           @d3svg.attr "cursor", "move"
+          $("[data-uuid=#{@uuid}]").insertAfter "##{@svg.getContentLayerBgId()}"
         .on "drag", =>
+          _.each @svg.pieces, (v, k) =>
+            if _.contains(@svg.hoveredContents, k) and not _.contains(@compositions, k)
+              v.target true, "join"
+            else
+              v.target false, "join"
           @move d3.event.x, d3.event.y
         .on "dragend", =>
+          before = _.find @svg.pieces, (v) => v.d3joinBeforeHover?
+          after  = _.find @svg.pieces, (v) => v.d3joinAfterHover?
+          parentTimeline = (uuid) =>
+            _.find @svg.pieces, (v) =>
+              v.compositions? and  _.contains(v.compositions, uuid)
+          if before?
+            console.log parentTimeline before.uuid
+          else if after?
+            console.log parentTimeline after.uuid
+          _.each @svg.pieces, (v) =>
+            v.target false, "join"
           @d3svg.attr "cursor", null
 
       d3hookEventHandler =
@@ -493,7 +572,7 @@ class Giraf.View.Expert.Node.Piece.Timeline extends Giraf.View.Expert.Node.Piece
             @x + style.hook.x, @y + style.hook.y
         .on "drag", =>
           _.each @svg.pieces, (v, k) =>
-            if @svg.hoveredContent is k and not _.contains(@compositions, k)
+            if _.contains(@svg.hoveredContents, k) and not _.contains(@compositions, k)
               v.target true
             else
               v.target false
@@ -519,6 +598,14 @@ class Giraf.View.Expert.Node.Piece.Timeline extends Giraf.View.Expert.Node.Piece
           fill: style.hook.color
         .call d3hookEventHandler
 
+    return @
+
+  target: (bool, mode="connect") ->
+    super bool, mode
+    return @
+
+  select: (bool) ->
+    super bool
     return @
 
   move: (x, y) ->

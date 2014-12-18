@@ -1287,7 +1287,7 @@ Giraf.View.Expert.Node.SVG = (function(_super) {
 
   SVG.pieces = {};
 
-  SVG.hoveredContent = null;
+  SVG.hoveredContents = [];
 
   function SVG(app, width, height) {
     this.app = app;
@@ -1301,12 +1301,18 @@ Giraf.View.Expert.Node.SVG = (function(_super) {
         _this.D3.svg.defs = _this.D3.svg.append("defs");
         _this.D3.svg.nodeLayer = _this.D3.svg.append("g");
         _this.D3.svg.contentLayer = _this.D3.svg.append("g").on("mousemove", function() {
-          var $node, uuid, _ref;
+          var $node;
           $node = $(d3.event.target);
-          uuid = (_ref = $node.parents("[data-uuid]")) != null ? _ref.attr("data-uuid") : void 0;
-          return _this.hoveredContent = uuid != null ? uuid : null;
+          _this.hoveredContents = [];
+          _this.hoveredContents = $node.parents("[data-uuid]").map(function() {
+            return $(this).attr("data-uuid");
+          });
+          if ($node.attr("data-uuid") != null) {
+            return _this.hoveredContents.push($node.attr("data-uuid"));
+          }
         });
         _this.D3.svg.contentLayer.append("rect").attr({
+          id: _this.getContentLayerBgId(),
           x: 0,
           y: 0,
           width: width,
@@ -1346,7 +1352,7 @@ Giraf.View.Expert.Node.SVG = (function(_super) {
 
   SVG.prototype.getShadowFilterId = function() {
     var idName;
-    idName = "shadow";
+    idName = "defs_shadow";
     if (this.d3shadow != null) {
       return idName;
     }
@@ -1374,6 +1380,10 @@ Giraf.View.Expert.Node.SVG = (function(_super) {
     return idName;
   };
 
+  SVG.prototype.getContentLayerBgId = function() {
+    return "contentLayer_bg";
+  };
+
   return SVG;
 
 })(Giraf.View.Expert._base);
@@ -1393,7 +1403,8 @@ Giraf.View.Expert.Node.Piece = (function(_super) {
     body: "#ebebeb",
     line: "#ebebeb",
     composition_bg: "#577354",
-    point_bg: "#ab6e49"
+    point_bg: "#ab6e49",
+    giraf_color: "#e2c742"
   };
 
   return Piece;
@@ -1417,7 +1428,7 @@ Giraf.View.Expert.Node.Piece.Content = (function(_super) {
     return this;
   };
 
-  Content.prototype.target = function(bool) {
+  Content.prototype.target = function(bool, mode) {
     return this;
   };
 
@@ -1465,7 +1476,7 @@ Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
     },
     target: {
       width: 2,
-      color: Composition.color.line
+      color: Composition.color.giraf_color
     }
   };
 
@@ -1516,39 +1527,101 @@ Giraf.View.Expert.Node.Piece.Composition = (function(_super) {
           "dominant-baseline": "middle",
           "fill": style.text.color
         });
-        return _this.d3image = _this.d3composition.append("image").attr({
+        _this.d3image = _this.d3composition.append("image").attr({
           x: (-style.width / 2) + style.image.x,
           y: (-style.height / 2) + style.image.y,
           width: style.image.width,
           height: style.image.height
+        });
+        _this.d3joinBeforeHoverArea = _this.d3composition.append("rect").attr({
+          "data-uuid": Giraf.Tools.uuid(),
+          x: -style.width / 2,
+          y: -style.height / 2,
+          width: style.width / 2,
+          height: style.height,
+          fill: "transparent"
+        });
+        return _this.d3joinAfterHoverArea = _this.d3composition.append("rect").attr({
+          "data-uuid": Giraf.Tools.uuid(),
+          x: 0,
+          y: -style.height / 2,
+          width: style.width / 2,
+          height: style.height,
+          fill: "transparent"
         });
       };
     })(this));
     return this;
   };
 
-  Composition.prototype.target = function(bool) {
-    var _ref;
-    Composition.__super__.target.call(this, bool);
-    if (bool) {
-      if (this.d3hover == null) {
-        this.d3hover = this.d3composition.append("rect").attr({
-          x: -style.width / 2,
-          y: -style.height / 2,
-          width: style.width,
-          height: style.height,
-          rx: style.rect.radius,
-          ry: style.rect.radius,
-          fill: "transparent",
-          stroke: style.target.color,
-          "stroke-width": style.target.width
-        });
+  Composition.prototype.target = function(bool, mode) {
+    var _ref, _ref1, _ref2, _ref3, _ref4;
+    if (mode == null) {
+      mode = "connect";
+    }
+    Composition.__super__.target.call(this, bool, mode);
+    if (mode === "connect") {
+      if (bool) {
+        if (this.d3connectHover == null) {
+          this.d3connectHover = this.d3composition.append("rect").attr({
+            x: -style.width / 2,
+            y: -style.height / 2,
+            width: style.width,
+            height: style.height,
+            rx: style.rect.radius,
+            ry: style.rect.radius,
+            fill: "transparent",
+            stroke: style.target.color,
+            "stroke-width": style.target.width
+          });
+        }
+      } else {
+        if ((_ref = this.d3connectHover) != null) {
+          _ref.remove();
+        }
+        this.d3connectHover = null;
       }
-    } else {
-      if ((_ref = this.d3hover) != null) {
-        _ref.remove();
+    } else if (mode === "join") {
+      if (bool && _.contains(this.svg.hoveredContents, this.d3joinBeforeHoverArea.attr("data-uuid"))) {
+        if ((_ref1 = this.d3joinAfterHover) != null) {
+          _ref1.remove();
+        }
+        this.d3joinAfterHover = null;
+        if (this.d3joinBeforeHover == null) {
+          this.d3joinBeforeHover = this.d3composition.append("line").attr({
+            x1: -style.width / 2,
+            y1: -style.height / 2,
+            x2: -style.width / 2,
+            y2: style.height / 2,
+            stroke: style.target.color,
+            "stroke-width": style.target.width * 2
+          });
+        }
+      } else if (bool && _.contains(this.svg.hoveredContents, this.d3joinAfterHoverArea.attr("data-uuid"))) {
+        if ((_ref2 = this.d3joinBeforeHover) != null) {
+          _ref2.remove();
+        }
+        this.d3joinBeforeHover = null;
+        if (this.d3joinAfterHover == null) {
+          this.d3joinAfterHover = this.d3composition.append("line").attr({
+            x1: style.width / 2,
+            y1: -style.height / 2,
+            x2: style.width / 2,
+            y2: style.height / 2,
+            stroke: style.target.color,
+            "stroke-width": style.target.width * 2
+          });
+        }
+      } else {
+        if ((_ref3 = this.d3joinBeforeHover) != null) {
+          _ref3.remove();
+        }
+        if ((_ref4 = this.d3joinAfterHover) != null) {
+          _ref4.remove();
+        }
+        this.d3joinBeforeHover = null;
+        this.d3joinAfterHover = null;
       }
-      this.d3hover = null;
     }
     return this;
   };
@@ -1600,7 +1673,7 @@ Giraf.View.Expert.Node.Piece.Point = (function(_super) {
     },
     target: {
       width: 2,
-      color: Point.color.line
+      color: Point.color.giraf_color
     }
   };
 
@@ -1646,7 +1719,7 @@ Giraf.View.Expert.Node.Piece.Point = (function(_super) {
           return _this.arrow.draw().move(_this.x + (-style.width / 2) + style.hook.x, _this.y + (-style.height / 2) + style.hook.y, _this.x + (-style.width / 2) + style.hook.y, _this.y + (-style.height / 2) + style.hook.y);
         }).on("drag", function() {
           _.each(_this.svg.pieces, function(v, k) {
-            if (_this.svg.hoveredContent === k && k !== _this.uuid) {
+            if (_.contains(_this.svg.hoveredContents, k) && k !== _this.uuid) {
               return v.target(true);
             } else {
               return v.target(false);
@@ -1684,28 +1757,33 @@ Giraf.View.Expert.Node.Piece.Point = (function(_super) {
     return this;
   };
 
-  Point.prototype.target = function(bool) {
+  Point.prototype.target = function(bool, mode) {
     var _ref, _ref1;
-    Point.__super__.target.call(this, bool);
-    if (bool) {
-      if (this.d3hover == null) {
-        this.d3hover = (_ref = this.d3point) != null ? _ref.append("rect").attr({
-          x: -style.width / 2,
-          y: -style.height / 2,
-          width: style.width,
-          height: style.height,
-          rx: style.rect.radius,
-          ry: style.rect.radius,
-          fill: "transparent",
-          stroke: style.target.color,
-          "stroke-width": style.target.width
-        }) : void 0;
+    if (mode == null) {
+      mode = "connect";
+    }
+    Point.__super__.target.call(this, bool, mode);
+    if (mode === "connect") {
+      if (bool) {
+        if (this.d3connectHover == null) {
+          this.d3connectHover = (_ref = this.d3point) != null ? _ref.append("rect").attr({
+            x: -style.width / 2,
+            y: -style.height / 2,
+            width: style.width,
+            height: style.height,
+            rx: style.rect.radius,
+            ry: style.rect.radius,
+            fill: "transparent",
+            stroke: style.target.color,
+            "stroke-width": style.target.width
+          }) : void 0;
+        }
+      } else {
+        if ((_ref1 = this.d3connectHover) != null) {
+          _ref1.remove();
+        }
+        this.d3connectHover = null;
       }
-    } else {
-      if ((_ref1 = this.d3hover) != null) {
-        _ref1.remove();
-      }
-      this.d3hover = null;
     }
     return this;
   };
@@ -1765,10 +1843,38 @@ Giraf.View.Expert.Node.Piece.Timeline = (function(_super) {
         var d3hookEventHandler, d3timelineEventHandler;
         d3timelineEventHandler = d3.behavior.drag().on("dragstart", function() {
           d3.event.sourceEvent.stopPropagation();
-          return _this.d3svg.attr("cursor", "move");
+          _this.d3svg.attr("cursor", "move");
+          return $("[data-uuid=" + _this.uuid + "]").insertAfter("#" + (_this.svg.getContentLayerBgId()));
         }).on("drag", function() {
+          _.each(_this.svg.pieces, function(v, k) {
+            if (_.contains(_this.svg.hoveredContents, k) && !_.contains(_this.compositions, k)) {
+              return v.target(true, "join");
+            } else {
+              return v.target(false, "join");
+            }
+          });
           return _this.move(d3.event.x, d3.event.y);
         }).on("dragend", function() {
+          var after, before, parentTimeline;
+          before = _.find(_this.svg.pieces, function(v) {
+            return v.d3joinBeforeHover != null;
+          });
+          after = _.find(_this.svg.pieces, function(v) {
+            return v.d3joinAfterHover != null;
+          });
+          parentTimeline = function(uuid) {
+            return _.find(_this.svg.pieces, function(v) {
+              return (v.compositions != null) && _.contains(v.compositions, uuid);
+            });
+          };
+          if (before != null) {
+            console.log(parentTimeline(before.uuid));
+          } else if (after != null) {
+            console.log(parentTimeline(after.uuid));
+          }
+          _.each(_this.svg.pieces, function(v) {
+            return v.target(false, "join");
+          });
           return _this.d3svg.attr("cursor", null);
         });
         d3hookEventHandler = d3.behavior.drag().on("dragstart", function() {
@@ -1781,7 +1887,7 @@ Giraf.View.Expert.Node.Piece.Timeline = (function(_super) {
           return _this.arrow.draw().move(_this.x + style.hook.x, _this.y + style.hook.y, _this.x + style.hook.x, _this.y + style.hook.y);
         }).on("drag", function() {
           _.each(_this.svg.pieces, function(v, k) {
-            if (_this.svg.hoveredContent === k && !_.contains(_this.compositions, k)) {
+            if (_.contains(_this.svg.hoveredContents, k) && !_.contains(_this.compositions, k)) {
               return v.target(true);
             } else {
               return v.target(false);
@@ -1807,6 +1913,19 @@ Giraf.View.Expert.Node.Piece.Timeline = (function(_super) {
         }).call(d3hookEventHandler);
       };
     })(this));
+    return this;
+  };
+
+  Timeline.prototype.target = function(bool, mode) {
+    if (mode == null) {
+      mode = "connect";
+    }
+    Timeline.__super__.target.call(this, bool, mode);
+    return this;
+  };
+
+  Timeline.prototype.select = function(bool) {
+    Timeline.__super__.select.call(this, bool);
     return this;
   };
 

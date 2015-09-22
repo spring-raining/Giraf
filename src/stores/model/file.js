@@ -1,5 +1,15 @@
 "use strict";
 
+import keyMirror from "keymirror";
+
+import Actions from "../../actions/actions";
+
+const statusList = keyMirror({
+  unknown: null,
+  loading: null,
+  normal: null,
+  dying: null,
+});
 
 class File {
   /**
@@ -11,11 +21,16 @@ class File {
    * @param content
    */
   constructor(id, name, size, type, content=null) {
-    this.id = id;
-    this.name = name;
-    this.size = size;
-    this.type = type;
-    this.content = content;
+    Object.assign(this, {
+      id, name, size, type, content
+    });
+    this.status = (content)? statusList.normal : statusList.loading;
+  }
+
+  update(obj) {
+    Object.assign(this, obj);
+    this.status = (this.content)? statusList.normal : statusList.dying;
+    Actions.updateFile(this);
   }
 }
 

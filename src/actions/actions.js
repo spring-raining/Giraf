@@ -22,6 +22,13 @@ const actions = {
         })
       });
     }
+  },
+
+  updateFile(file) {
+    Dispatcher.dispatch({
+      actionType: ActionConst.UPDATE_FILE,
+      file: file
+    });
   }
 };
 

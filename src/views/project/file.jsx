@@ -10,9 +10,8 @@ export default React.createClass({
   },
   render() {
     return (
-      <li className="project__file">
+      <li className={"project__file " + this.props.file.status}>
         <span className="project__file__title">{this.props.file.name}</span>
-
       </li>
     );
   },

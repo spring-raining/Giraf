@@ -1,0 +1,20 @@
+@import "../defs";
+
+nav, .nav {
+  width: 100%;
+  height: $nav-height;
+  color: $color-nav-body;
+  background-color: $color-nav-bg;
+
+  ul {
+    display: block;
+    list-style: none;
+
+    li.nav__list {
+      position: relative;
+      display: block;
+      float: left;
+      height: $nav-height;
+    }
+  }
+}

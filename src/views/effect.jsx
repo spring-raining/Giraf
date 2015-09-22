@@ -4,7 +4,7 @@ import React from "react";
 
 class Effect extends React.Component {
   render() {
-    return <p>effect</p>;
+    return <section className="effect panel">effect</section>;
   }
 }
 

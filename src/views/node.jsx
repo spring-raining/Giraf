@@ -4,7 +4,7 @@ import React from "react";
 
 class Node extends React.Component {
   render() {
-    return <p>node</p>;
+    return <section className="node panel">node</section>;
   }
 }
 

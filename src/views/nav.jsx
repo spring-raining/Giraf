@@ -4,7 +4,7 @@ import React from "react";
 
 class Nav extends React.Component {
   render() {
-    return <p>nav</p>;
+    return <nav className="nav panel"></nav>;
   }
 }
 

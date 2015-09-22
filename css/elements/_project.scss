@@ -1,0 +1,35 @@
+@import "../defs";
+
+.project {
+  color: $color-project-body;
+  background-color: $color-project-bg;
+
+  .project__file {
+    @include transition(all 0.2s cubic-bezier(0.4, 0, 0.2, 1));
+    @include giraf-card(1);
+    background-color: $color-project-card-bg;
+    height: $project-file-height;
+    margin: 6px;
+    padding: 0;
+    position: relative;
+
+    &.selected {
+      @include giraf-card(2);
+      padding: 0;
+      height: $project-file-height + 20px;
+      background-color: lighten($color-project-card-bg, 10%);
+
+      .project-piece-thumbnail-container {
+        height: $project-file-height + 20px;
+      }
+    }
+
+    &.loading {
+      color: #888;
+    }
+
+    > * {
+      float: left;
+    }
+  }
+}

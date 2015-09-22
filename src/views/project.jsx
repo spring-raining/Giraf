@@ -10,8 +10,8 @@ var Project = React.createClass({
     let store = this.props.store;
 
     let files = store.files.map((e) => <File file={e} key={e.id} />);
-    return <section>
-        <p onClick={this._onClick}>project</p>
+    return <section className="project panel">
+        <button onClick={this._onClick}>ファイルを読み込む</button>
         <ul>
           {files}
         </ul>

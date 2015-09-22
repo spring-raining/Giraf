@@ -1,0 +1,90 @@
+@import "../node_modules/bourbon/app/assets/stylesheets/bourbon";
+
+$color-giraf:                       rgb(226, 199, 16);
+$color-white:                       rgb(235, 235, 235);
+$color-white-sub:                   rgb(207, 207, 207);
+$color-black:                       rgb(34, 34, 34);
+$color-a:                           $color-giraf;
+
+$color-nav-bg:                      $color-black;
+$color-nav-body:                    rgb(163, 163, 163);
+$color-split-bg:                    $color-black;
+$color-preview-body:                $color-white;
+$color-preview-bg:                  rgb(38, 38, 37);
+$color-effect-body:                 $color-white;
+$color-effect-bg:                   rgb(73, 73, 71);
+$color-dropdown-bg:                 $color-preview-bg;
+$color-dropdown-body:               $color-white;
+$color-dropdown-select-bg:          rgb(181, 171, 131);
+$color-dropdown-select-body:        $color-nav-bg;
+$color-node-bg:                     rgb(51, 50, 47);
+$color-node-line:                   rgb(173, 173, 173);
+$color-node-piece-composition-bg:   rgb(87, 115, 84);
+$color-node-piece-point-bg:         rgb(173, 110, 73);
+$color-project-body:                $color-white;
+$color-project-bg:                  rgb(102, 100, 85);
+$color-project-card-bg:             rgb(122, 120, 109);
+
+$nav-height:                        42px;
+
+$project-file-height:               58px;
+
+// abstract mixins
+
+@mixin giraf-normal-body($background-color) {
+  @if (lightness($background-color) > 50) {
+    color: $color-white;
+  } @else {
+    color: $color-black;
+  }
+}
+
+@mixin giraf-shadow($height: 1) {
+  @if ($height == 1) {
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16),
+    0 2px 5px  0 rgba(0, 0, 0, 0.26);
+  } @else if ($height == 2) {
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19),
+    0 8px 17px 0 rgba(0, 0, 0, 0.2);
+  } @else if ($height == 3) {
+    box-shadow: 0 17px 50px 0 rgba(0, 0, 0, 0.19),
+    0 12px 15px 0 rgba(0, 0, 0, 0.24);
+  } @else if ($height == 4) {
+    box-shadow: 0 25px 55px 0 rgba(0, 0, 0, 0.21),
+    0 16px 28px 0 rgba(0, 0, 0, 0.22);
+  } @else if ($height == 5) {
+    box-shadow: 0 40px 77px 0 rgba(0, 0, 0, 0.22),
+    0 27px 24px 0 rgba(0, 0, 0, 0.2);
+  } @else {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
+@mixin giraf-button($background-color: $color-giraf) {
+  @include transition(all 0.2s cubic-bezier(0.4, 0, 0.2, 1));
+  @include giraf-shadow(1);
+  @include giraf-normal-body($background-color);
+
+  background-color: $background-color;
+  border: 0;
+  border-radius: 2px;
+  text-align: center;
+  font-size: 14px;
+  padding: 9px 18px;
+  vertical-align: middle;
+
+  &:hover {
+    @include giraf-shadow(3);
+    background-color: lighten($background-color, 5%);
+  }
+}
+
+@mixin giraf-card($height: 1) {
+  @include giraf-shadow($height);
+
+  display: block;
+  border: 0;
+  border-radius: 2px;
+  margin: 4px;
+  padding: 4px;
+}

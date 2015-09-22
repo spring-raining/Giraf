@@ -29,9 +29,9 @@ var App = React.createClass({
       <Fixed>
         <Nav store={this.state} /></Fixed>
       <Flex>
-        <Split split="vertical">
+        <Split split="vertical" minSize="30" defaultSize="30%">
           <Project store={this.state} />
-          <Split split="horizontal">
+          <Split split="horizontal" minSize="30" defaultSize="50%">
             <Split split="vertical">
               <Effect store={this.state} />
               <Preview store={this.state} />

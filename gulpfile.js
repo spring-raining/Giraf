@@ -8,7 +8,7 @@ gulp.task("default", ["build"]);
 gulp.task("build", function() {
   return browserify({
     entries: "./src/giraf.jsx",
-    extensions: [".jsx"],
+    extensions: [".jsx", ".js"],
     debug: true
   }).transform(babelify)
     .bundle()

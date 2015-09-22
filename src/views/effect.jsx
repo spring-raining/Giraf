@@ -1,3 +1,5 @@
+"use strict";
+
 import React from "react";
 
 class Effect extends React.Component {

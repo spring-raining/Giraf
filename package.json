@@ -22,7 +22,9 @@
   "dependencies": {
     "babelify": "^6.3.0",
     "browserify": "^11.1.0",
+    "flux": "^2.1.1",
     "gulp": "^3.9.0",
+    "keymirror": "^0.1.1",
     "react": "^0.13.3",
     "react-layout-pane": "^0.1.12",
     "react-split-pane": "^0.1.10",

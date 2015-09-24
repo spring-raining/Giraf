@@ -9,7 +9,10 @@ var Project = React.createClass({
   render() {
     let store = this.props.store;
 
-    let files = store.files.map((e) => <File file={e} key={e.id} />);
+    let files = store.files.map((e) => {
+      let isSelected = (e.id === store.idOfSelectingItem);
+      return <File file={e} key={e.id} isSelected={isSelected} />;
+    });
     return <section className="project panel">
         <button onClick={this._onClick}>ファイルを読み込む</button>
         <ul>

@@ -3,6 +3,7 @@
 import keyMirror from "keymirror";
 
 import Actions from "../../actions/actions";
+import _Selectable from "./_selectable";
 
 const statusList = keyMirror({
   unknown: null,
@@ -11,7 +12,7 @@ const statusList = keyMirror({
   dying: null,
 });
 
-class File {
+class File extends _Selectable {
   /**
    *
    * @param {string} id
@@ -21,8 +22,9 @@ class File {
    * @param content
    */
   constructor(id, name, size, type, content=null) {
+    super(id);
     Object.assign(this, {
-      id, name, size, type, content
+      name, size, type, content
     });
     this.status = (content)? statusList.normal : statusList.loading;
   }

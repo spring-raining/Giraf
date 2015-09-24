@@ -16,8 +16,8 @@
     &.selected {
       @include giraf-card(2);
       padding: 0;
-      height: $project-file-height + 20px;
       background-color: lighten($color-project-card-bg, 10%);
+      border: 2px solid $color-giraf;
 
       .project-piece-thumbnail-container {
         height: $project-file-height + 20px;

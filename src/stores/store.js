@@ -6,17 +6,19 @@ import Dispatcher from "../dispatcher";
 import ActionConst from "../actions/const";
 import GenUUID from "../utils/genUUID";
 import FileLoader from "../utils/fileLoader";
+import Access from "./access";
 import File from "./model/file";
 
 const CHANGE_EVENT = "change";
 
 var _state = {
   files: [],
+  idOfSelectingItem: null,
 };
 
 var Store = Object.assign({}, EventEmitter.prototype, {
   getAll: function() {
-    return _state;
+    return Object.assign(_state, {access: Access(_state)});
   },
 
   emitChange: function() {
@@ -55,6 +57,11 @@ Dispatcher.register((action) => {
         });
         Store.emitChange();
       }
+      break;
+
+    case ActionConst.CHANGE_SELECTING_ITEM:
+      _state.idOfSelectingItem = (action.item)? action.item.id : null;
+      Store.emitChange();
       break;
   }
 });

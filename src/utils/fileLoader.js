@@ -15,10 +15,11 @@ export default {
   },
   run: (file, fileApiObj) => {
     let p = new Promise((resolve, reject) => {
-      let reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-      reader.readAsDataURL(fileApiObj)
+      try {
+        resolve(window.URL.createObjectURL(fileApiObj));
+      } catch (e) {
+        reject(e);
+      }
     });
     p.then(
       (result) => {

@@ -13,6 +13,7 @@ const CHANGE_EVENT = "change";
 
 var _state = {
   files: [],
+  compositions: [],
   idOfSelectingItem: null,
 };
 
@@ -62,6 +63,20 @@ Dispatcher.register((action) => {
     case ActionConst.CHANGE_SELECTING_ITEM:
       _state.idOfSelectingItem = (action.item)? action.item.id : null;
       Store.emitChange();
+      break;
+
+    case ActionConst.CREATE_COMPOSITION:
+      _state.compositions.push(action.composition);
+      Store.emitChange();
+      break;
+
+    case ActionConst.UPDATE_COMPOSITION:
+      if (_state.compositions.map((e) => e.id).indexOf(action.composition.id) >= 0) {
+        _state.composiitons = _state.compositions.map((e) => {
+          return (e.id === action.composition.id)? action.composition : e;
+        });
+        Store.emitChange();
+      }
       break;
   }
 });

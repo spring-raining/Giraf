@@ -12,7 +12,6 @@ class Preview extends React.Component {
       previewContainer = <div className="preview__container none"></div>;
     }
     else if (selectedItem instanceof File) {
-      console.log(selectedItem);
       if (selectedItem.type.indexOf("image/") === 0) {
         previewContainer =
           <div className="preview__container file image">

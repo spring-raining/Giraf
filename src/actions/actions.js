@@ -2,8 +2,10 @@
 
 import Dispatcher from "../dispatcher";
 import ActionConst from "./const";
+import GenUUID from "../utils/genUUID";
 import SelectFile from "../utils/selectFile";
 import _Selectable from "../stores/model/_selectable";
+import Composition from "../stores/model/composition";
 
 const actions = {
   importFile(file = null) {
@@ -38,6 +40,26 @@ const actions = {
         actionType: ActionConst.CHANGE_SELECTING_ITEM,
         item: item
       })
+    }
+  },
+
+  createComposition(composition = null) {
+    let comp = (composition !== null)? composition
+      : new Composition(GenUUID(), "new composition", 400, 300, 48, 12);
+    if (comp instanceof Composition) {
+      Dispatcher.dispatch({
+        actionType: ActionConst.CREATE_COMPOSITION,
+        composition: comp
+      });
+    }
+  },
+
+  updateComposition(composition) {
+    if (composition instanceof Composition) {
+      Dispatcher.dispatch({
+        actionType: ActionConst.UPDATE_COMPOSITION,
+        composition: composition
+      });
     }
   },
 };

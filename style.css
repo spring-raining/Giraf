@@ -481,7 +481,7 @@ nav, .nav {
 .project {
   color: #ebebeb;
   background-color: #666455; }
-  .project .project__file {
+  .project .project__item {
     -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -496,7 +496,7 @@ nav, .nav {
     margin: 6px;
     padding: 0;
     position: relative; }
-    .project .project__file.selected {
+    .project .project__item.selected {
       box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19), 0 8px 17px 0 rgba(0, 0, 0, 0.2);
       display: block;
       border: 0;
@@ -506,11 +506,11 @@ nav, .nav {
       padding: 0;
       background-color: #939187;
       border: 2px solid #e2c710; }
-      .project .project__file.selected .project-piece-thumbnail-container {
+      .project .project__item.selected .project-piece-thumbnail-container {
         height: 78px; }
-    .project .project__file.loading {
+    .project .project__item.loading {
       color: #888; }
-    .project .project__file > * {
+    .project .project__item > * {
       float: left; }
 
 .effect {
@@ -535,5 +535,5 @@ nav, .nav {
       left: 0;
       right: 0; }
 
-.node {
+.timeline {
   background-color: #33322f; }

@@ -9,7 +9,7 @@ import Nav from "./nav";
 import Project from "./project";
 import Effect from "./effect";
 import Preview from "./preview";
-import Node from "./node";
+import Timeline from "./timeline";
 
 var App = React.createClass({
   getInitialState() {
@@ -36,7 +36,7 @@ var App = React.createClass({
               <Effect store={this.state} />
               <Preview store={this.state} />
             </Split>
-            <Node store={this.state} />
+            <Timeline store={this.state} />
           </Split>
         </Split>
       </Flex>

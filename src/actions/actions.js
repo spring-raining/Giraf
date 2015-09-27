@@ -6,6 +6,7 @@ import GenUUID from "../utils/genUUID";
 import SelectFile from "../utils/selectFile";
 import _Selectable from "../stores/model/_selectable";
 import Composition from "../stores/model/composition";
+import Layer from "../stores/model/layer";
 
 const actions = {
   importFile(file = null) {
@@ -62,6 +63,18 @@ const actions = {
       });
     }
   },
+
+  createLayer(parentComp, index = 0, layer = null) {
+    let lyr = (layer !== null)? layer
+      : new Layer(GenUUID(), "new layer", parentComp.id, null, {}, 0, 30);
+    if (lyr instanceof Layer) {
+      Dispatcher.dispatch({
+        actionType: ActionConst.CREATE_LAYER,
+        layer: lyr,
+        index: index
+      })
+    }
+  }
 };
 
 export default actions;

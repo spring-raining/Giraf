@@ -41,6 +41,10 @@ q:before, q:after {
   content:none;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 *, *:active, *:focus {
   outline: 0;
   outline-style: none;

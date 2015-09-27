@@ -1,0 +1,77 @@
+@import "../defs";
+
+.timeline {
+  color: $color-timeline-body;
+  background-color: $color-timeline-bg;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  .scroll-area {
+    position: absolute;
+    overflow: scroll;
+  }
+
+  .timeline__summary {
+    z-index: 4;
+    position: absolute;
+    width: $timeline-summary-width;
+    height: $timeline-summary-height;
+    overflow: hidden;
+    background-color: $color-timeline-bg;
+  }
+
+  .timeline__header-container {
+    z-index: 3;
+    top: 0;
+    left: $timeline-summary-width;
+    right: 0;
+  }
+  .timeline__left-container {
+    z-index: 2;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: $timeline-summary-width;
+    padding-top: $timeline-summary-height;
+  }
+
+  .timeline__timetable-container {
+    z-index: 1;
+    top: 0;
+    bottom: 0;
+    left: $timeline-summary-width;
+    right: 0;
+    padding-top: $timeline-summary-height;
+  }
+
+
+  .timeline__header {
+    background-color: $color-timeline-header-bg;
+    height: $timeline-summary-height;
+  }
+
+  .timeline__layer,
+  .timeline__layer-header{
+    height: $timeline-layer-height;
+    border-bottom: 1px solid $color-timeline-grid;
+  }
+
+  .timeline__layer-header,
+  .timeline__summary {
+    border-right: 2px solid $color-timeline-grid;
+  }
+
+  .timeline__layer-cell-container {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  .timeline__layer-cell{
+    height: $timeline-layer-height;
+    width: 10000px;
+    border-right: 1px solid $color-timeline-grid;
+  }
+}

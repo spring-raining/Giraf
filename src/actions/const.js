@@ -8,4 +8,5 @@ export default keyMirror({
   CHANGE_SELECTING_ITEM: null,
   CREATE_COMPOSITION: null,
   UPDATE_COMPOSITION: null,
+  CREATE_LAYER: null,
 });

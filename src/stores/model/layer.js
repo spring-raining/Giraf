@@ -4,10 +4,10 @@ import Actions from "../../actions/actions";
 import _Selectable from "./_selectable";
 
 class Layer extends _Selectable {
-  constructor(id, name, parentComp, target, effect, start, end) {
+  constructor(id, name, parentCompId, footage, effect, start, end) {
     super(id);
     Object.assign(this, {
-      name, parentComp, target, effect
+      name, parentCompId, footage, effect
     });
     this.layerStart = start;
     this.layerEnd = end;

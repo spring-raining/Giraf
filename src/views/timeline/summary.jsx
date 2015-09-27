@@ -14,8 +14,9 @@ export default React.createClass({
   render() {
     let comp = this.props.composition;
     return <div className="timeline__summary">
+      <span className="timeline__summary__name">{comp.name}</span>
       <span className="timeline__summary__frame">{comp.frame}fr</span>
-      <span className="timeline__summary__fps">{comp.frame}fps</span>
+      <span className="timeline__summary__fps">{comp.fps}fps</span>
       <span className="timeline__summary__size">{comp.width} x {comp.height}</span>
     </div>;
   },

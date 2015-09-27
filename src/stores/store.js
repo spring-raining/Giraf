@@ -36,6 +36,9 @@ var Store = Object.assign({}, EventEmitter.prototype, {
 });
 
 Dispatcher.register((action) => {
+
+  const searchById = (list) => (id) => list.filter((e) => e.id === id)[0];
+
   switch (action.actionType) {
     case ActionConst.IMPORT_FILE:
       action.file.forEach((e) => {
@@ -52,7 +55,7 @@ Dispatcher.register((action) => {
       break;
 
     case ActionConst.UPDATE_FILE:
-      if (_state.files.map((e) => e.id).indexOf(action.file.id) >= 0) {
+      if (searchById(_state.files)(action.file.id)) {
         _state.files = _state.files.map((e) => {
           return (e.id === action.file.id)? action.file : e;
         });
@@ -71,10 +74,18 @@ Dispatcher.register((action) => {
       break;
 
     case ActionConst.UPDATE_COMPOSITION:
-      if (_state.compositions.map((e) => e.id).indexOf(action.composition.id) >= 0) {
+      if (searchById(_state.compositions)(action.comopsition.id)) {
         _state.composiitons = _state.compositions.map((e) => {
           return (e.id === action.composition.id)? action.composition : e;
         });
+        Store.emitChange();
+      }
+      break;
+
+    case ActionConst.CREATE_LAYER:
+      let comp = searchById(_state.compositions)(action.layer.parentCompId);
+      if (comp) {
+        comp.layers.splice(action.index, 0, action.layer);
         Store.emitChange();
       }
       break;

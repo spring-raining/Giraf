@@ -7,6 +7,8 @@ import SelectFile from "../utils/selectFile";
 import _Selectable from "../stores/model/_selectable";
 import Composition from "../stores/model/composition";
 import Layer from "../stores/model/layer";
+import File from "../stores/model/file";
+import {DragAction, DragActionType} from "../stores/model/dragAction";
 
 const actions = {
   importFile(file = null) {
@@ -64,17 +66,44 @@ const actions = {
     }
   },
 
-  createLayer(parentComp, index = 0, layer = null) {
-    let lyr = (layer !== null)? layer
+  createLayer(parentComp, index = 0, footage = null) {
+    let lyr = (footage !== null && footage instanceof Layer)? footage
+      : (footage !== null)?
+        new Layer(GenUUID(), footage.name, parentComp.id, footage, {}, 0, 30)
       : new Layer(GenUUID(), "new layer", parentComp.id, null, {}, 0, 30);
     if (lyr instanceof Layer) {
       Dispatcher.dispatch({
         actionType: ActionConst.CREATE_LAYER,
         layer: lyr,
         index: index
-      })
+      });
     }
-  }
+  },
+
+  startDrag(dragObj) {
+    let dragAction = (dragObj instanceof DragAction)? dragObj : null;
+    if (!dragAction) {
+      let type = (dragObj instanceof File) ? DragActionType.FILE
+        : (dragObj instanceof Composition) ? DragActionType.COMPOSITION
+        : (dragObj instanceof Layer) ?       DragActionType.LAYER
+        : null;
+      if (type) {
+        dragAction = new DragAction(type, dragObj);
+      }
+    }
+    if (dragAction) {
+      Dispatcher.dispatch({
+        actionType: ActionConst.START_DRAG,
+        dragAction: dragAction
+      });
+    }
+  },
+
+  endDrag() {
+    Dispatcher.dispatch({
+      actionType: ActionConst.END_DRAG
+    });
+  },
 };
 
 export default actions;

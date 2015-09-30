@@ -14,6 +14,7 @@ export default React.createClass({
       isSelected: React.PropTypes.boolean.isRequired,
     }
   },
+
   render() {
     var className = "project__item";
 
@@ -27,12 +28,24 @@ export default React.createClass({
     }
 
     return (
-      <li className={className} onClick={this._onClick}>
+      <li className={className} draggable="true"
+          onClick={this._onClick}
+          onDragStart={this._onDragStart}
+          onDragEnd={this._onDragEnd}>
         <span className="project__file__title">{this.props.item.name}</span>
       </li>
     );
   },
+
   _onClick() {
     Actions.changeSelectingItem(this.props.item);
+  },
+
+  _onDragStart() {
+    Actions.startDrag(this.props.item);
+  },
+
+  _onDragEnd() {
+    Actions.endDrag();
   },
 });

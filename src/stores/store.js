@@ -15,6 +15,7 @@ var _state = {
   files: [],
   compositions: [],
   idOfSelectingItem: null,
+  dragging: null,
 };
 
 var Store = Object.assign({}, EventEmitter.prototype, {
@@ -86,6 +87,18 @@ Dispatcher.register((action) => {
       let comp = searchById(_state.compositions)(action.layer.parentCompId);
       if (comp) {
         comp.layers.splice(action.index, 0, action.layer);
+        Store.emitChange();
+      }
+      break;
+
+    case ActionConst.START_DRAG:
+      _state.dragging = action.dragAction;
+      Store.emitChange();
+      break;
+
+    case ActionConst.END_DRAG:
+      if (_state.dragging) {
+        _state.dragging = null;
         Store.emitChange();
       }
       break;

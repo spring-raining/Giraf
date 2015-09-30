@@ -25,22 +25,27 @@ var App = React.createClass({
   },
 
   render() {
-    return <Layout type="rows">
-      <Fixed>
-        <Nav store={this.state} /></Fixed>
-      <Flex>
-        <Split split="vertical" minSize="30" defaultSize="30%">
-          <Project store={this.state} />
-          <Split split="horizontal" minSize="30" defaultSize="50%">
-            <Split split="vertical">
-              <Effect store={this.state} />
-              <Preview store={this.state} />
+    var _;
+    let dragging = (_ = this.state.dragging)? _.type : null;
+
+    return <div data-giraf-dragging={dragging}>
+      <Layout type="rows">
+        <Fixed>
+          <Nav store={this.state} /></Fixed>
+        <Flex>
+          <Split split="vertical" minSize="30" defaultSize="30%">
+            <Project store={this.state} />
+            <Split split="horizontal" minSize="30" defaultSize="50%">
+              <Split split="vertical">
+                <Effect store={this.state} />
+                <Preview store={this.state} />
+              </Split>
+              <Timeline store={this.state} />
             </Split>
-            <Timeline store={this.state} />
           </Split>
-        </Split>
-      </Flex>
-    </Layout>;
+        </Flex>
+      </Layout>
+    </div>;
   },
 
   _onChange() {

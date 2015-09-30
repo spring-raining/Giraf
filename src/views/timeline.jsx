@@ -7,6 +7,7 @@ import Layer from "./timeline/layer";
 import LayerHeader from "./timeline/layerHeader";
 import Actions from "../actions/actions";
 import Composition from "../stores/model/composition";
+import {DragAction, DragActionType} from "../stores/model/dragAction";
 
 var Timeline = React.createClass({
   getInitialState() {
@@ -14,6 +15,7 @@ var Timeline = React.createClass({
       timetableWidth: 1500,
       scrollTop: 0,
       scrollLeft: 0,
+      dragSemaphore: 0, // become 1 or more when onDragOver
     };
   },
 
@@ -27,7 +29,6 @@ var Timeline = React.createClass({
   render() {
     let store = this.props.store;
     let selectedItem = store.access.getSelectedItem();
-    console.log(selectedItem);
 
     if (selectedItem instanceof Composition) {
       let comp = selectedItem;
@@ -39,35 +40,44 @@ var Timeline = React.createClass({
         <LayerHeader composition={comp} layer={e} key={e.id} />
       );
 
-      return <section className="timeline panel">
-        <div className="timeline__summary">
-          {summary}
-        </div>
-        <div className="timeline__header-container scroll-area"
-             ref="header"
-             onScroll={this._onScroll("header")}>
-          <div className="timeline__header" style={{width: this.state.timetableWidth + "px"}}>
-            <button onClick={this._onCreateLayerButtonClicked}>Create Layer</button>
+      return (
+        <section className="timeline panel"
+                 onDragEnter={this._onDragEnter}
+                 onDragOver={this._onDragOver}
+                 onDragLeave={this._onDragLeave}
+                 onDrop={this._onDrop}>
+          <div className="timeline__summary">
+            {summary}
           </div>
-        </div>
-        <div className="timeline__left-container scroll-area"
-             ref="left"
-             onScroll={this._onScroll("left")}>
-          <div className="timeline__left">
-            {layerHeaders}
+          <div className="timeline__header-container scroll-area"
+               ref="header"
+               onScroll={this._onScroll("header")}>
+            <div className="timeline__header" style={{width: this.state.timetableWidth + "px"}}>
+              <button onClick={this._onCreateLayerButtonClicked}>Create Layer</button>
+            </div>
           </div>
-        </div>
-        <div className="timeline__timetable-container scroll-area"
-             ref="timetable"
-             onScroll={this._onScroll("timetable")}>
-          <div className="timeline__timetable" style={{width: this.state.timetableWidth + "px"}}>
-            {layers}
+          <div className="timeline__left-container scroll-area"
+               ref="left"
+               onScroll={this._onScroll("left")}>
+            <div className="timeline__left">
+              {layerHeaders}
+            </div>
           </div>
-        </div>
-      </section>;
+          <div className="timeline__timetable-container scroll-area"
+               ref="timetable"
+               onScroll={this._onScroll("timetable")}>
+            <div className="timeline__timetable" style={{width: this.state.timetableWidth + "px"}}>
+              {layers}
+            </div>
+          </div>
+        </section>
+      );
     }
     else {
-      return <section className="timeline panel"></section>
+      return (
+        <section className="timeline panel">
+        </section>
+      );
     }
   },
 
@@ -91,6 +101,30 @@ var Timeline = React.createClass({
   _onCreateLayerButtonClicked() {
     Actions.createLayer(this.props.store.access.getSelectedItem());
   },
+
+  _onDragEnter(e) {
+    e.preventDefault();
+    this.setState({dragSemaphore: this.state.dragSemaphore + 1});
+  },
+
+  _onDragOver(e) {
+    e.preventDefault();
+  },
+
+  _onDragLeave(e) {
+    e.preventDefault();
+    this.setState({dragSemaphore: this.state.dragSemaphore - 1});
+  },
+
+  _onDrop(e) {
+    e.preventDefault();
+    if (this.props.store.dragging.type === DragActionType.FILE) {
+      Actions.createLayer(
+        this.props.store.access.getSelectedItem(),
+        0,
+        this.props.store.dragging.object);
+    }
+  }
 });
 
 export default Timeline;

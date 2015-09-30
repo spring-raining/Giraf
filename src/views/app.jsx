@@ -29,9 +29,10 @@ var App = React.createClass({
     let dragging = (_ = this.state.dragging)? _.type : null;
 
     return <div data-giraf-dragging={dragging}>
-      <Layout type="rows">
+      <Layout type="column">
         <Fixed>
-          <Nav store={this.state} /></Fixed>
+          <Nav store={this.state} />
+        </Fixed>
         <Flex>
           <Split split="vertical" minSize="30" defaultSize="30%">
             <Project store={this.state} />

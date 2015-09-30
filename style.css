@@ -428,8 +428,7 @@ button {
 
 .panel {
   width: 100%;
-  height: 100%;
-  overflow: scroll; }
+  height: 100%; }
 
 nav, .nav {
   width: 100%;

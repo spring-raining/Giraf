@@ -64,14 +64,38 @@
     border-right: 2px solid $color-timeline-grid;
   }
 
-  .timeline__layer-cell-container {
-    display: flex;
-    flex-wrap: nowrap;
+  .timeline__layer {
+    position: relative;
   }
 
-  .timeline__layer-cell{
-    height: $timeline-layer-height;
-    width: 10000px;
+  .timeline__layer-flex-container {
+    position:absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  .timeline__layer-flex {
+    height: 100%;
+    @include display(flex);
+    @include flex-wrap(nowrap);
+  }
+
+  .timeline__layer-cell {
+    height: 100%;
+    width: 0;
+    @include flex-grow(1);
     border-right: 1px solid $color-timeline-grid;
+  }
+
+  .timeline__layer-timetable {
+    & > * {
+      width: 0;
+    }
+
+    .timeline__layer-timetable__entity {
+      background-color: $color-timeline-layer-entity-bg;
+    }
   }
 }

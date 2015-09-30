@@ -584,10 +584,39 @@ nav, .nav {
   .timeline .timeline__layer-header,
   .timeline .timeline__summary {
     border-right: 2px solid #464440; }
-  .timeline .timeline__layer-cell-container {
+  .timeline .timeline__layer {
+    position: relative; }
+  .timeline .timeline__layer-flex-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%; }
+  .timeline .timeline__layer-flex {
+    height: 100%;
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-box-lines: single;
+    -moz-box-lines: single;
+    box-lines: single;
+    -webkit-flex-wrap: nowrap;
+    -moz-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
     flex-wrap: nowrap; }
   .timeline .timeline__layer-cell {
-    height: 80px;
-    width: 10000px;
+    height: 100%;
+    width: 0;
+    -webkit-flex-grow: 1;
+    -moz-flex-grow: 1;
+    flex-grow: 1;
+    -ms-flex-positive: 1;
     border-right: 1px solid #464440; }
+  .timeline .timeline__layer-timetable > * {
+    width: 0; }
+  .timeline .timeline__layer-timetable .timeline__layer-timetable__entity {
+    background-color: #A26D6D; }

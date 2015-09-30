@@ -16,6 +16,37 @@ var LayerCell = React.createClass({
   },
 });
 
+var LayerTimetable = React.createClass({
+  propTypes() {
+    return {
+      composition: React.Proptypes.instanceOf(ModelComp).isRequired,
+      layer: React.PropTypes.instanceOf(ModelLayer).isRequired,
+    }
+  },
+
+  render() {
+    let comp = this.props.composition;
+    let layer = this.props.layer;
+
+    return (
+      <div className="timeline__layer-timetable timeline__layer-flex">
+        <div className="timeline__layer-timetable__before"
+             style={{flexGrow: layer.layerStart}}>
+        </div>
+
+        <div className="timeline__layer-timetable__entity"
+             style={{flexGrow: layer.layerEnd - layer.layerStart}}>
+          {layer.layerStart} - {layer.layerEnd}
+        </div>
+
+        <div className="timeline__layer-timetable__after"
+             style={{flexGrow: comp.frame - layer.layerEnd}}>
+        </div>
+      </div>
+    );
+  },
+});
+
 export default React.createClass({
   propTypes() {
     return {
@@ -31,8 +62,13 @@ export default React.createClass({
     }
 
     return <div className="timeline__layer">
-      <div className="timeline__layer-cell-container">
-        {cells}
+      <div className="timeline__layer-flex-container">
+        <div className="timeline__layer-flex">
+          {cells}
+        </div>
+      </div>
+      <div className="timeline__layer-flex-container">
+        <LayerTimetable layer={this.props.layer} composition={this.props.composition} />
       </div>
     </div>;
   },

@@ -113,6 +113,15 @@ const actions = {
       actionType: ActionConst.END_DRAG
     });
   },
+
+  updateCurrentFrame(frame) {
+    if (frame === null || typeof(frame) === "number") {
+      Dispatcher.dispatch({
+        actionType: ActionConst.UPDATE_CURRENT_FRAME,
+        currentFrame: frame
+      });
+    }
+  },
 };
 
 export default actions;

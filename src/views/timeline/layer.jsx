@@ -3,24 +3,14 @@ import KeyMirror from "keyMirror";
 
 import ModelComp from "../../stores/model/composition";
 import ModelLayer from "../../stores/model/layer";
+import FlexibleCell from "./flexibleCell";
+import GenDummyImg from "../../utils/genDummyImg";
 
 
 const draggingTarget = KeyMirror({
   ENTITY: null,
   ENTITY_START: null,
   ENTITY_END: null,
-});
-
-var LayerCell = React.createClass({
-  propTypes() {
-    return {
-      index: React.PropTypes.number.isRequired,
-    }
-  },
-
-  render() {
-    return <div className="timeline__layer-cell"></div>;
-  },
 });
 
 var LayerTimetable = React.createClass({
@@ -132,9 +122,7 @@ var LayerTimetable = React.createClass({
     return (e) => {
       e.stopPropagation();
       let pos = this.getPositionInfo(e);
-      let el = document.createElement("img");
-      el.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
-      e.dataTransfer.setDragImage(el, 0, 0);
+      e.dataTransfer.setDragImage(GenDummyImg(), 0, 0);
       this.setState({
         dragging: target,
         dragStartInfo: pos,
@@ -224,7 +212,8 @@ export default React.createClass({
   render() {
     let cells = [];
     for (var i=0; i < this.props.composition.frame; i++) {
-      cells.push(<LayerCell index={i} key={i} />);
+      cells.push(<FlexibleCell key={i} index={i} flexGlow={1}
+                               className="timeline__layer-cell" />);
     }
 
     return <div className="timeline__layer">

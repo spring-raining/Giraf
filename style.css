@@ -430,6 +430,12 @@ button {
   width: 100%;
   height: 100%; }
 
+.pointer-enabled {
+  pointer-events: auto; }
+
+.pointer-disabled {
+  pointer-events: none; }
+
 nav, .nav {
   width: 100%;
   height: 42px;
@@ -577,6 +583,59 @@ nav, .nav {
   .timeline .timeline__header {
     background-color: rgba(0, 0, 0, 0.7);
     height: 40px; }
+  .timeline .timeline__time-controller {
+    height: 100%; }
+  .timeline .timeline__time-controller__cells-container {
+    height: 100%;
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-lines: single;
+    -moz-box-lines: single;
+    box-lines: single;
+    -webkit-flex-wrap: nowrap;
+    -moz-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap; }
+    .timeline .timeline__time-controller__cells-container > * {
+      width: 0; }
+  .timeline .timeline__time-controller__handle {
+    background-color: #e2c710;
+    box-shadow: rgba(90, 30, 18, 0.5) 0 0 12px 0 inset;
+    border-radius: 2px 2px 30% 30%/2px 2px 100% 100%; }
+  .timeline .timeline__timetable {
+    position: relative;
+    min-height: 100%; }
+  .timeline .timeline__timetable-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-lines: single;
+    -moz-box-lines: single;
+    box-lines: single;
+    -webkit-flex-wrap: nowrap;
+    -moz-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap; }
+    .timeline .timeline__timetable-overlay > * {
+      height: 100%;
+      width: 0; }
+  .timeline .timeline__timetable-overlay__controller {
+    border: 1px solid #FF53B2;
+    background-color: rgba(255, 83, 178, 0.1); }
   .timeline .timeline__layer,
   .timeline .timeline__layer-header {
     height: 80px;

@@ -47,10 +47,54 @@
     padding-top: $timeline-summary-height;
   }
 
-
   .timeline__header {
     background-color: $color-timeline-header-bg;
     height: $timeline-summary-height;
+  }
+
+  .timeline__time-controller {
+    height: 100%;
+  }
+
+  .timeline__time-controller__cells-container, {
+    height: 100%;
+    @include display(flex);
+    @include flex-wrap(nowrap);
+
+    & > * {
+      width: 0;
+    }
+  }
+
+  .timeline__time-controller__handle {
+    background-color: $color-timeline-handle;
+    box-shadow: $color-timeline-handle-shadow 0 0 12px 0 inset;
+    border-radius: 2px 2px 30% 30% / 2px 2px 100% 100%;
+  }
+
+  .timeline__timetable {
+    position: relative;
+    min-height: 100%;
+  }
+
+  .timeline__timetable-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    @include display(flex);
+    @include flex-wrap(nowrap);
+
+    & > * {
+      height: 100%;
+      width: 0;
+    }
+  }
+
+  .timeline__timetable-overlay__controller {
+    border: 1px solid $color-timeline-overlay-ctrl-border;
+    background-color: $color-timeline-overlay-ctrl-bg;
   }
 
   .timeline__layer,

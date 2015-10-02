@@ -16,6 +16,7 @@ var _state = {
   compositions: [],
   idOfSelectingItem: null,
   dragging: null,
+  currentFrame: null,
 };
 
 var Store = Object.assign({}, EventEmitter.prototype, {
@@ -75,7 +76,7 @@ Dispatcher.register((action) => {
 
     else if (action.actionType === ActionConst.UPDATE_COMPOSITION) {
       if (searchById(_state.compositions)(action.comopsition.id)) {
-        _state.composiitons = _state.compositions.map((e) => {
+        _state.compositions = _state.compositions.map((e) => {
           return (e.id === action.composition.id)? action.composition : e;
         });
         Store.emitChange();
@@ -108,6 +109,13 @@ Dispatcher.register((action) => {
     else if (action.actionType === ActionConst.END_DRAG) {
       if (_state.dragging) {
         _state.dragging = null;
+        Store.emitChange();
+      }
+    }
+
+    else if (action.actionType === ActionConst.UPDATE_CURRENT_FRAME) {
+      if (_state.currentFrame !== action.currentFrame) {
+        _state.currentFrame = action.currentFrame;
         Store.emitChange();
       }
     }

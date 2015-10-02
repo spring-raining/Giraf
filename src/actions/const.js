@@ -12,4 +12,5 @@ export default keyMirror({
   UPDATE_LAYER: null,
   START_DRAG: null,
   END_DRAG: null,
+  UPDATE_CURRENT_FRAME: null,
 });

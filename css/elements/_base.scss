@@ -82,3 +82,11 @@ button.button-default {
   height: 100%;
   //overflow: scroll;
 }
+
+.pointer-enabled {
+  pointer-events: auto;
+}
+
+.pointer-disabled {
+  pointer-events: none;
+}

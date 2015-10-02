@@ -12,7 +12,7 @@ import {DragAction, DragActionType} from "../stores/model/dragAction";
 var Timeline = React.createClass({
   getInitialState() {
     return {
-      timetableWidth: 1500,
+      timetableWidth: 1000,
       scrollTop: 0,
       scrollLeft: 0,
       dragSemaphore: 0, // become 1 or more when onDragOver
@@ -118,7 +118,8 @@ var Timeline = React.createClass({
 
   _onDrop(e) {
     e.preventDefault();
-    if (this.props.store.dragging.type === DragActionType.FILE) {
+    if (this.props.store.dragging &&
+        this.props.store.dragging.type === DragActionType.FILE) {
       Actions.createLayer(
         this.props.store.access.getSelectedItem(),
         0,

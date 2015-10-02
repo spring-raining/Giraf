@@ -80,6 +80,15 @@ const actions = {
     }
   },
 
+  updateLayer(layer) {
+    if (layer instanceof Layer) {
+      Dispatcher.dispatch({
+        actionType: ActionConst.UPDATE_LAYER,
+        layer: layer
+      });
+    }
+  },
+
   startDrag(dragObj) {
     let dragAction = (dragObj instanceof DragAction)? dragObj : null;
     if (!dragAction) {

@@ -20,8 +20,7 @@ class Layer extends _Selectable {
   }
 
   update(obj) {
-    object.assign(this, obj);
-    Actions.updateComposition(this);
+    Actions.updateLayer(Object.assign(this, obj));
   }
 }
 

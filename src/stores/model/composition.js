@@ -22,8 +22,7 @@ class Composition extends _Selectable {
   }
 
   update(obj) {
-    object.assign(this, obj);
-    Actions.updateComposition(this);
+    Actions.updateComposition(Object.assign(this, obj));
   }
 }
 

@@ -9,6 +9,7 @@ export default keyMirror({
   CREATE_COMPOSITION: null,
   UPDATE_COMPOSITION: null,
   CREATE_LAYER: null,
+  UPDATE_LAYER: null,
   START_DRAG: null,
   END_DRAG: null,
 });

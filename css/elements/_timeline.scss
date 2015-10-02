@@ -95,7 +95,24 @@
     }
 
     .timeline__layer-timetable__entity {
+      position: relative;
       background-color: $color-timeline-layer-entity-bg;
+
+      .timeline__layer-timetable__entity__start,
+      .timeline__layer-timetable__entity__end {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: $timeline-layer-handle-width;
+      }
+
+      .timeline__layer-timetable__entity__start {
+        left: - $timeline-layer-handle-width / 2;
+      }
+
+      .timeline__layer-timetable__entity__end {
+        right: - $timeline-layer-handle-width / 2;
+      }
     }
   }
 }

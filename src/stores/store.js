@@ -40,8 +40,7 @@ Dispatcher.register((action) => {
 
   const searchById = (list) => (id) => list.filter((e) => e.id === id)[0];
 
-  switch (action.actionType) {
-    case ActionConst.IMPORT_FILE:
+    if (action.actionType === ActionConst.IMPORT_FILE) {
       action.file.forEach((e) => {
         let f = new File(GenUUID(), e.name, e.size, e.type);
         if (FileLoader.check(f)) {
@@ -53,56 +52,65 @@ Dispatcher.register((action) => {
         }
       });
       Store.emitChange();
-      break;
+    }
 
-    case ActionConst.UPDATE_FILE:
+    else if (action.actionType === ActionConst.UPDATE_FILE) {
       if (searchById(_state.files)(action.file.id)) {
         _state.files = _state.files.map((e) => {
           return (e.id === action.file.id)? action.file : e;
         });
         Store.emitChange();
       }
-      break;
+    }
 
-    case ActionConst.CHANGE_SELECTING_ITEM:
+    else if (action.actionType === ActionConst.CHANGE_SELECTING_ITEM) {
       _state.idOfSelectingItem = (action.item)? action.item.id : null;
       Store.emitChange();
-      break;
+    }
 
-    case ActionConst.CREATE_COMPOSITION:
+    else if (action.actionType === ActionConst.CREATE_COMPOSITION) {
       _state.compositions.push(action.composition);
       Store.emitChange();
-      break;
+    }
 
-    case ActionConst.UPDATE_COMPOSITION:
+    else if (action.actionType === ActionConst.UPDATE_COMPOSITION) {
       if (searchById(_state.compositions)(action.comopsition.id)) {
         _state.composiitons = _state.compositions.map((e) => {
           return (e.id === action.composition.id)? action.composition : e;
         });
         Store.emitChange();
       }
-      break;
+    }
 
-    case ActionConst.CREATE_LAYER:
+    else if (action.actionType === ActionConst.CREATE_LAYER) {
       let comp = searchById(_state.compositions)(action.layer.parentCompId);
       if (comp) {
         comp.layers.splice(action.index, 0, action.layer);
         Store.emitChange();
       }
-      break;
+    }
 
-    case ActionConst.START_DRAG:
+    else if (action.actionType === ActionConst.UPDATE_LAYER) {
+      let comp = searchById(_state.compositions)(action.layer.parentCompId);
+      if (comp && searchById(comp.layers)(action.layer.id)) {
+        comp.layers = comp.layers.map((e) => {
+          return (e.id === action.layer.id)? action.layer : e;
+        });
+        Store.emitChange();
+      }
+    }
+
+    else if (action.actionType === ActionConst.START_DRAG) {
       _state.dragging = action.dragAction;
       Store.emitChange();
-      break;
+    }
 
-    case ActionConst.END_DRAG:
+    else if (action.actionType === ActionConst.END_DRAG) {
       if (_state.dragging) {
         _state.dragging = null;
         Store.emitChange();
       }
-      break;
-  }
+    }
 });
 
 export default Store;

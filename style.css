@@ -619,4 +619,15 @@ nav, .nav {
   .timeline .timeline__layer-timetable > * {
     width: 0; }
   .timeline .timeline__layer-timetable .timeline__layer-timetable__entity {
+    position: relative;
     background-color: #A26D6D; }
+    .timeline .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__start,
+    .timeline .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__end {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 20px; }
+    .timeline .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__start {
+      left: -10px; }
+    .timeline .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__end {
+      right: -10px; }

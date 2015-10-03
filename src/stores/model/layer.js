@@ -2,12 +2,14 @@
 
 import Actions from "../../actions/actions";
 import _Selectable from "./_selectable";
+import {classWithTraits} from "../../utils/traitUtils";
 
-class Layer extends _Selectable {
+
+class Layer extends classWithTraits(null, _Selectable) {
   constructor(id, name, parentCompId, footage, effect, start, end) {
-    super(id);
+    super();
     Object.assign(this, {
-      name, parentCompId, footage, effect
+      id, name, parentCompId, footage, effect
     });
     this.layerStart = start;
     this.layerEnd = end;

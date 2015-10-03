@@ -4,6 +4,10 @@ import keyMirror from "keymirror";
 
 import Actions from "../../actions/actions";
 import _Selectable from "./_selectable";
+import {classWithTraits} from "../../utils/traitUtils";
+
+
+
 
 const statusList = keyMirror({
   unknown: null,
@@ -12,7 +16,7 @@ const statusList = keyMirror({
   dying: null,
 });
 
-class File extends _Selectable {
+class File extends classWithTraits(null, _Selectable) {
   /**
    *
    * @param {string} id
@@ -22,9 +26,9 @@ class File extends _Selectable {
    * @param content
    */
   constructor(id, name, size, type, content=null) {
-    super(id);
+    super();
     Object.assign(this, {
-      name, size, type, content
+      id, name, size, type, content
     });
     this.status = (content)? statusList.normal : statusList.loading;
   }

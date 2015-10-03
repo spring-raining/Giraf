@@ -4,13 +4,15 @@ import Dispatcher from "../dispatcher";
 import ActionConst from "./const";
 import GenUUID from "../utils/genUUID";
 import SelectFile from "../utils/selectFile";
+import {hasTrait} from "../utils/traitUtils";
 import _Selectable from "../stores/model/_selectable";
 import Composition from "../stores/model/composition";
 import Layer from "../stores/model/layer";
 import File from "../stores/model/file";
 import {DragAction, DragActionType} from "../stores/model/dragAction";
 
-const actions = {
+
+export default {
   importFile(file = null) {
     if (file) {
       Dispatcher.dispatch({
@@ -38,7 +40,7 @@ const actions = {
   },
 
   changeSelectingItem(item) {
-    if (item === null || item instanceof _Selectable) {
+    if (item === null || hasTrait(item, _Selectable)) {
       Dispatcher.dispatch({
         actionType: ActionConst.CHANGE_SELECTING_ITEM,
         item: item
@@ -123,5 +125,3 @@ const actions = {
     }
   },
 };
-
-export default actions;

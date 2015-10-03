@@ -2,8 +2,10 @@
 
 import Actions from "../../actions/actions";
 import _Selectable from "./_selectable";
+import {classWithTraits} from "../../utils/traitUtils";
 
-class Composition extends _Selectable {
+
+class Composition extends classWithTraits(null, _Selectable) {
   /**
    *
    * @param {string} id
@@ -14,9 +16,9 @@ class Composition extends _Selectable {
    * @param {int} fps
    */
   constructor(id, name, width, height, frame, fps) {
-    super(id);
+    super();
     Object.assign(this, {
-      name, width, height, frame, fps
+      id, name, width, height, frame, fps
     });
     this.layers = [];
   }

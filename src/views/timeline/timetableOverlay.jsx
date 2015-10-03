@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import Composition from "../../stores/model/composition";
+import {Composition} from "../../stores/model/composition";
 
 
 export default React.createClass({

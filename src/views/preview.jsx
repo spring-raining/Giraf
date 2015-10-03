@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import File from "../stores/model/file";
+import {File, FileKinds} from "../stores/model/file";
 
 class Preview extends React.Component {
   render() {
@@ -12,13 +12,13 @@ class Preview extends React.Component {
       previewContainer = <div className="preview__container none"></div>;
     }
     else if (selectedItem instanceof File) {
-      if (selectedItem.type.indexOf("image/") === 0) {
+      if (selectedItem.getFileKind() === FileKinds.IMAGE) {
         previewContainer =
           <div className="preview__container file image">
             <img src={selectedItem.content} />
           </div>;
       }
-      else if(selectedItem.type.indexOf("video/") === 0) {
+      else if (selectedItem.getFileKind() === FileKinds.VIDEO) {
         previewContainer =
           <div className="preview__container file video">
             <video controls src={selectedItem.content} />

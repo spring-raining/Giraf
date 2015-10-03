@@ -1,8 +1,8 @@
 import React from "react";
 
 import Actions from "../../actions/actions";
-import ModelComp from "../../stores/model/composition";
-import ModelLayer from "../../stores/model/layer";
+import {Composition as ModelComp} from "../../stores/model/composition";
+import {Layer as ModelLayer} from "../../stores/model/layer";
 
 
 export default React.createClass({

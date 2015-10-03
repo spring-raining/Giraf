@@ -9,11 +9,17 @@ import {classWithTraits} from "../../utils/traitUtils";
 
 
 
-const statusList = keyMirror({
-  unknown: null,
-  loading: null,
-  normal: null,
-  dying: null,
+const StatusTypes = keyMirror({
+  UNKNOWN: null,
+  LOADING: null,
+  NORMAL: null,
+  DYING: null,
+});
+
+const FileKinds = keyMirror({
+  UNKNOWN: null,
+  IMAGE: null,
+  VIDEO: null,
 });
 
 class File extends classWithTraits(null, _Selectable) {
@@ -30,14 +36,24 @@ class File extends classWithTraits(null, _Selectable) {
     Object.assign(this, {
       id, name, size, type, content
     });
-    this.status = (content)? statusList.normal : statusList.loading;
+    this.status = (content)? StatusTypes.NORMAL : StatusTypes.LOADING;
   }
 
   update(obj) {
     Object.assign(this, obj);
-    this.status = (this.content)? statusList.normal : statusList.dying;
+    this.status = (this.content)? StatusTypes.NORMAL : StatusTypes.DYING;
     Actions.updateFile(this);
+  }
+
+  getFileKind() {
+    if      (this.type.indexOf("image/") === 0) return FileKinds.IMAGE;
+    else if (this.type.indexOf("video/") === 0) return FileKinds.VIDEO;
+    else                                        return FileKinds.UNKNOWN;
   }
 }
 
-export default File;
+export default {
+  File: File,
+  StatusTypes: StatusTypes,
+  FileKinds: FileKinds,
+};

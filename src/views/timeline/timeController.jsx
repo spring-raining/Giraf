@@ -3,7 +3,7 @@
 import React from "react";
 
 import Actions from "../../actions/actions";
-import Composition from "../../stores/model/composition";
+import {Composition} from "../../stores/model/composition";
 import FlexibleCell from "./flexibleCell";
 import GenDummyImg from "../../utils/genDummyImg";
 

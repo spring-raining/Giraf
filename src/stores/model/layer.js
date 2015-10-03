@@ -26,4 +26,6 @@ class Layer extends classWithTraits(null, _Selectable) {
   }
 }
 
-export default Layer;
+export default {
+  Layer: Layer,
+};

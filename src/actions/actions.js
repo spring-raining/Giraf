@@ -6,9 +6,9 @@ import GenUUID from "../utils/genUUID";
 import SelectFile from "../utils/selectFile";
 import {hasTrait} from "../utils/traitUtils";
 import _Selectable from "../stores/model/_selectable";
-import Composition from "../stores/model/composition";
-import Layer from "../stores/model/layer";
-import File from "../stores/model/file";
+import {Composition} from "../stores/model/composition";
+import {Layer} from "../stores/model/layer";
+import {File} from "../stores/model/file";
 import {DragAction, DragActionType} from "../stores/model/dragAction";
 
 

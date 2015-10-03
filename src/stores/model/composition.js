@@ -28,4 +28,6 @@ class Composition extends classWithTraits(null, _Selectable) {
   }
 }
 
-export default Composition;
+export default {
+  Composition: Composition,
+};

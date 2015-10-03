@@ -7,7 +7,7 @@ import ActionConst from "../actions/const";
 import GenUUID from "../utils/genUUID";
 import FileLoader from "../utils/fileLoader";
 import Access from "./access";
-import File from "./model/file";
+import {File} from "./model/file";
 
 const CHANGE_EVENT = "change";
 

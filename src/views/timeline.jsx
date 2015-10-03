@@ -8,7 +8,7 @@ import LayerHeader from "./timeline/layerHeader";
 import TimeController from "./timeline/timeController";
 import TimetableOverlay from "./timeline/timetableOverlay"
 import Actions from "../actions/actions";
-import Composition from "../stores/model/composition";
+import {Composition} from "../stores/model/composition";
 import {DragAction, DragActionType} from "../stores/model/dragAction";
 
 var Timeline = React.createClass({

@@ -1,8 +1,8 @@
 import React from "react";
 import KeyMirror from "keyMirror";
 
-import ModelComp from "../../stores/model/composition";
-import ModelLayer from "../../stores/model/layer";
+import {Composition as ModelComp} from "../../stores/model/composition";
+import {Layer as ModelLayer} from "../../stores/model/layer";
 import FlexibleCell from "./flexibleCell";
 import GenDummyImg from "../../utils/genDummyImg";
 

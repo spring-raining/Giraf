@@ -1,8 +1,8 @@
 import React from "react";
 
 import Actions from "../../actions/actions";
-import ModelFile from "../../stores/model/file";
-import ModelComp from "../../stores/model/composition";
+import {File as ModelFile} from "../../stores/model/file";
+import {Composition as ModelComp} from "../../stores/model/composition";
 
 export default React.createClass({
   propTypes() {

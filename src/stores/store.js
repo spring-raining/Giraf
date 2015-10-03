@@ -2,12 +2,13 @@
 
 import { EventEmitter } from "events";
 
-import Dispatcher from "../dispatcher";
-import ActionConst from "../actions/const";
-import GenUUID from "../utils/genUUID";
-import FileLoader from "../utils/fileLoader";
-import Access from "./access";
-import {Footage} from "./model/footage";
+import Dispatcher           from "src/dispatcher";
+import ActionConst          from "src/actions/const";
+import GenUUID              from "src/utils/genUUID";
+import FileLoader           from "src/utils/fileLoader";
+import Access               from "src/stores/access";
+import {Footage}            from "src/stores/model/footage";
+
 
 const CHANGE_EVENT = "change";
 

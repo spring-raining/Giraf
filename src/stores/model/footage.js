@@ -2,9 +2,9 @@
 
 import keyMirror from "keymirror";
 
-import Actions from "../../actions/actions";
-import _Selectable from "./_selectable";
-import {classWithTraits} from "../../utils/traitUtils";
+import Actions            from "src/actions/actions";
+import _Selectable        from "src/stores/model/_selectable";
+import {classWithTraits}  from "src/utils/traitUtils";
 
 
 const StatusTypes = keyMirror({

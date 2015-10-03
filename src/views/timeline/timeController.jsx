@@ -1,11 +1,11 @@
 "use strict";
 
-import React from "react";
+import React              from "react";
 
-import Actions from "../../actions/actions";
-import {Composition} from "../../stores/model/composition";
-import FlexibleCell from "./flexibleCell";
-import GenDummyImg from "../../utils/genDummyImg";
+import Actions            from "src/actions/actions";
+import {Composition}      from "src/stores/model/composition";
+import GenDummyImg        from "src/utils/genDummyImg";
+import FlexibleCell       from "src/views/timeline/flexibleCell";
 
 
 var TimeControllerHandle = React.createClass({

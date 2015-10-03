@@ -1,10 +1,12 @@
-import React from "react";
-import KeyMirror from "keyMirror";
+"use strict";
 
-import {Composition as ModelComp} from "../../stores/model/composition";
-import {Layer as ModelLayer} from "../../stores/model/layer";
-import FlexibleCell from "./flexibleCell";
-import GenDummyImg from "../../utils/genDummyImg";
+import React                      from "react";
+import KeyMirror                  from "keyMirror";
+
+import {Composition as ModelComp} from "src/stores/model/composition";
+import {Layer as ModelLayer}      from "src/stores/model/layer";
+import GenDummyImg                from "src/utils/genDummyImg";
+import FlexibleCell               from "src/views/timeline/flexibleCell";
 
 
 const draggingTarget = KeyMirror({

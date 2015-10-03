@@ -2,14 +2,15 @@
 
 import React from "react";
 
-import Summary from "./timeline/summary";
-import Layer from "./timeline/layer";
-import LayerHeader from "./timeline/layerHeader";
-import TimeController from "./timeline/timeController";
-import TimetableOverlay from "./timeline/timetableOverlay"
-import Actions from "../actions/actions";
-import {Composition} from "../stores/model/composition";
-import {DragAction, DragActionType} from "../stores/model/dragAction";
+import Actions                        from "src/actions/actions";
+import {Composition}                  from "src/stores/model/composition";
+import {DragAction, DragActionType}   from "src/stores/model/dragAction";
+import Summary                        from "src/views/timeline/summary";
+import Layer                          from "src/views/timeline/layer";
+import LayerHeader                    from "src/views/timeline/layerHeader";
+import TimeController                 from "src/views/timeline/timeController";
+import TimetableOverlay               from "src/views/timeline/timetableOverlay"
+
 
 var Timeline = React.createClass({
   getInitialState() {

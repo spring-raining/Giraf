@@ -1,8 +1,9 @@
 "use strict";
 
-import React from "react";
+import React                      from "react";
 
-import {Footage, FootageKinds} from "../stores/model/footage";
+import {Footage, FootageKinds}    from "src/stores/model/footage";
+
 
 class Preview extends React.Component {
   render() {

@@ -1,9 +1,10 @@
 "use strict";
 
-import React from "react";
+import React              from "react";
 
-import Actions from "../actions/actions";
-import Item from "./project/item";
+import Actions            from "src/actions/actions";
+import Item               from "src/views/project/item";
+
 
 var Project = React.createClass({
   render() {

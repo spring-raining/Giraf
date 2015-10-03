@@ -1,8 +1,9 @@
 import React from "react";
 
-import Actions from "../../actions/actions";
-import {Footage} from "../../stores/model/footage";
-import {Composition} from "../../stores/model/composition";
+import Actions              from "src/actions/actions";
+import {Footage}            from "src/stores/model/footage";
+import {Composition}        from "src/stores/model/composition";
+
 
 export default React.createClass({
   propTypes() {

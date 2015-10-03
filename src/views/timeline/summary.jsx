@@ -1,8 +1,9 @@
 "use strict";
 
-import React from "react";
+import React            from "react";
 
-import {Composition} from "../../stores/model/composition";
+import {Composition}    from "src/stores/model/composition";
+
 
 export default React.createClass({
   propTypes() {

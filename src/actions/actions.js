@@ -1,15 +1,16 @@
 "use strict";
 
-import Dispatcher from "../dispatcher";
-import ActionConst from "./const";
-import GenUUID from "../utils/genUUID";
-import SelectFile from "../utils/selectFile";
-import {hasTrait} from "../utils/traitUtils";
-import _Selectable from "../stores/model/_selectable";
-import {Composition} from "../stores/model/composition";
-import {Layer} from "../stores/model/layer";
-import {Footage} from "../stores/model/footage";
-import {DragAction, DragActionType} from "../stores/model/dragAction";
+import Dispatcher                     from "src/dispatcher";
+import ActionConst                    from "src/actions/const";
+import GenUUID                        from "src/utils/genUUID";
+import SelectFile                     from "src/utils/selectFile";
+import {hasTrait}                     from "src/utils/traitUtils";
+import _Selectable                    from "src/stores/model/_selectable";
+import {Composition}                  from "src/stores/model/composition";
+import {Layer}                        from "src/stores/model/layer";
+//import {Footage}                      from "src/stores/model/footage";
+import F                              from "src/stores/model/footage";
+import {DragAction, DragActionType}   from "src/stores/model/dragAction";
 
 
 export default {
@@ -94,7 +95,7 @@ export default {
   startDrag(dragObj) {
     let dragAction = (dragObj instanceof DragAction)? dragObj : null;
     if (!dragAction) {
-      let type = (dragObj instanceof Footage) ? DragActionType.FOOTAGE
+      let type = (dragObj instanceof F.Footage) ? DragActionType.FOOTAGE
         : (dragObj instanceof Composition) ? DragActionType.COMPOSITION
         : (dragObj instanceof Layer) ?       DragActionType.LAYER
         : null;

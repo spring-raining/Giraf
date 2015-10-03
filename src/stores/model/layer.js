@@ -6,10 +6,10 @@ import {classWithTraits} from "../../utils/traitUtils";
 
 
 class Layer extends classWithTraits(null, _Selectable) {
-  constructor(id, name, parentCompId, footage, effect, start, end) {
+  constructor(id, name, parentCompId, entity, effect, start, end) {
     super();
     Object.assign(this, {
-      id, name, parentCompId, footage, effect
+      id, name, parentCompId, entity, effect
     });
     this.layerStart = start;
     this.layerEnd = end;

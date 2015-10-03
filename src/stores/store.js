@@ -7,12 +7,12 @@ import ActionConst from "../actions/const";
 import GenUUID from "../utils/genUUID";
 import FileLoader from "../utils/fileLoader";
 import Access from "./access";
-import {File} from "./model/file";
+import {Footage} from "./model/footage";
 
 const CHANGE_EVENT = "change";
 
 var _state = {
-  files: [],
+  footages: [],
   compositions: [],
   idOfSelectingItem: null,
   dragging: null,
@@ -43,9 +43,9 @@ Dispatcher.register((action) => {
 
     if (action.actionType === ActionConst.IMPORT_FILE) {
       action.file.forEach((e) => {
-        let f = new File(GenUUID(), e.name, e.size, e.type);
+        let f = new Footage(GenUUID(), e.name, e.size, e.type);
         if (FileLoader.check(f)) {
-          _state.files.push(f);
+          _state.footages.push(f);
           FileLoader.run(f, e);
         }
         else {
@@ -55,10 +55,10 @@ Dispatcher.register((action) => {
       Store.emitChange();
     }
 
-    else if (action.actionType === ActionConst.UPDATE_FILE) {
-      if (searchById(_state.files)(action.file.id)) {
-        _state.files = _state.files.map((e) => {
-          return (e.id === action.file.id)? action.file : e;
+    else if (action.actionType === ActionConst.UPDATE_FOOTAGE) {
+      if (searchById(_state.footages)(action.footage.id)) {
+        _state.footages = _state.footages.map((e) => {
+          return (e.id === action.footage.id)? action.footage : e;
         });
         Store.emitChange();
       }

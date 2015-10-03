@@ -8,7 +8,7 @@ import {hasTrait} from "../utils/traitUtils";
 import _Selectable from "../stores/model/_selectable";
 import {Composition} from "../stores/model/composition";
 import {Layer} from "../stores/model/layer";
-import {File} from "../stores/model/file";
+import {Footage} from "../stores/model/footage";
 import {DragAction, DragActionType} from "../stores/model/dragAction";
 
 
@@ -32,10 +32,10 @@ export default {
     }
   },
 
-  updateFile(file) {
+  updateFootage(footage) {
     Dispatcher.dispatch({
-      actionType: ActionConst.UPDATE_FILE,
-      file: file
+      actionType: ActionConst.UPDATE_FOOTAGE,
+      footage: footage
     });
   },
 
@@ -68,10 +68,10 @@ export default {
     }
   },
 
-  createLayer(parentComp, index = 0, footage = null) {
-    let lyr = (footage !== null && footage instanceof Layer)? footage
-      : (footage !== null)?
-        new Layer(GenUUID(), footage.name, parentComp.id, footage, {}, 0, 30)
+  createLayer(parentComp, index = 0, entity = null) {
+    let lyr = (entity !== null && entity instanceof Layer)? entity
+      : (entity !== null)?
+        new Layer(GenUUID(), entity.name, parentComp.id, entity, {}, 0, 30)
       : new Layer(GenUUID(), "new layer", parentComp.id, null, {}, 0, 30);
     if (lyr instanceof Layer) {
       Dispatcher.dispatch({
@@ -94,7 +94,7 @@ export default {
   startDrag(dragObj) {
     let dragAction = (dragObj instanceof DragAction)? dragObj : null;
     if (!dragAction) {
-      let type = (dragObj instanceof File) ? DragActionType.FILE
+      let type = (dragObj instanceof Footage) ? DragActionType.FOOTAGE
         : (dragObj instanceof Composition) ? DragActionType.COMPOSITION
         : (dragObj instanceof Layer) ?       DragActionType.LAYER
         : null;

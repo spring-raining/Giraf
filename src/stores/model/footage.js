@@ -7,8 +7,6 @@ import _Selectable from "./_selectable";
 import {classWithTraits} from "../../utils/traitUtils";
 
 
-
-
 const StatusTypes = keyMirror({
   UNKNOWN: null,
   LOADING: null,
@@ -16,13 +14,13 @@ const StatusTypes = keyMirror({
   DYING: null,
 });
 
-const FileKinds = keyMirror({
+const FootageKinds = keyMirror({
   UNKNOWN: null,
   IMAGE: null,
   VIDEO: null,
 });
 
-class File extends classWithTraits(null, _Selectable) {
+class Footage extends classWithTraits(null, _Selectable) {
   /**
    *
    * @param {string} id
@@ -42,18 +40,18 @@ class File extends classWithTraits(null, _Selectable) {
   update(obj) {
     Object.assign(this, obj);
     this.status = (this.content)? StatusTypes.NORMAL : StatusTypes.DYING;
-    Actions.updateFile(this);
+    Actions.updateFootage(this);
   }
 
-  getFileKind() {
-    if      (this.type.indexOf("image/") === 0) return FileKinds.IMAGE;
-    else if (this.type.indexOf("video/") === 0) return FileKinds.VIDEO;
-    else                                        return FileKinds.UNKNOWN;
+  getFootageKind() {
+    if      (this.type.indexOf("image/") === 0) return FootageKinds.IMAGE;
+    else if (this.type.indexOf("video/") === 0) return FootageKinds.VIDEO;
+    else                                        return FootageKinds.UNKNOWN;
   }
 }
 
 export default {
-  File: File,
+  Footage: Footage,
   StatusTypes: StatusTypes,
-  FileKinds: FileKinds,
+  FootageKinds: FootageKinds,
 };

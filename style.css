@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 /**
  * 1. Set default font family to sans-serif.
@@ -436,14 +437,25 @@ nav, .nav {
   height: 42px;
   color: #a3a3a3;
   background-color: #222222; }
-  nav ul, .nav ul {
+  nav .nav__ul, .nav .nav__ul {
     display: block;
-    list-style: none; }
-    nav ul li.nav__list, .nav ul li.nav__list {
-      position: relative;
-      display: block;
-      float: left;
-      height: 42px; }
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    height: 100%; }
+  nav .nav__li, .nav .nav__li {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    position: relative;
+    display: block;
+    float: left;
+    height: 100%;
+    padding: 0 20px;
+    cursor: default; }
+  nav .nav__text, .nav .nav__text {
+    line-height: 42px; }
 
 .Resizer {
   opacity: .2;
@@ -592,3 +604,41 @@ nav, .nav {
     height: 80px;
     width: 10000px;
     border-right: 1px solid #464440; }
+
+.menu {
+  position: fixed;
+  z-index: 100; }
+  .menu__li > .menu {
+    position: absolute;
+    top: 0;
+    left: 100%; }
+  .menu .menu__ul {
+    box-shadow: 0 17px 50px 0 rgba(0, 0, 0, 0.19), 0 12px 15px 0 rgba(0, 0, 0, 0.24);
+    display: block;
+    border: 0;
+    border-radius: 2px;
+    margin: 4px;
+    padding: 4px;
+    list-style: none;
+    position: absolute;
+    top: 0;
+    min-width: 150px;
+    max-width: 300px;
+    margin: 0;
+    padding: 6px 0;
+    background-color: #222222;
+    color: #ebebeb; }
+  .menu .menu__li {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    position: relative;
+    padding: 6px 20px; }
+  .menu .menu__expandable::after {
+    content: "▸";
+    position: absolute;
+    right: 0;
+    margin: 0 6px; }
+  .menu .menu__disabled {
+    color: #a3a3a3; }

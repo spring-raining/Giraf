@@ -6,15 +6,26 @@ nav, .nav {
   color: $color-nav-body;
   background-color: $color-nav-bg;
 
-  ul {
+  .nav__ul {
     display: block;
     list-style: none;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
 
-    li.nav__list {
-      position: relative;
-      display: block;
-      float: left;
-      height: $nav-height;
-    }
+  .nav__li {
+    @include user-select(none);
+
+    position: relative;
+    display: block;
+    float: left;
+    height: 100%;
+    padding: $nav-li-padding;
+    cursor: default;
+  }
+
+  .nav__text {
+    line-height: $nav-height;
   }
 }

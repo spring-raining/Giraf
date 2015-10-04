@@ -1,0 +1,44 @@
+@import "../defs";
+
+.menu {
+  position: fixed;
+  z-index: 100;
+
+  .menu__li > & {
+    position: absolute;
+    top: 0;
+    left: 100%;
+  }
+
+  .menu__ul {
+    @include giraf-card(3);
+
+    list-style: none;
+    position: absolute;
+    top: 0;
+    min-width: 150px;
+    max-width: 300px;
+    margin: 0;
+    padding: 6px 0;
+    background-color: $color-menu-bg;
+    color: $color-menu-body;
+  }
+
+  .menu__li {
+    @include user-select(none);
+
+    position: relative;
+    padding: $menu-li-padding;
+  }
+
+  .menu__expandable::after {
+    content: "▸";
+    position: absolute;
+    right: 0;
+    margin: 0 6px;
+  }
+
+  .menu__disabled {
+    color: $color-menu-disabled;
+  }
+}

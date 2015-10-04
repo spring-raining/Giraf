@@ -3,7 +3,7 @@
 import keyMirror from "keymirror";
 
 const dragActionType = keyMirror({
-  FILE: null,
+  FOOTAGE: null,
   COMPOSITION: null,
   LAYER: null,
   UNKNOWN: null,

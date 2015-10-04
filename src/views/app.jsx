@@ -1,15 +1,16 @@
 "use strict";
 
-import React from "react";
-import {Layout, Flex, Fixed} from "react-layout-pane";
-import Split from "react-split-pane";
+import React                  from "react";
+import {Layout, Flex, Fixed}  from "react-layout-pane";
+import Split                  from "react-split-pane";
 
-import Store from "../stores/store";
-import Nav from "./nav";
-import Project from "./project";
-import Effect from "./effect";
-import Preview from "./preview";
-import Timeline from "./timeline";
+import Store                  from "src/stores/store";
+import Nav                    from "src/views/nav";
+import Project                from "src/views/project";
+import Effect                 from "src/views/effect";
+import Preview                from "src/views/preview";
+import Timeline               from "src/views/timeline";
+
 
 var App = React.createClass({
   getInitialState() {
@@ -29,9 +30,10 @@ var App = React.createClass({
     let dragging = (_ = this.state.dragging)? _.type : null;
 
     return <div data-giraf-dragging={dragging}>
-      <Layout type="rows">
+      <Layout type="column">
         <Fixed>
-          <Nav store={this.state} /></Fixed>
+          <Nav store={this.state} />
+        </Fixed>
         <Flex>
           <Split split="vertical" minSize="30" defaultSize="30%">
             <Project store={this.state} />

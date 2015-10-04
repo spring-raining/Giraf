@@ -1,15 +1,16 @@
 import React from "react";
 
-import Actions from "../../actions/actions";
-import ModelFile from "../../stores/model/file";
-import ModelComp from "../../stores/model/composition";
+import Actions              from "src/actions/actions";
+import {Footage}            from "src/stores/model/footage";
+import {Composition}        from "src/stores/model/composition";
+
 
 export default React.createClass({
   propTypes() {
     return {
       item: React.PropTypes.oneOfType([
-        React.PropTypes.instanceOf(ModelFile),
-        React.PropTypes.instanceOf(ModelComp),
+        React.PropTypes.instanceOf(Footage),
+        React.PropTypes.instanceOf(Composition),
       ]).isRequired,
       isSelected: React.PropTypes.boolean.isRequired,
     }
@@ -18,11 +19,11 @@ export default React.createClass({
   render() {
     var className = "project__item";
 
-    if (this.props.item instanceof ModelFile) {
-      className += " file " + this.props.item.status
+    if (this.props.item instanceof Footage) {
+      className += " footage " + this.props.item.status
                   + (this.props.isSelected? " selected" : "");
     }
-    else if (this.props.item instanceof ModelComp) {
+    else if (this.props.item instanceof Composition) {
       className += " composition "
                   + (this.props.isSelected? " selected" : "");
     }
@@ -32,7 +33,7 @@ export default React.createClass({
           onClick={this._onClick}
           onDragStart={this._onDragStart}
           onDragEnd={this._onDragEnd}>
-        <span className="project__file__title">{this.props.item.name}</span>
+        <span className="project__item__title">{this.props.item.name}</span>
       </li>
     );
   },

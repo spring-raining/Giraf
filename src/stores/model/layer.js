@@ -1,13 +1,15 @@
 "use strict";
 
-import Actions from "../../actions/actions";
-import _Selectable from "./_selectable";
+import Actions            from "src/actions/actions";
+import _Selectable        from "src/stores/model/_selectable";
+import {classWithTraits}  from "src/utils/traitUtils";
 
-class Layer extends _Selectable {
-  constructor(id, name, parentCompId, footage, effect, start, end) {
-    super(id);
+
+class Layer extends classWithTraits(null, _Selectable) {
+  constructor(id, name, parentCompId, entity, effect, start, end) {
+    super();
     Object.assign(this, {
-      name, parentCompId, footage, effect
+      id, name, parentCompId, entity, effect
     });
     this.layerStart = start;
     this.layerEnd = end;
@@ -20,9 +22,10 @@ class Layer extends _Selectable {
   }
 
   update(obj) {
-    object.assign(this, obj);
-    Actions.updateComposition(this);
+    Actions.updateLayer(Object.assign(this, obj));
   }
 }
 
-export default Layer;
+export default {
+  Layer: Layer,
+};

@@ -1,8 +1,9 @@
 "use strict";
 
-import React from "react";
+import React                      from "react";
 
-import File from "../stores/model/file";
+import {Footage, FootageKinds}    from "src/stores/model/footage";
+
 
 class Preview extends React.Component {
   render() {
@@ -11,16 +12,16 @@ class Preview extends React.Component {
     if (selectedItem === null) {
       previewContainer = <div className="preview__container none"></div>;
     }
-    else if (selectedItem instanceof File) {
-      if (selectedItem.type.indexOf("image/") === 0) {
+    else if (selectedItem instanceof Footage) {
+      if (selectedItem.getFootageKind() === FootageKinds.IMAGE) {
         previewContainer =
-          <div className="preview__container file image">
+          <div className="preview__container footage image">
             <img src={selectedItem.content} />
           </div>;
       }
-      else if(selectedItem.type.indexOf("video/") === 0) {
+      else if (selectedItem.getFootageKind() === FootageKinds.VIDEO) {
         previewContainer =
-          <div className="preview__container file video">
+          <div className="preview__container footage video">
             <video controls src={selectedItem.content} />
           </div>;
       }

@@ -1,3 +1,5 @@
+"use strict";
+
 const supportedImageTypes = [
   "image/gif",
   "image/png",

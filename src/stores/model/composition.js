@@ -1,9 +1,11 @@
 "use strict";
 
-import Actions from "../../actions/actions";
-import _Selectable from "./_selectable";
+import Actions              from "src/actions/actions";
+import _Selectable          from "src/stores/model/_selectable";
+import {classWithTraits}    from "src/utils/traitUtils";
 
-class Composition extends _Selectable {
+
+class Composition extends classWithTraits(null, _Selectable) {
   /**
    *
    * @param {string} id
@@ -14,17 +16,18 @@ class Composition extends _Selectable {
    * @param {int} fps
    */
   constructor(id, name, width, height, frame, fps) {
-    super(id);
+    super();
     Object.assign(this, {
-      name, width, height, frame, fps
+      id, name, width, height, frame, fps
     });
     this.layers = [];
   }
 
   update(obj) {
-    object.assign(this, obj);
-    Actions.updateComposition(this);
+    Actions.updateComposition(Object.assign(this, obj));
   }
 }
 
-export default Composition;
+export default {
+  Composition: Composition,
+};

@@ -1,15 +1,16 @@
 "use strict";
 
-import React from "react";
+import React              from "react";
 
-import Actions from "../actions/actions";
-import Item from "./project/item";
+import Actions            from "src/actions/actions";
+import Item               from "src/views/project/item";
+
 
 var Project = React.createClass({
   render() {
     let store = this.props.store;
 
-    let files = store.files.map((e) => {
+    let footages = store.footages.map((e) => {
       let isSelected = (e.id === store.idOfSelectingItem);
       return <Item item={e} key={e.id} isSelected={isSelected} />;
     });
@@ -22,7 +23,7 @@ var Project = React.createClass({
         <button onClick={this._onImportFileButtonClicked}>ファイルを読み込む</button>
         <button onClick={this._onCreateCompositionButtonClicked}>Create Composition</button>
         <ul>
-          {files}
+          {footages}
           {comps}
         </ul>
       </section>;

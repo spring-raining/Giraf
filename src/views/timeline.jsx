@@ -2,17 +2,20 @@
 
 import React from "react";
 
-import Summary from "./timeline/summary";
-import Layer from "./timeline/layer";
-import LayerHeader from "./timeline/layerHeader";
-import Actions from "../actions/actions";
-import Composition from "../stores/model/composition";
-import {DragAction, DragActionType} from "../stores/model/dragAction";
+import Actions                        from "src/actions/actions";
+import {Composition}                  from "src/stores/model/composition";
+import {DragAction, DragActionType}   from "src/stores/model/dragAction";
+import Summary                        from "src/views/timeline/summary";
+import Layer                          from "src/views/timeline/layer";
+import LayerHeader                    from "src/views/timeline/layerHeader";
+import TimeController                 from "src/views/timeline/timeController";
+import TimetableOverlay               from "src/views/timeline/timetableOverlay"
+
 
 var Timeline = React.createClass({
   getInitialState() {
     return {
-      timetableWidth: 1500,
+      timetableWidth: 1000,
       scrollTop: 0,
       scrollLeft: 0,
       dragSemaphore: 0, // become 1 or more when onDragOver
@@ -53,7 +56,8 @@ var Timeline = React.createClass({
                ref="header"
                onScroll={this._onScroll("header")}>
             <div className="timeline__header" style={{width: this.state.timetableWidth + "px"}}>
-              <button onClick={this._onCreateLayerButtonClicked}>Create Layer</button>
+              <TimeController composition={comp}
+                              currentFrame={store.currentFrame} />
             </div>
           </div>
           <div className="timeline__left-container scroll-area"
@@ -61,6 +65,7 @@ var Timeline = React.createClass({
                onScroll={this._onScroll("left")}>
             <div className="timeline__left">
               {layerHeaders}
+              <button onClick={this._onCreateLayerButtonClicked}>Create Layer</button>
             </div>
           </div>
           <div className="timeline__timetable-container scroll-area"
@@ -68,6 +73,8 @@ var Timeline = React.createClass({
                onScroll={this._onScroll("timetable")}>
             <div className="timeline__timetable" style={{width: this.state.timetableWidth + "px"}}>
               {layers}
+              <TimetableOverlay composition={comp}
+                                currentFrame={store.currentFrame} />
             </div>
           </div>
         </section>
@@ -118,7 +125,8 @@ var Timeline = React.createClass({
 
   _onDrop(e) {
     e.preventDefault();
-    if (this.props.store.dragging.type === DragActionType.FILE) {
+    if (this.props.store.dragging &&
+        this.props.store.dragging.type === DragActionType.FILE) {
       Actions.createLayer(
         this.props.store.access.getSelectedItem(),
         0,

@@ -1,16 +1,19 @@
 "use strict";
 
-import Dispatcher from "../dispatcher";
-import ActionConst from "./const";
-import GenUUID from "../utils/genUUID";
-import SelectFile from "../utils/selectFile";
-import _Selectable from "../stores/model/_selectable";
-import Composition from "../stores/model/composition";
-import Layer from "../stores/model/layer";
-import File from "../stores/model/file";
-import {DragAction, DragActionType} from "../stores/model/dragAction";
+import Dispatcher                     from "src/dispatcher";
+import ActionConst                    from "src/actions/const";
+import GenUUID                        from "src/utils/genUUID";
+import SelectFile                     from "src/utils/selectFile";
+import {hasTrait}                     from "src/utils/traitUtils";
+import _Selectable                    from "src/stores/model/_selectable";
+import {Composition}                  from "src/stores/model/composition";
+import {Layer}                        from "src/stores/model/layer";
+//import {Footage}                      from "src/stores/model/footage";
+import F                              from "src/stores/model/footage";
+import {DragAction, DragActionType}   from "src/stores/model/dragAction";
 
-const actions = {
+
+export default {
   importFile(file = null) {
     if (file) {
       Dispatcher.dispatch({
@@ -30,15 +33,15 @@ const actions = {
     }
   },
 
-  updateFile(file) {
+  updateFootage(footage) {
     Dispatcher.dispatch({
-      actionType: ActionConst.UPDATE_FILE,
-      file: file
+      actionType: ActionConst.UPDATE_FOOTAGE,
+      footage: footage
     });
   },
 
   changeSelectingItem(item) {
-    if (item === null || item instanceof _Selectable) {
+    if (item === null || hasTrait(item, _Selectable)) {
       Dispatcher.dispatch({
         actionType: ActionConst.CHANGE_SELECTING_ITEM,
         item: item
@@ -66,10 +69,10 @@ const actions = {
     }
   },
 
-  createLayer(parentComp, index = 0, footage = null) {
-    let lyr = (footage !== null && footage instanceof Layer)? footage
-      : (footage !== null)?
-        new Layer(GenUUID(), footage.name, parentComp.id, footage, {}, 0, 30)
+  createLayer(parentComp, index = 0, entity = null) {
+    let lyr = (entity !== null && entity instanceof Layer)? entity
+      : (entity !== null)?
+        new Layer(GenUUID(), entity.name, parentComp.id, entity, {}, 0, 30)
       : new Layer(GenUUID(), "new layer", parentComp.id, null, {}, 0, 30);
     if (lyr instanceof Layer) {
       Dispatcher.dispatch({
@@ -80,10 +83,19 @@ const actions = {
     }
   },
 
+  updateLayer(layer) {
+    if (layer instanceof Layer) {
+      Dispatcher.dispatch({
+        actionType: ActionConst.UPDATE_LAYER,
+        layer: layer
+      });
+    }
+  },
+
   startDrag(dragObj) {
     let dragAction = (dragObj instanceof DragAction)? dragObj : null;
     if (!dragAction) {
-      let type = (dragObj instanceof File) ? DragActionType.FILE
+      let type = (dragObj instanceof F.Footage) ? DragActionType.FOOTAGE
         : (dragObj instanceof Composition) ? DragActionType.COMPOSITION
         : (dragObj instanceof Layer) ?       DragActionType.LAYER
         : null;
@@ -104,6 +116,13 @@ const actions = {
       actionType: ActionConst.END_DRAG
     });
   },
-};
 
-export default actions;
+  updateCurrentFrame(frame) {
+    if (frame === null || typeof(frame) === "number") {
+      Dispatcher.dispatch({
+        actionType: ActionConst.UPDATE_CURRENT_FRAME,
+        currentFrame: frame
+      });
+    }
+  },
+};

@@ -10,7 +10,8 @@ gulp.task("browserify", function() {
   return browserify({
     entries: "./src/giraf.jsx",
     extensions: [".jsx", ".js"],
-    debug: true
+    debug: true,
+    paths: ["./node_modules/", "./"]
   }).transform(babelify)
     .bundle()
     .pipe(source("bundle.js"))

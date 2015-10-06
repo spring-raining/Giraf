@@ -13,4 +13,6 @@ export default keyMirror({
   START_DRAG: null,
   END_DRAG: null,
   UPDATE_CURRENT_FRAME: null,
+  RENDER_COMPOSITION: null,
+  RENDER_FRAME: null,
 });

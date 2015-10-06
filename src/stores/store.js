@@ -18,6 +18,7 @@ var _state = {
   idOfSelectingItem: null,
   dragging: null,
   currentFrame: null,
+  compositionFrameCache: {},
 };
 
 var Store = Object.assign({}, EventEmitter.prototype, {
@@ -119,6 +120,16 @@ Dispatcher.register((action) => {
         _state.currentFrame = action.currentFrame;
         Store.emitChange();
       }
+    }
+
+    else if (action.actionType === ActionConst.RENDER_FRAME) {
+      let cache = _state.compositionFrameCache;
+      if (!cache[action.composition.id]) {
+        cache[action.composition.id] = {};
+      }
+      cache[action.composition.id][action.frame] = action.canvas;
+      console.log(action.canvas);
+      Store.emitChange();
     }
 });
 

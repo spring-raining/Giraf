@@ -125,4 +125,36 @@ export default {
       });
     }
   },
+
+  renderComposition(composition) {
+
+  },
+
+  renderFrame(composition, frame) {
+    if (composition instanceof Composition
+    && frame !== null
+    && frame >= 0
+    && frame < composition.frame) {
+      let canvas = document.createElement("canvas");
+      canvas.width = composition.width;
+      canvas.height = composition.height;
+      let ctx = canvas.getContext("2d");
+
+      composition.render(frame).then(
+        (result) => {
+          ctx.drawImage(result, 0, 0);
+          Dispatcher.dispatch({
+            actionType: ActionConst.RENDER_FRAME,
+            canvas: canvas,
+            composition: composition,
+            frame: frame,
+          });
+        },
+        (error) => {
+          console.error(error);
+          console.warn("Rendering failed : " + composition.name);
+        }
+      );
+    }
+  },
 };

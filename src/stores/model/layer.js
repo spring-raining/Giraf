@@ -1,8 +1,10 @@
 "use strict";
 
-import Actions            from "src/actions/actions";
-import _Selectable        from "src/stores/model/_selectable";
-import {classWithTraits}  from "src/utils/traitUtils";
+import Actions                        from "src/actions/actions";
+import Footage                        from "src/stores/model/footage";
+import _Selectable                    from "src/stores/model/_selectable";
+import _Renderable                    from "src/stores/model/_renderable";
+import {classWithTraits, hasTrait}    from "src/utils/traitUtils";
 
 
 class Layer extends classWithTraits(null, _Selectable) {
@@ -23,6 +25,30 @@ class Layer extends classWithTraits(null, _Selectable) {
 
   update(obj) {
     Actions.updateLayer(Object.assign(this, obj));
+  }
+
+  capture(frame) {
+    return new Promise((resolve, reject) => {
+      try {
+        if (!this.entity
+          || !hasTrait(this.entity, _Renderable)
+          || frame < this.layerStart
+          || frame > this.layerEnd
+        ) {
+          resolve(null);
+        }
+
+        let r = this.layerEnd - this.layerStart;
+        let f = (frame + (r - (this.layerStart % r))) % r;
+        this.entity.render(f).then(
+          (result) => {
+            resolve(result);
+          },
+          (error) => { throw error });
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 }
 

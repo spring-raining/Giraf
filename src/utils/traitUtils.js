@@ -7,6 +7,8 @@
 
 const PRIVATE_TRAITS_KEY = "_traits";
 
+class _Base { }
+
 function mixinTraits(object, ...traits) {
   let _object = object;
   let _traits = [];
@@ -29,7 +31,7 @@ function mixinTraits(object, ...traits) {
       Array.prototype.push.apply(_traits, trait[PRIVATE_TRAITS_KEY]);
     }
     for (let name of Object.getOwnPropertyNames(trait)) {
-      if (name !== PRIVATE_TRAITS_KEY && _object.hasOwnProperty(name)) {
+      if (name !== PRIVATE_TRAITS_KEY && object.hasOwnProperty(name)) {
         props[name] = {
           value: trait[name],
           writable: true,
@@ -44,9 +46,15 @@ function mixinTraits(object, ...traits) {
 }
 
 function classWithTraits(baseClass, ...traits) {
-  class traitedClass extends baseClass { }
-  mixinTraits.apply(this, [traitedClass.prototype].concat(traits));
-  return traitedClass;
+  if (baseClass === null) {
+    class traitedClass extends _Base { }
+    mixinTraits.apply(this, [traitedClass.prototype].concat(traits));
+    return traitedClass;
+  } else {
+    class traitedClass extends baseClass { }
+    mixinTraits.apply(this, [traitedClass.prototype].concat(traits));
+    return traitedClass;
+  }
 }
 
 function hasTrait(object, trait) {

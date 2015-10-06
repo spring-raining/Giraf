@@ -27,6 +27,20 @@ var Timeline = React.createClass({
     this.timetableDOM = (_ = this.refs.timetable)? _.getDOMNode() : null;
     this.headerDOM    = (_ = this.refs.header)? _.getDOMNode() : null;
     this.leftDOM      = (_ = this.refs.left)? _.getDOMNode() : null;
+
+    let selectedItem = this.props.store.access.getSelectedItem();
+    let currentFrame = this.props.store.currentFrame;
+    if (selectedItem instanceof Composition
+    && currentFrame !== null) {
+      this._fetchFrameCache(selectedItem, currentFrame);
+    }
+  },
+
+  _fetchFrameCache(composition, frame) {
+    let frameCache = this.props.store.compositionFrameCache[composition.id];
+    if (!frameCache || !frameCache[frame]) {
+      Actions.renderFrame(composition, frame);
+    }
   },
 
   render() {
@@ -126,7 +140,7 @@ var Timeline = React.createClass({
   _onDrop(e) {
     e.preventDefault();
     if (this.props.store.dragging &&
-        this.props.store.dragging.type === DragActionType.FILE) {
+        this.props.store.dragging.type === DragActionType.FOOTAGE) {
       Actions.createLayer(
         this.props.store.access.getSelectedItem(),
         0,

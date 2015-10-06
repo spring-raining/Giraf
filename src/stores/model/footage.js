@@ -4,6 +4,7 @@ import keyMirror from "keymirror";
 
 import Actions            from "src/actions/actions";
 import _Selectable        from "src/stores/model/_selectable";
+import _Renderable        from "src/stores/model/_renderable";
 import {classWithTraits}  from "src/utils/traitUtils";
 
 
@@ -20,7 +21,7 @@ const FootageKinds = keyMirror({
   VIDEO: null,
 });
 
-class Footage extends classWithTraits(null, _Selectable) {
+class Footage extends classWithTraits(null, _Selectable, _Renderable) {
   /**
    *
    * @param {string} id
@@ -39,7 +40,12 @@ class Footage extends classWithTraits(null, _Selectable) {
 
   update(obj) {
     Object.assign(this, obj);
-    this.status = (this.content)? StatusTypes.NORMAL : StatusTypes.DYING;
+    if (this.content) {
+      this.status = StatusTypes.NORMAL;
+    };
+    if (obj.width > 0 && obj.height > 0) {
+      this._prepareCanvas(obj.width, obj.height);
+    }
     Actions.updateFootage(this);
   }
 
@@ -47,6 +53,53 @@ class Footage extends classWithTraits(null, _Selectable) {
     if      (this.type.indexOf("image/") === 0) return FootageKinds.IMAGE;
     else if (this.type.indexOf("video/") === 0) return FootageKinds.VIDEO;
     else                                        return FootageKinds.UNKNOWN;
+  }
+
+  render(time) {
+    return new Promise((resolve, reject) => {
+      try {
+        if (!this.canvas) {
+          throw Error("Canvas not created.");
+        }
+
+        this.context.clearRect(0, 0, this.width, this.height);
+        if (this.getFootageKind() === FootageKinds.IMAGE) {
+          let img = document.createElement("img");
+          img.src = this.content;
+          img.onload = () => {
+            this.context.drawImage(img, 0, 0);
+            resolve(this.canvas);
+          };
+        }
+        else if (this.getFootageKind() === FootageKinds.VIDEO) {
+          let video = document.createElement("video");
+          video.addEventListener("timeupdate", () => {
+            video.addEventListener("canplay", () => {
+              this.context.drawImage(video, 0, 0);
+              resolve(this.canvas);
+            });
+          });
+          video.src = this.content;
+          video.currentTime = time;
+        }
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  _prepareCanvas(width, height) {
+    return new Promise((resolve, reject) => {
+      try {
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.context = this.canvas.getContext("2d");
+        resolve(this.canvas);
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 }
 

@@ -64,14 +64,13 @@ var Timeline = React.createClass({
                  onDragEnter={this._onDragEnter}
                  onDragOver={this._onDragOver}
                  onDragLeave={this._onDragLeave}
-                 onDrop={this._onDrop}
-                 onWheel={this._onWheel}>
+                 onDrop={this._onDrop}>
           <div className="timeline__summary">
             {summary}
           </div>
           <div className="timeline__header-container scroll-area"
                ref="header"
-               onScroll={this._onScroll("header")}>
+               onWheel={this._onWheel("header")}>
             <div className="timeline__header" style={{width: this.state.timetableWidth + "px"}}>
               <TimeController composition={comp}
                               currentFrame={store.currentFrame} />
@@ -79,7 +78,7 @@ var Timeline = React.createClass({
           </div>
           <div className="timeline__left-container scroll-area"
                ref="left"
-               onScroll={this._onScroll("left")}>
+               onWheel={this._onWheel("left")}>
             <div className="timeline__left">
               {layerHeaders}
               <button onClick={this._onCreateLayerButtonClicked}>Create Layer</button>
@@ -87,7 +86,7 @@ var Timeline = React.createClass({
           </div>
           <div className="timeline__timetable-container scroll-area"
                ref="timetable"
-               onScroll={this._onScroll("timetable")}>
+               onWheel={this._onWheel("timetable")}>
             <div className="timeline__timetable" style={{width: this.state.timetableWidth + "px"}}>
               {layers}
               <TimetableOverlay composition={comp}
@@ -105,20 +104,33 @@ var Timeline = React.createClass({
     }
   },
 
-  _onScroll(scrollArea) {
-    return () => {
-      setTimeout(() => {
-        if (scrollArea === "timetable") {
-          this.headerDOM.scrollLeft    = this.timetableDOM.scrollLeft;
-          this.leftDOM.scrollTop       = this.timetableDOM.scrollTop;
-        }
-        else if (scrollArea === "header") {
-          this.timetableDOM.scrollLeft = this.headerDOM.scrollLeft;
-        }
-        else if (scrollArea === "left") {
-          this.timetableDOM.scrollTop  = this.leftDOM.scrollTop;
-        }
-      }, 0);
+  _onWheel(scrollArea) {
+    return (e) => {
+      if (e.altKey) {
+        e.stopPropagation();
+        e.preventDefault();
+        let width = this.state.timetableWidth;
+        let diff = width * e.deltaY * ZOOM_RATIO;
+        this.setState({
+          timetableWidth: Math.max(100, width + diff)
+        });
+        this.headerDOM.scrollLeft    += diff / 2;
+        this.timetableDOM.scrollLeft += diff / 2;
+      }
+      else {
+        setTimeout(() => {
+          if (scrollArea === "timetable") {
+            this.headerDOM.scrollLeft = this.timetableDOM.scrollLeft;
+            this.leftDOM.scrollTop = this.timetableDOM.scrollTop;
+          }
+          else if (scrollArea === "header") {
+            this.timetableDOM.scrollLeft = this.headerDOM.scrollLeft;
+          }
+          else if (scrollArea === "left") {
+            this.timetableDOM.scrollTop = this.leftDOM.scrollTop;
+          }
+        }, 0);
+      }
     }
   },
 
@@ -156,20 +168,6 @@ var Timeline = React.createClass({
         return;
       }
       Actions.createLayer(nowComp, 0, dropped.object);
-    }
-  },
-
-  _onWheel(e) {
-    if (e.altKey) {
-      e.stopPropagation();
-      e.preventDefault();
-      let width = this.state.timetableWidth;
-      let diff = width * e.deltaY * ZOOM_RATIO;
-      this.setState({
-        timetableWidth: Math.max(100, width + diff)
-      });
-      this.headerDOM.scrollLeft    += diff / 2;
-      this.timetableDOM.scrollLeft += diff / 2;
     }
   },
 });

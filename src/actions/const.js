@@ -15,4 +15,5 @@ export default keyMirror({
   UPDATE_CURRENT_FRAME: null,
   RENDER_COMPOSITION: null,
   RENDER_FRAME: null,
+  CLEAR_FRAME_CACHE: null,
 });

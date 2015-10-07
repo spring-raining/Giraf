@@ -157,4 +157,23 @@ export default {
       );
     }
   },
+  clearFrameCache(composition, frames=null) {
+    let _frames = frames;
+    if (frames === null) {
+      _frames = [];
+      for (let i=0; i < compostion.frame; i++) {
+        _frames.push(i);
+      }
+    }
+    if (typeof(frames) === "number") {
+      _frames = [frames];
+    }
+    if (_frames instanceof Array) {
+      Dispatcher.dispatch({
+        actionType: ActionConst.CLEAR_FRAME_CACHE,
+        composition: composition,
+        frames: frames.filter((e) => e >= 0 && e < composition.frame),
+      })
+    }
+  },
 };

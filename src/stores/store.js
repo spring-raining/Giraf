@@ -128,7 +128,17 @@ Dispatcher.register((action) => {
         cache[action.composition.id] = {};
       }
       cache[action.composition.id][action.frame] = action.canvas;
-      console.log(action.canvas);
+      Store.emitChange();
+    }
+
+    else if (action.actionType === ActionConst.CLEAR_FRAME_CACHE) {
+      let cache = _state.compositionFrameCache;
+      if (!cache[action.composition.id]) {
+        cache[action.composition.id] = {};
+      }
+      action.frames.forEach((e) => {
+        delete cache[action.composition.id][e];
+      });
       Store.emitChange();
     }
 });

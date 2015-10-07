@@ -139,12 +139,20 @@ var Timeline = React.createClass({
 
   _onDrop(e) {
     e.preventDefault();
-    if (this.props.store.dragging &&
-        this.props.store.dragging.type === DragActionType.FOOTAGE) {
-      Actions.createLayer(
-        this.props.store.access.getSelectedItem(),
-        0,
-        this.props.store.dragging.object);
+    let nowComp = this.props.store.access.getSelectedItem();
+    let dropped = this.props.store.dragging;
+    if (!dropped) {
+      return;
+    }
+    if (dropped.type === DragActionType.FOOTAGE) {
+      Actions.createLayer(nowComp, 0, dropped.object);
+    }
+    else if (dropped.type === DragActionType.COMPOSITION) {
+      if (dropped.object.id === nowComp.id) {
+        console.warn("Cannot create a layer of same composition.")
+        return;
+      }
+      Actions.createLayer(nowComp, 0, dropped.object);
     }
   }
 });

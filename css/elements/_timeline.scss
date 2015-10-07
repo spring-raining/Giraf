@@ -50,6 +50,7 @@
   .timeline__header {
     background-color: $color-timeline-header-bg;
     height: $timeline-summary-height;
+    min-width: 100%;
   }
 
   .timeline__time-controller {
@@ -75,6 +76,7 @@
   .timeline__timetable {
     position: relative;
     min-height: 100%;
+    min-width: 100%;
   }
 
   .timeline__timetable-overlay {

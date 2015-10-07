@@ -12,6 +12,8 @@ import TimeController                 from "src/views/timeline/timeController";
 import TimetableOverlay               from "src/views/timeline/timetableOverlay"
 
 
+var ZOOM_RATIO = 0.01;
+
 var Timeline = React.createClass({
   getInitialState() {
     return {
@@ -62,7 +64,8 @@ var Timeline = React.createClass({
                  onDragEnter={this._onDragEnter}
                  onDragOver={this._onDragOver}
                  onDragLeave={this._onDragLeave}
-                 onDrop={this._onDrop}>
+                 onDrop={this._onDrop}
+                 onWheel={this._onWheel}>
           <div className="timeline__summary">
             {summary}
           </div>
@@ -154,7 +157,21 @@ var Timeline = React.createClass({
       }
       Actions.createLayer(nowComp, 0, dropped.object);
     }
-  }
+  },
+
+  _onWheel(e) {
+    if (e.altKey) {
+      e.stopPropagation();
+      e.preventDefault();
+      let width = this.state.timetableWidth;
+      let diff = width * e.deltaY * ZOOM_RATIO;
+      this.setState({
+        timetableWidth: Math.max(100, width + diff)
+      });
+      this.headerDOM.scrollLeft    += diff / 2;
+      this.timetableDOM.scrollLeft += diff / 2;
+    }
+  },
 });
 
 export default Timeline;

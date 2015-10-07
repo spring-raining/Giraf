@@ -594,7 +594,8 @@ nav, .nav {
     padding-top: 40px; }
   .timeline .timeline__header {
     background-color: rgba(0, 0, 0, 0.7);
-    height: 40px; }
+    height: 40px;
+    min-width: 100%; }
   .timeline .timeline__time-controller {
     height: 100%; }
   .timeline .timeline__time-controller__cells-container {
@@ -621,7 +622,8 @@ nav, .nav {
     border-radius: 2px 2px 30% 30%/2px 2px 100% 100%; }
   .timeline .timeline__timetable {
     position: relative;
-    min-height: 100%; }
+    min-height: 100%;
+    min-width: 100%; }
   .timeline .timeline__timetable-overlay {
     position: absolute;
     top: 0;

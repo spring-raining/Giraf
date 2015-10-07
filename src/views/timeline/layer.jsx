@@ -3,6 +3,7 @@
 import React                      from "react";
 import KeyMirror                  from "keyMirror";
 
+import Actions                    from "src/actions/actions";
 import {Composition as ModelComp} from "src/stores/model/composition";
 import {Layer as ModelLayer}      from "src/stores/model/layer";
 import GenDummyImg                from "src/utils/genDummyImg";
@@ -163,24 +164,49 @@ var LayerTimetable = React.createClass({
     return (e) => {
       e.stopPropagation();
       let layer = this.props.layer;
+      var i;
+      let fill = (a, b) => {
+        let arr = [];
+        for (var i = Math.min(a, b); i < Math.max(a, b); i++) {
+          arr.push(i);
+        }
+        return arr;
+      };
+
       if (target === draggingTarget.ENTITY) {
+        let diff = this.getEntityDragDiff();
+        if (diff !== 0) {
+          let changedFrames = fill(Math.min(layer.layerStart, layer.layerStart + diff),
+                                   Math.max(layer.layerEnd,   layer.layerEnd + diff));
+          Actions.clearFrameCache(this.props.composition, changedFrames);
+        }
         layer.update({
-          layerStart: layer.layerStart + this.getEntityDragDiff(),
-          entityStart: layer.entityStart + this.getEntityDragDiff(),
-          layerEnd: layer.layerEnd + this.getEntityDragDiff(),
-          entityEnd: layer.entityEnd + this.getEntityDragDiff(),
+          layerStart:   layer.layerStart + diff,
+          entityStart:  layer.entityStart + diff,
+          layerEnd:     layer.layerEnd + diff,
+          entityEnd:    layer.entityEnd + diff,
         });
       }
       else if (target === draggingTarget.ENTITY_START) {
+        let diff = this.getEntityStartDragDiff();
+        if (diff !== 0) {
+          let changedFrames = fill(layer.layerStart, layer.layerStart + diff);
+          Actions.clearFrameCache(this.props.composition, changedFrames);
+        }
         layer.update({
-          layerStart: layer.layerStart + this.getEntityStartDragDiff(),
-          entityStart: layer.entityStart + this.getEntityStartDragDiff(),
-        })
+          layerStart:   layer.layerStart + diff,
+          entityStart:  layer.entityStart + diff,
+        });
       }
       else if (target === draggingTarget.ENTITY_END) {
+        let diff = this.getEntityEndDragDiff();
+        if (diff !== 0) {
+          let changedFrames = fill(layer.layerEnd, layer.layerEnd + diff);
+          Actions.clearFrameCache(this.props.composition, changedFrames);
+        }
         layer.update({
-          layerEnd: layer.layerEnd + this.getEntityEndDragDiff(),
-          entityEnd: layer.entityEnd + this.getEntityEndDragDiff(),
+          layerEnd:   layer.layerEnd + diff,
+          entityEnd:  layer.entityEnd + diff,
         })
       }
 

@@ -33,7 +33,7 @@ class Layer extends classWithTraits(null, _Selectable) {
         if (!this.entity
           || !hasTrait(this.entity, _Renderable)
           || frame < this.layerStart
-          || frame > this.layerEnd
+          || frame >= this.layerEnd
         ) {
           resolve(null);
         }

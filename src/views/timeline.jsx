@@ -10,6 +10,7 @@ import Layer                          from "src/views/timeline/layer";
 import LayerHeader                    from "src/views/timeline/layerHeader";
 import TimeController                 from "src/views/timeline/timeController";
 import TimetableOverlay               from "src/views/timeline/timetableOverlay"
+import genDummyImg                    from "src/utils/genDummyImg";
 
 
 var ZOOM_RATIO = 0.01;
@@ -187,7 +188,8 @@ var Timeline = React.createClass({
 
   _onLayerHeaderDragStart(layer, layerHeader) {
     return (e) => {
-      this.setState({draggingLayer: layer})
+      e.dataTransfer.setDragImage(genDummyImg(), 0, 0);
+      this.setState({draggingLayer: layer});
     };
   },
 

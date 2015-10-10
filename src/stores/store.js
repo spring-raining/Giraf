@@ -77,7 +77,7 @@ Dispatcher.register((action) => {
     }
 
     else if (action.actionType === ActionConst.UPDATE_COMPOSITION) {
-      if (searchById(_state.compositions)(action.comopsition.id)) {
+      if (searchById(_state.compositions)(action.composition.id)) {
         _state.compositions = _state.compositions.map((e) => {
           return (e.id === action.composition.id)? action.composition : e;
         });

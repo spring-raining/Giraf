@@ -16,12 +16,23 @@ var ZOOM_RATIO = 0.01;
 
 var Timeline = React.createClass({
   getInitialState() {
+    let selectedItem = this.props.store.access.getSelectedItem();
+
     return {
       timetableWidth: 1000,
       scrollTop: 0,
       scrollLeft: 0,
       dragSemaphore: 0, // become 1 or more when onDragOver
+      layers: null,
+      draggingLayer: null,
     };
+  },
+
+  componentWillReceiveProps(nextProps) {
+    let selectedItem = nextProps.store.access.getSelectedItem();
+    this.setState({
+      layers: (selectedItem instanceof Composition)? selectedItem.layers : null,
+    });
   },
 
   componentDidUpdate() {
@@ -52,11 +63,14 @@ var Timeline = React.createClass({
     if (selectedItem instanceof Composition) {
       let comp = selectedItem;
       let summary = <Summary composition={comp} />;
-      let layers = comp.layers.map((e) =>
+      let layers = this.state.layers.map((e) =>
         <Layer composition={comp} layer={e} key={e.id} />
       );
-      let layerHeaders = comp.layers.map((e) =>
-        <LayerHeader composition={comp} layer={e} key={e.id} />
+      let layerHeaders = this.state.layers.map((e) =>
+        <LayerHeader composition={comp} layer={e} key={e.id}
+                     onDragStart={this._onLayerHeaderDragStart}
+                     onDragEnter={this._onLayerHeaderDragEnter}
+                     onDragEnd={this._onLayerHeaderDragEnd} />
       );
 
       return (
@@ -169,6 +183,67 @@ var Timeline = React.createClass({
       }
       Actions.createLayer(nowComp, 0, dropped.object);
     }
+  },
+
+  _onLayerHeaderDragStart(layer, layerHeader) {
+    return (e) => {
+      this.setState({draggingLayer: layer})
+    };
+  },
+
+  _onLayerHeaderDragEnter(layer, layerHeader) {
+    return (e) => {
+      let layers = this.state.layers;
+      let draggingLayer = this.state.draggingLayer;
+      if (draggingLayer === null) {
+        return;
+      }
+      let srcIndex = layers.map(e => e.id).indexOf(draggingLayer.id);
+      let dstIndex = layers.map(e => e.id).indexOf(layer.id);
+      if (srcIndex < dstIndex) {
+        this.setState({layers:
+          layers.slice(0, srcIndex).concat(
+            layer,
+            layers.slice(srcIndex + 1, dstIndex),
+            draggingLayer,
+            layers.slice(dstIndex + 1)
+          ),
+        });
+      }
+      else if (srcIndex > dstIndex) {
+        this.setState({layers:
+          layers.slice(0, dstIndex).concat(
+            draggingLayer,
+            layers.slice(dstIndex + 1, srcIndex),
+            layer,
+            layers.slice(srcIndex + 1)
+          ),
+        });
+      }
+    };
+  },
+
+  _onLayerHeaderDragEnd(layer, layerHeader) {
+    return (e) => {
+      let comp = this.props.store.access.getSelectedItem();
+      let clearingFrames = new Array(comp.frame).fill(0);
+
+      for (var i = 0; i < this.state.layers.length; i++) {
+        let layer = this.state.layers[i];
+        if (layer.id === comp.layers[i].id) {
+          continue;
+        }
+        for (var j = layer.layerStart; j < layer.layerEnd; j++) {
+          clearingFrames[i] += 1;
+        }
+      }
+      Actions.clearFrameCache(comp,
+        clearingFrames.map((e, i) => i)
+                      .filter((e) => clearingFrames[e] > 0));
+
+      comp.update({layers: this.state.layers});
+      this.setState({draggingLayer: null});
+    };
   },
 });
 

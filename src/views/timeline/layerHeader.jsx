@@ -12,6 +12,9 @@ export default React.createClass({
     return {
       composition: React.PropTypes.instanceOf(ModelComp).isRequired,
       layer: React.PropTypes.instanceOf(ModelLayer).isRequired,
+      onDragStart: React.PropTypes.func.isRequired,
+      onDragEnter: React.PropTypes.func.isRequired,
+      onDragEnd: React.PropTypes.func.isRequired,
     };
   },
 
@@ -22,17 +25,25 @@ export default React.createClass({
     return (
       <div className="timeline__layer-header" draggable="true"
            onDragStart={this._onDragStart}
+           onDragEnter={this._onDragEnter}
            onDragEnd={this._onDragEnd}>
         <span className="timeline__layer-header__name">{layer.name}</span>
       </div>
     );
   },
 
-  _onDragStart() {
-    Actions.startDrag(this.props.layer);
+  _onDragStart(e) {
+    e.stopPropagation();
+    this.props.onDragStart(this.props.layer, this)(e);
   },
 
-  _onDragEnd() {
-    Actions.endDrag(this.props.layer);
+  _onDragEnter(e) {
+    e.stopPropagation();
+    this.props.onDragEnter(this.props.layer, this)(e);
+  },
+
+  _onDragEnd(e) {
+    e.stopPropagation();
+    this.props.onDragEnd(this.props.layer, this)(e);
   },
 });

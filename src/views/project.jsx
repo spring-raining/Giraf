@@ -11,12 +11,17 @@ var Project = React.createClass({
     let store = this.props.store;
 
     let footages = store.footages.map((e) => {
-      let isSelected = (e.id === store.idOfSelectingItem);
-      return <Item item={e} key={e.id} isSelected={isSelected} />;
+      let isSelected = (store.selectingItem && e.id === store.selectingItem.id);
+      return <Item item={e} key={e.id}
+                   isSelected={isSelected}
+                   isEdited={false} />;
     });
     let comps = store.compositions.map((e) => {
-      let isSelected = (e.id === store.idOfSelectingItem);
-      return <Item item={e} key={e.id} isSelected={isSelected} />;
+      let isSelected = (store.selectingItem && e.id === store.selectingItem.id);
+      let isEdited   = (store.editingComposition && e.id === store.editingComposition.id);
+      return <Item item={e} key={e.id}
+                   isSelected={isSelected}
+                   isEdited={isEdited} />;
     });
 
     return <section className="project panel">

@@ -560,10 +560,18 @@ nav, .nav {
       margin: 4px;
       padding: 4px;
       padding: 0;
-      background-color: #939187;
-      border: 2px solid #e2c710; }
+      background-color: #939187; }
       .project .project__item.selected .project-piece-thumbnail-container {
         height: 78px; }
+    .project .project__item.edited::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      border: 2px solid #e2c710;
+      border-radius: 2px; }
     .project .project__item.loading {
       color: #888; }
     .project .project__item > * {
@@ -588,7 +596,7 @@ nav, .nav {
       bottom: 0;
       left: 0;
       right: 0; }
-  .preview .preview__container__footage {
+  .preview .preview__footage-container {
     background-color: #000; }
 
 .timeline {

@@ -15,7 +15,9 @@ const CHANGE_EVENT = "change";
 var _state = {
   footages: [],
   compositions: [],
-  idOfSelectingItem: null,
+  selectingItem: null,
+  editingComposition: null,
+  editingLayer: null,
   dragging: null,
   currentFrame: null,
   compositionFrameCache: {},
@@ -67,7 +69,18 @@ Dispatcher.register((action) => {
     }
 
     else if (action.actionType === ActionConst.CHANGE_SELECTING_ITEM) {
-      _state.idOfSelectingItem = (action.item)? action.item.id : null;
+      _state.selectingItem = action.item;
+      Store.emitChange();
+    }
+
+    else if (action.actionType === ActionConst.CHANGE_EDITING_COMPOSITION) {
+      _state.editingComposition = action.composition;
+      _state.editingLayer = null;
+      Store.emitChange();
+    }
+
+    else if (action.actionType === ActionConst.CHANGE_EDITING_LAYER) {
+      _state.editingLayer = action.layer;
       Store.emitChange();
     }
 

@@ -13,6 +13,7 @@ export default React.createClass({
         React.PropTypes.instanceOf(Composition),
       ]).isRequired,
       isSelected: React.PropTypes.boolean.isRequired,
+      isEdited: React.PropTypes.boolean.ieRequired,
     }
   },
 
@@ -25,12 +26,14 @@ export default React.createClass({
     }
     else if (this.props.item instanceof Composition) {
       className += " composition "
-                  + (this.props.isSelected? " selected" : "");
+                  + (this.props.isSelected? " selected" : "")
+                  + (this.props.isEdited?   " edited" : "");
     }
 
     return (
       <li className={className} draggable="true"
           onClick={this._onClick}
+          onDoubleClick={this._onDoubleClick}
           onDragStart={this._onDragStart}
           onDragEnd={this._onDragEnd}>
         <span className="project__item__title">{this.props.item.name}</span>
@@ -40,6 +43,15 @@ export default React.createClass({
 
   _onClick() {
     Actions.changeSelectingItem(this.props.item);
+  },
+
+  _onDoubleClick() {
+    if (this.props.item instanceof Composition) {
+      Actions.changeEditingComposition(this.props.item);
+    }
+    else {
+      Actions.changeEditingComposition(null);
+    }
   },
 
   _onDragStart() {

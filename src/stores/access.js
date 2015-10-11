@@ -2,7 +2,7 @@
 
 var access = (store) => {
   return {
-    getSelectedItem() {
+    /*getSelectedItem() {
       var file = store.footages.filter((e) => e.id === store.idOfSelectingItem);
       var comp = store.compositions.filter((e) => e.id === store.idOfSelectingItem);
       if (file.length > 0) {
@@ -14,7 +14,7 @@ var access = (store) => {
       else {
         return null;
       }
-    }
+    }*/
   }
 };
 

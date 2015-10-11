@@ -17,8 +17,6 @@ var ZOOM_RATIO = 0.01;
 
 var Timeline = React.createClass({
   getInitialState() {
-    let selectedItem = this.props.store.access.getSelectedItem();
-
     return {
       timetableWidth: 1000,
       scrollTop: 0,
@@ -30,9 +28,9 @@ var Timeline = React.createClass({
   },
 
   componentWillReceiveProps(nextProps) {
-    let selectedItem = nextProps.store.access.getSelectedItem();
+    let comp = nextProps.store.editingComposition;
     this.setState({
-      layers: (selectedItem instanceof Composition)? selectedItem.layers : null,
+      layers: (comp)? comp.layers : null,
     });
   },
 
@@ -42,11 +40,10 @@ var Timeline = React.createClass({
     this.headerDOM    = (_ = this.refs.header)? _.getDOMNode() : null;
     this.leftDOM      = (_ = this.refs.left)? _.getDOMNode() : null;
 
-    let selectedItem = this.props.store.access.getSelectedItem();
+    let comp = this.props.store.editingComposition;
     let currentFrame = this.props.store.currentFrame;
-    if (selectedItem instanceof Composition
-    && currentFrame !== null) {
-      this._fetchFrameCache(selectedItem, currentFrame);
+    if (comp && currentFrame !== null) {
+      this._fetchFrameCache(comp, currentFrame);
     }
   },
 
@@ -59,10 +56,9 @@ var Timeline = React.createClass({
 
   render() {
     let store = this.props.store;
-    let selectedItem = store.access.getSelectedItem();
+    let comp = store.editingComposition;
 
-    if (selectedItem instanceof Composition) {
-      let comp = selectedItem;
+    if (comp) {
       let summary = <Summary composition={comp} />;
       let layers = this.state.layers.map((e) =>
         <Layer composition={comp} layer={e} key={e.id} />
@@ -150,7 +146,11 @@ var Timeline = React.createClass({
   },
 
   _onCreateLayerButtonClicked() {
-    Actions.createLayer(this.props.store.access.getSelectedItem());
+    let comp = this.props.store.editingComposition;
+    if (!comp) {
+      return;
+    }
+    Actions.createLayer(comp);
   },
 
   _onDragEnter(e) {
@@ -169,7 +169,10 @@ var Timeline = React.createClass({
 
   _onDrop(e) {
     e.preventDefault();
-    let nowComp = this.props.store.access.getSelectedItem();
+    let nowComp = this.props.store.editingComposition;
+    if (!nowComp) {
+      return;
+    }
     let dropped = this.props.store.dragging;
     if (!dropped) {
       return;
@@ -227,7 +230,10 @@ var Timeline = React.createClass({
 
   _onLayerHeaderDragEnd(layer, layerHeader) {
     return (e) => {
-      let comp = this.props.store.access.getSelectedItem();
+      let comp = this.props.store.editingComposition;
+      if (!comp) {
+        return;
+      }
       let clearingFrames = new Array(comp.frame).fill(0);
 
       for (var i = 0; i < this.state.layers.length; i++) {

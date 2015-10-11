@@ -17,10 +17,22 @@
       @include giraf-card(2);
       padding: 0;
       background-color: lighten($color-project-card-bg, 10%);
-      border: 2px solid $color-giraf;
 
       .project-piece-thumbnail-container {
         height: $project-file-height + 20px;
+      }
+    }
+
+    &.edited {
+      &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border: 2px solid $color-giraf;
+        border-radius: 2px;
       }
     }
 

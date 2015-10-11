@@ -29,11 +29,11 @@ var App = React.createClass({
     let dragging = (_ = this.state.dragging)? _.type : null;
 
     return (
-      <div class="app" data-giraf-dragging={dragging}>
-        <div class="app__nav">
+      <div className="app" data-giraf-dragging={dragging}>
+        <div className="app__nav">
           <Nav store={this.state} />
         </div>
-        <div class="app__main">
+        <div className="app__main">
           <Split split="vertical" minSize="30" defaultSize="30%">
             <Project store={this.state} />
             <Split split="horizontal" minSize="30" defaultSize="50%">

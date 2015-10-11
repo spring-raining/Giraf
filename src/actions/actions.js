@@ -69,6 +69,24 @@ export default {
     }
   },
 
+  changeEditingComposition(composition) {
+    if (composition === null || composition instanceof Composition) {
+      Dispatcher.dispatch({
+        actionType: ActionConst.CHANGE_EDITING_COMPOSITION,
+        composition: composition
+      });
+    }
+  },
+
+  changeEditingLayer(layer) {
+    if (layer === null || layer instanceof Layer) {
+      Dispatcher.dispatch({
+        actionType: ActionConst.CHANGE_EDITING_LAYER,
+        layer: layer
+      });
+    }
+  },
+
   createLayer(parentComp, index = 0, entity = null) {
     let lyr = (entity !== null && entity instanceof Layer)? entity
       : (entity !== null)?

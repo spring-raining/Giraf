@@ -1,7 +1,6 @@
 "use strict";
 
 import React                  from "react";
-import {Layout, Flex, Fixed}  from "react-layout-pane";
 import Split                  from "react-split-pane";
 
 import Store                  from "src/stores/store";
@@ -29,12 +28,12 @@ var App = React.createClass({
     var _;
     let dragging = (_ = this.state.dragging)? _.type : null;
 
-    return <div data-giraf-dragging={dragging}>
-      <Layout type="column">
-        <Fixed>
+    return (
+      <div class="app" data-giraf-dragging={dragging}>
+        <div class="app__nav">
           <Nav store={this.state} />
-        </Fixed>
-        <Flex>
+        </div>
+        <div class="app__main">
           <Split split="vertical" minSize="30" defaultSize="30%">
             <Project store={this.state} />
             <Split split="horizontal" minSize="30" defaultSize="50%">
@@ -45,9 +44,9 @@ var App = React.createClass({
               <Timeline store={this.state} />
             </Split>
           </Split>
-        </Flex>
-      </Layout>
-    </div>;
+        </div>
+      </div>
+    );
   },
 
   _onChange() {

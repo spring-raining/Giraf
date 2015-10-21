@@ -46,6 +46,7 @@ var TimeControllerCells = React.createClass({
   _onMouseDown(index) {
     return (e) => {
       e.stopPropagation();
+      Actions.play(false);
       Actions.updateCurrentFrame(index);
     };
   },
@@ -54,6 +55,7 @@ var TimeControllerCells = React.createClass({
     return (e) => {
       e.stopPropagation();
       if (e.buttons % 2 === 1) {    // left button pressed
+        Actions.play(false);
         Actions.updateCurrentFrame(index);
       }
     };

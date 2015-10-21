@@ -5,6 +5,9 @@ import ActionConst                    from "src/actions/const";
 import GenUUID                        from "src/utils/genUUID";
 import SelectFile                     from "src/utils/selectFile";
 import {hasTrait}                     from "src/utils/traitUtils";
+import {renderFrameAsync, renderFrameAutomatically as autoRender}
+                                      from "src/utils/renderUtils";
+import Store                          from "src/stores/store";
 import _Selectable                    from "src/stores/model/_selectable";
 import {Composition}                  from "src/stores/model/composition";
 import {Layer}                        from "src/stores/model/layer";
@@ -149,32 +152,52 @@ export default {
   },
 
   renderFrame(composition, frame) {
-    if (composition instanceof Composition
-    && frame !== null
-    && frame >= 0
-    && frame < composition.frame) {
-      let canvas = document.createElement("canvas");
-      canvas.width = composition.width;
-      canvas.height = composition.height;
-      let ctx = canvas.getContext("2d");
-
-      composition.render(frame).then(
-        (result) => {
-          ctx.drawImage(result, 0, 0);
-          Dispatcher.dispatch({
-            actionType: ActionConst.RENDER_FRAME,
-            canvas: canvas,
-            composition: composition,
-            frame: frame,
-          });
-        },
-        (error) => {
-          console.error(error);
-          console.warn("Rendering failed : " + composition.name);
-        }
-      );
+    if (!composition instanceof Composition) {
+      return;
     }
+    renderFrameAsync(composition, frame).then(
+      (result) => {
+        Dispatcher.dispatch({
+          actionType: ActionConst.RENDER_FRAME,
+          canvas: result,
+          composition: composition,
+          frame: frame,
+        });
+      },
+      (error) => {
+        console.error(error);
+        console.warn("Rendering failed : " + composition.name);
+      }
+    );
   },
+
+  renderFrameAutomatically(composition) {
+    let firstFrame = Store.get("currentFrame");
+    if (firstFrame === null) {
+      this.updateCurrentFrame(0);
+      firstFrame = 0;
+    }
+
+    autoRender(
+      composition,
+      firstFrame,
+      (frame) => {
+        this.updateCurrentFrame(frame)
+      },
+      (canvas, frame) => {
+        Dispatcher.dispatch({
+          actionType: ActionConst.RENDER_FRAME,
+          canvas: canvas,
+          composition: composition,
+          frame: frame,
+        });
+      },
+      (error) => {
+        console.error(error);
+        console.warn("Rendering failed : " + composition.name);
+      });
+  },
+
   clearFrameCache(composition, frames=null) {
     let _frames = frames;
     if (frames === null) {
@@ -193,5 +216,47 @@ export default {
         frames: frames.filter((e) => e >= 0 && e < composition.frame),
       })
     }
+  },
+
+  togglePlay() {
+    let playing = Store.get("playing");
+    this.play(!playing);
+  },
+
+  play(play) {
+    if (typeof(play) !== "boolean") {
+      return;
+    }
+    Dispatcher.dispatch({
+      actionType: ActionConst.PLAY,
+      play: play,
+    });
+    //let selectingItem = Store.get("selectingItem");
+    //if (play && selectingItem instanceof Composition) {
+    //  this._renderFrameAutomatically(selectingItem);
+    //}
+  },
+
+  _createCanvasWithRenderedFrame(composition, frame) {
+    return new Promise((resolve,reject) => {
+      try {
+        let canvas = document.createElement("canvas");
+        canvas.width = composition.width;
+        canvas.height = composition.height;
+        let ctx = canvas.getContext("2d");
+
+        composition.render(frame).then(
+          (result) => {
+            ctx.drawImage(result, 0, 0);
+            resolve(canvas);
+          },
+          (error) => {
+            throw error;
+          }
+        );
+      } catch (e) {
+        reject(e);
+      }
+    });
   },
 };

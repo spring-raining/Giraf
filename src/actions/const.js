@@ -18,4 +18,5 @@ export default keyMirror({
   RENDER_COMPOSITION: null,
   RENDER_FRAME: null,
   CLEAR_FRAME_CACHE: null,
+  PLAY: null,
 });

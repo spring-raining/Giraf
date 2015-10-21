@@ -21,9 +21,14 @@ var _state = {
   dragging: null,
   currentFrame: null,
   compositionFrameCache: {},
+  playing: false,
 };
 
 var Store = Object.assign({}, EventEmitter.prototype, {
+  get: function(key) {
+    return _state[key];
+  },
+
   getAll: function() {
     return Object.assign(_state, {access: Access(_state)});
   },
@@ -70,17 +75,20 @@ Dispatcher.register((action) => {
 
     else if (action.actionType === ActionConst.CHANGE_SELECTING_ITEM) {
       _state.selectingItem = action.item;
+      _state.playing = false;
       Store.emitChange();
     }
 
     else if (action.actionType === ActionConst.CHANGE_EDITING_COMPOSITION) {
       _state.editingComposition = action.composition;
       _state.editingLayer = null;
+      _state.playing = false;
       Store.emitChange();
     }
 
     else if (action.actionType === ActionConst.CHANGE_EDITING_LAYER) {
       _state.editingLayer = action.layer;
+      _state.playing = false;
       Store.emitChange();
     }
 
@@ -153,6 +161,13 @@ Dispatcher.register((action) => {
         delete cache[action.composition.id][e];
       });
       Store.emitChange();
+    }
+
+    else if (action.actionType === ActionConst.PLAY) {
+      if (action.play !== _state.playing) {
+        _state.playing = action.play;
+        Store.emitChange();
+      }
     }
 });
 

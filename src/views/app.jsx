@@ -2,7 +2,9 @@
 
 import React                  from "react";
 import Split                  from "react-split-pane";
+import Mousetrap              from "mousetrap";
 
+import Actions                from "src/actions/actions";
 import Store                  from "src/stores/store";
 import Nav                    from "src/views/nav";
 import Project                from "src/views/project";
@@ -17,11 +19,18 @@ var App = React.createClass({
   },
 
   componentDidMount() {
+    this.setKeyEvents();
     Store.addChangeListener(this._onChange);
   },
 
   componentWillUnMount() {
     Store.removeChangeListener(this._onChange);
+  },
+
+  setKeyEvents() {
+    Mousetrap.bind("space", () => {
+      Actions.togglePlay();
+    });
   },
 
   render() {

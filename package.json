@@ -27,6 +27,7 @@
     "gulp": "^3.9.0",
     "gulp-sass": "^2.0.4",
     "keymirror": "^0.1.1",
+    "mousetrap": "^1.5.3",
     "react": "^0.13.3",
     "react-split-pane": "^0.1.10",
     "run-sequence": "^1.1.3",

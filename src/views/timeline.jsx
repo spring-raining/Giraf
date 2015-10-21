@@ -24,6 +24,7 @@ var Timeline = React.createClass({
       dragSemaphore: 0, // become 1 or more when onDragOver
       layers: null,
       draggingLayer: null,
+      executingAutoRender: false,
     };
   },
 
@@ -34,7 +35,7 @@ var Timeline = React.createClass({
     });
   },
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     var _;
     this.timetableDOM = (_ = this.refs.timetable)? _.getDOMNode() : null;
     this.headerDOM    = (_ = this.refs.header)? _.getDOMNode() : null;
@@ -42,12 +43,33 @@ var Timeline = React.createClass({
 
     let comp = this.props.store.editingComposition;
     let currentFrame = this.props.store.currentFrame;
-    if (comp && currentFrame !== null) {
-      this._fetchFrameCache(comp, currentFrame);
+    if (comp != null) {
+      // start auto render
+      if (this.props.store.selectingItem.id === comp.id
+      &&  this.props.store.playing
+      &&  !prevProps.store.palying
+      &&  !this.state.executingAutoRender) {
+        this.setState({
+          executingAutoRender: true,
+        });
+        Actions.renderFrameAutomatically(comp);
+      }
+
+      // render current frame
+      else if (!this.props.store.playing && currentFrame !== null) {
+        this._createFrameCache(comp, currentFrame);
+      }
+    }
+
+    // end auto render
+    if (!this.props.store.playing && prevProps.store.playing) {
+      this.setState({
+        executingAutoRender: false,
+      });
     }
   },
 
-  _fetchFrameCache(composition, frame) {
+  _createFrameCache(composition, frame) {
     let frameCache = this.props.store.compositionFrameCache[composition.id];
     if (!frameCache || !frameCache[frame]) {
       Actions.renderFrame(composition, frame);

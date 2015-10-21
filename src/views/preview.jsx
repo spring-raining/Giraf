@@ -7,12 +7,12 @@ import {Composition}              from "src/stores/model/composition";
 
 
 var Preview = React.createClass({
-  componentWillUpdate() {
-    if (this.refs.compositionContainer) {
-      let dom = this.refs.compositionContainer.getDOMNode();
-      while (dom.firstChild) {
-        dom.removeChild(dom.firstChild);
-      }
+  componentWillUpdate(nextProps, nextState) {
+    let selectingItem = nextProps.store.selectingItem;
+
+    if (this.refs.compositionContainer
+    &&  !(selectingItem instanceof Composition)) {
+      this._flushDOM(this.refs.compositionContainer.getDOMNode());
     }
   },
 
@@ -20,17 +20,59 @@ var Preview = React.createClass({
     let store = this.props.store;
     let selectingItem = store.selectingItem;
 
-    // insert canvas into DOM
-    if (selectingItem !== null
-    &&  selectingItem instanceof Composition) {
-      let _ = store.compositionFrameCache;
-      let frameCache = (_ = _[selectingItem.id])?
-                       (_ = _[store.currentFrame])? _ : null : null;
+    if (selectingItem !== null) {
 
-      let dom = this.refs.compositionContainer.getDOMNode();
+      // insert canvas into DOM
+      if (selectingItem instanceof Composition) {
+        this._updatePreviewCompositionDOM(selectingItem);
+      }
+
+      // play video
+      if (selectingItem instanceof Footage
+      &&  selectingItem.getFootageKind() === FootageKinds.VIDEO) {
+        let dom = this.refs.video.getDOMNode();
+        if (store.playing) {
+          dom.play();
+        }
+        else {
+          dom.pause();
+        }
+      }
+
+    }
+  },
+
+  _updatePreviewCompositionDOM(composition) {
+    var _;
+    let store = this.props.store;
+    if (!this.refs.compositionContainer) {
+      return;
+    }
+    let dom = this.refs.compositionContainer.getDOMNode();
+
+    _ = store.compositionFrameCache;
+    let frameCache = !(_ = _[composition.id]) ? null
+                   : !(_ = _[store.currentFrame]) ? null
+                   : _;
+    // lazy update mode
+    if (store.playing) {
+      if (frameCache) {
+        this._flushDOM(dom);
+        dom.appendChild(frameCache);
+      }
+    }
+    // sync with currentFrame
+    else {
+      this._flushDOM(dom);
       if (frameCache) {
         dom.appendChild(frameCache);
       }
+    }
+  },
+
+  _flushDOM(dom) {
+    while (dom.firstChild) {
+      dom.removeChild(dom.firstChild);
     }
   },
 
@@ -51,7 +93,8 @@ var Preview = React.createClass({
       else if (selectingItem.getFootageKind() === FootageKinds.VIDEO) {
         previewContainer =
           <div className="preview__container preview__footage-container">
-            <video controls src={selectingItem.content} />
+            <video controls src={selectingItem.content}
+                   ref="video" />
           </div>;
       }
     }

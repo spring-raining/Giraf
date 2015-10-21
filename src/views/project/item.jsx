@@ -1,3 +1,5 @@
+"use strict";
+
 import React from "react";
 
 import Actions              from "src/actions/actions";

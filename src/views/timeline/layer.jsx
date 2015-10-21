@@ -228,6 +228,8 @@ export default React.createClass({
     return {
       composition: React.PropTypes.instanceOf(ModelComp).isRequired,
       layer: React.PropTypes.instanceOf(ModelLayer).isRequired,
+      onClick: React.PropTypes.func.isRequired,
+      isEdited: React.PropTypes.boolean.isRequired,
     };
   },
 
@@ -244,16 +246,26 @@ export default React.createClass({
                                className="timeline__layer-cell" />);
     }
 
-    return <div className="timeline__layer">
-      <div className="timeline__layer-flex-container">
-        <div className="timeline__layer-flex">
-          {cells}
+    let className = "timeline__layer"
+                  + (this.props.isEdited? " edited" : "");
+
+    return (
+      <div className={className}
+           onClick={this._onClick}>
+        <div className="timeline__layer-flex-container">
+          <div className="timeline__layer-flex">
+            {cells}
+          </div>
+        </div>
+        <div className="timeline__layer-flex-container">
+          <LayerTimetable layer={this.props.layer}
+                          composition={this.props.composition} />
         </div>
       </div>
-      <div className="timeline__layer-flex-container">
-        <LayerTimetable layer={this.props.layer}
-                        composition={this.props.composition} />
-      </div>
-    </div>;
+    );
+  },
+
+  _onClick() {
+    this.props.onClick(this.props.layer);
   },
 });

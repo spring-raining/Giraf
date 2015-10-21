@@ -610,144 +610,171 @@ nav, .nav {
   .timeline .scroll-area {
     position: absolute;
     overflow: scroll; }
-  .timeline .timeline__summary {
-    z-index: 4;
-    position: absolute;
-    width: 180px;
-    height: 40px;
-    overflow: hidden;
-    background-color: #33322f; }
-  .timeline .timeline__header-container {
-    z-index: 3;
-    top: 0;
-    left: 180px;
-    right: 0; }
-  .timeline .timeline__left-container {
-    z-index: 2;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 180px;
-    padding-top: 40px; }
-  .timeline .timeline__timetable-container {
-    z-index: 1;
-    top: 0;
-    bottom: 0;
-    left: 180px;
-    right: 0;
-    padding-top: 40px; }
-  .timeline .timeline__header {
-    background-color: rgba(0, 0, 0, 0.7);
-    height: 40px;
-    min-width: 100%; }
-  .timeline .timeline__time-controller {
-    height: 100%; }
-  .timeline .timeline__time-controller__cells-container {
-    height: 100%;
-    display: -webkit-box;
-    display: -moz-box;
-    display: box;
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-lines: single;
-    -moz-box-lines: single;
-    box-lines: single;
-    -webkit-flex-wrap: nowrap;
-    -moz-flex-wrap: nowrap;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap; }
-    .timeline .timeline__time-controller__cells-container > * {
-      width: 0; }
-  .timeline .timeline__time-controller__handle {
-    background-color: #e2c710;
-    box-shadow: rgba(90, 30, 18, 0.5) 0 0 12px 0 inset;
-    border-radius: 2px 2px 30% 30%/2px 2px 100% 100%; }
-  .timeline .timeline__timetable {
-    position: relative;
-    min-height: 100%;
-    min-width: 100%; }
-  .timeline .timeline__timetable-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: -webkit-box;
-    display: -moz-box;
-    display: box;
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-lines: single;
-    -moz-box-lines: single;
-    box-lines: single;
-    -webkit-flex-wrap: nowrap;
-    -moz-flex-wrap: nowrap;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap; }
-    .timeline .timeline__timetable-overlay > * {
-      height: 100%;
-      width: 0; }
-  .timeline .timeline__timetable-overlay__controller {
-    border: 1px solid #FF53B2;
-    background-color: rgba(255, 83, 178, 0.1); }
-  .timeline .timeline__layer,
-  .timeline .timeline__layer-header {
-    height: 80px;
-    border-bottom: 1px solid #464440; }
-  .timeline .timeline__layer-header,
-  .timeline .timeline__summary {
-    border-right: 2px solid #464440; }
-  .timeline .timeline__layer {
-    position: relative; }
-  .timeline .timeline__layer-flex-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%; }
-  .timeline .timeline__layer-flex {
-    height: 100%;
-    display: -webkit-box;
-    display: -moz-box;
-    display: box;
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-lines: single;
-    -moz-box-lines: single;
-    box-lines: single;
-    -webkit-flex-wrap: nowrap;
-    -moz-flex-wrap: nowrap;
-    -ms-flex-wrap: nowrap;
-    flex-wrap: nowrap; }
-  .timeline .timeline__layer-cell {
-    height: 100%;
-    width: 0;
-    -webkit-flex-grow: 1;
-    -moz-flex-grow: 1;
-    flex-grow: 1;
-    -ms-flex-positive: 1;
-    border-right: 1px solid #464440; }
-  .timeline .timeline__layer-timetable > * {
+
+.timeline__summary {
+  z-index: 4;
+  position: absolute;
+  width: 180px;
+  height: 40px;
+  overflow: hidden;
+  background-color: #33322f; }
+
+.timeline__header-container {
+  z-index: 3;
+  top: 0;
+  left: 180px;
+  right: 0; }
+
+.timeline__left-container {
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 180px;
+  padding-top: 40px; }
+
+.timeline__timetable-container {
+  z-index: 1;
+  top: 0;
+  bottom: 0;
+  left: 180px;
+  right: 0;
+  padding-top: 40px; }
+
+.timeline__header {
+  background-color: rgba(0, 0, 0, 0.7);
+  height: 40px;
+  min-width: 100%; }
+
+.timeline__time-controller {
+  height: 100%; }
+
+.timeline__time-controller__cells-container {
+  height: 100%;
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-lines: single;
+  -moz-box-lines: single;
+  box-lines: single;
+  -webkit-flex-wrap: nowrap;
+  -moz-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap; }
+  .timeline__time-controller__cells-container > * {
     width: 0; }
-  .timeline .timeline__layer-timetable .timeline__layer-timetable__entity {
-    position: relative;
-    background-color: #A26D6D; }
-    .timeline .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__start,
-    .timeline .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__end {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 20px; }
-    .timeline .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__start {
-      left: -10px; }
-    .timeline .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__end {
-      right: -10px; }
+
+.timeline__time-controller__handle {
+  background-color: #e2c710;
+  box-shadow: rgba(90, 30, 18, 0.5) 0 0 12px 0 inset;
+  border-radius: 2px 2px 30% 30%/2px 2px 100% 100%; }
+
+.timeline__timetable {
+  position: relative;
+  min-height: 100%;
+  min-width: 100%; }
+
+.timeline__timetable-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-lines: single;
+  -moz-box-lines: single;
+  box-lines: single;
+  -webkit-flex-wrap: nowrap;
+  -moz-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap; }
+  .timeline__timetable-overlay > * {
+    height: 100%;
+    width: 0; }
+
+.timeline__timetable-overlay__controller {
+  border: 1px solid #FF53B2;
+  background-color: rgba(255, 83, 178, 0.1); }
+
+.timeline__layer,
+.timeline__layer-header {
+  height: 80px;
+  border-bottom: 1px solid #464440; }
+
+.timeline__layer-header,
+.timeline__summary {
+  border-right: 2px solid #464440; }
+
+.timeline__layer-header {
+  background-color: #33322f; }
+  .timeline__layer-header.edited {
+    background-color: #53514c; }
+
+.timeline__layer {
+  position: relative; }
+
+.timeline__layer-flex-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%; }
+
+.timeline__layer-flex {
+  height: 100%;
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-lines: single;
+  -moz-box-lines: single;
+  box-lines: single;
+  -webkit-flex-wrap: nowrap;
+  -moz-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap; }
+
+.timeline__layer-cell {
+  height: 100%;
+  width: 0;
+  -webkit-flex-grow: 1;
+  -moz-flex-grow: 1;
+  flex-grow: 1;
+  -ms-flex-positive: 1;
+  border-right: 1px solid #464440;
+  background-color: #33322f; }
+  .timeline__layer.edited .timeline__layer-cell {
+    background-color: #53514c; }
+
+.timeline__layer-timetable > * {
+  width: 0; }
+
+.timeline__layer-timetable .timeline__layer-timetable__entity {
+  position: relative;
+  background-color: #A26D6D; }
+  .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__start,
+  .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__end {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 20px; }
+  .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__start {
+    left: -10px; }
+  .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__end {
+    right: -10px; }
 
 .menu {
   position: fixed;

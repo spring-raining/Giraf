@@ -5,12 +5,15 @@ import ActionConst                    from "src/actions/const";
 import GenUUID                        from "src/utils/genUUID";
 import SelectFile                     from "src/utils/selectFile";
 import {hasTrait}                     from "src/utils/traitUtils";
+import createLayerAsync               from "src/utils/createLayerAsync";
 import _Selectable                    from "src/stores/model/_selectable";
 import {Composition}                  from "src/stores/model/composition";
 import {Layer}                        from "src/stores/model/layer";
 //import {Footage}                      from "src/stores/model/footage";
 import F                              from "src/stores/model/footage";
 import {DragAction, DragActionType}   from "src/stores/model/dragAction";
+import {Point}                        from "src/stores/model/point";
+import {Transform}                    from "src/stores/model/transform"
 
 
 export default {
@@ -88,16 +91,27 @@ export default {
   },
 
   createLayer(parentComp, index = 0, entity = null) {
-    let lyr = (entity !== null && entity instanceof Layer)? entity
-      : (entity !== null)?
-        new Layer(GenUUID(), entity.name, parentComp.id, entity, {}, 0, 30)
-      : new Layer(GenUUID(), "new layer", parentComp.id, null, {}, 0, 30);
-    if (lyr instanceof Layer) {
+    if (entity instanceof Layer) {
       Dispatcher.dispatch({
         actionType: ActionConst.CREATE_LAYER,
-        layer: lyr,
-        index: index
+        layer: entity,
+        index: index,
       });
+    }
+    else {
+      createLayerAsync(parentComp, entity).then(
+        (result) => {
+          Dispatcher.dispatch({
+            actionType: ActionConst.CREATE_LAYER,
+            layer: result,
+            index: index,
+          });
+        },
+        (error) => {
+          console.error(error);
+          console.warn("Failed to create layer");
+        }
+      );
     }
   },
 

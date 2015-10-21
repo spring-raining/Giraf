@@ -8,10 +8,20 @@ import {classWithTraits, hasTrait}    from "src/utils/traitUtils";
 
 
 class Layer extends classWithTraits(null, _Selectable) {
-  constructor(id, name, parentCompId, entity, effect, start, end) {
+  /**
+   *
+   * @param {string} id
+   * @param {string} name
+   * @param {string} parentCompId
+   * @param {_Renderable} entity
+   * @param {Transform} transform
+   * @param {int} start
+   * @param {int} end
+   */
+  constructor(id, name, parentCompId, entity, transform, start, end) {
     super();
     Object.assign(this, {
-      id, name, parentCompId, entity, effect
+      id, name, parentCompId, entity, transform
     });
     this.layerStart = start;
     this.layerEnd = end;

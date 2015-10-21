@@ -61,10 +61,14 @@ var Timeline = React.createClass({
     if (comp) {
       let summary = <Summary composition={comp} />;
       let layers = this.state.layers.map((e) =>
-        <Layer composition={comp} layer={e} key={e.id} />
+        <Layer composition={comp} layer={e} key={e.id}
+               isEdited={store.editingLayer && e.id === store.editingLayer.id}
+               onClick={this._onLayerClick} />
       );
       let layerHeaders = this.state.layers.map((e) =>
         <LayerHeader composition={comp} layer={e} key={e.id}
+                     isEdited={store.editingLayer && e.id === store.editingLayer.id}
+                     onClick={this._onLayerClick}
                      onDragStart={this._onLayerHeaderDragStart}
                      onDragEnter={this._onLayerHeaderDragEnter}
                      onDragEnd={this._onLayerHeaderDragEnd} />
@@ -252,6 +256,10 @@ var Timeline = React.createClass({
       comp.update({layers: this.state.layers});
       this.setState({draggingLayer: null});
     };
+  },
+
+  _onLayerClick(layer) {
+    Actions.changeEditingLayer(layer);
   },
 });
 

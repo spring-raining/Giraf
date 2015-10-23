@@ -465,7 +465,8 @@ button {
 
 .panel {
   width: 100%;
-  height: 100%; }
+  height: 100%;
+  overflow: auto; }
 
 .pointer-enabled {
   pointer-events: auto; }
@@ -580,6 +581,26 @@ nav, .nav {
 .effect {
   color: #ebebeb;
   background-color: #494947; }
+  .effect fieldset {
+    padding: 5px; }
+  .effect legend {
+    width: 100%;
+    border-bottom: 1px solid; }
+  .effect input {
+    background: #636360; }
+
+.effect__header {
+  padding: 15px 5px; }
+
+.effect__input-container {
+  margin-bottom: 5px; }
+  .effect__input-container .effect__input-label {
+    position: relative; }
+  .effect__input-container .effect__input-label__description {
+    position: absolute; }
+  .effect__input-container input {
+    margin-left: 50%;
+    width: 50%; }
 
 .preview {
   color: #ebebeb;

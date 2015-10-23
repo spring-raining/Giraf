@@ -3,4 +3,38 @@
 .effect {
   color: $color-effect-body;
   background-color: $color-effect-bg;
+
+  fieldset {
+    padding: 5px;
+  }
+
+  legend {
+    width: 100%;
+    border-bottom: 1px solid;
+  }
+
+  input {
+    background: $color-effect-input-bg;
+  }
+}
+
+.effect__header {
+  padding: 15px 5px;
+}
+
+.effect__input-container {
+  margin-bottom: 5px;
+
+  .effect__input-label {
+    position: relative;
+  }
+
+  .effect__input-label__description {
+    position: absolute;
+  }
+
+  input {
+    margin-left: 50%;
+    width: 50%;
+  }
 }

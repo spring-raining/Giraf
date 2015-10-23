@@ -19,7 +19,7 @@ const draggingTarget = KeyMirror({
 var LayerTimetable = React.createClass({
   propTypes() {
     return {
-      composition: React.Proptypes.instanceOf(ModelComp).isRequired,
+      composition: React.PropTypes.instanceOf(ModelComp).isRequired,
       layer: React.PropTypes.instanceOf(ModelLayer).isRequired,
     }
   },

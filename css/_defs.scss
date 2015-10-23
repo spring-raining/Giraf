@@ -13,6 +13,7 @@ $color-preview-body:                $color-white;
 $color-preview-bg:                  rgb(38, 38, 37);
 $color-effect-body:                 $color-white;
 $color-effect-bg:                   rgb(73, 73, 71);
+$color-effect-input-bg:             lighten($color-effect-bg, 10%);
 $color-dropdown-bg:                 $color-preview-bg;
 $color-dropdown-body:               $color-white;
 $color-dropdown-select-bg:          rgb(181, 171, 131);

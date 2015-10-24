@@ -74,6 +74,13 @@
   border-radius: 2px 2px 30% 30% / 2px 2px 100% 100%;
 }
 
+.timeline__time-controller__cell {
+
+  &.cached {
+    border-top: 3px solid $color-timeline-cell-cached;
+  }
+}
+
 .timeline__timetable {
   position: relative;
   min-height: 100%;

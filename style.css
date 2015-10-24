@@ -694,6 +694,9 @@ nav, .nav {
   box-shadow: rgba(90, 30, 18, 0.5) 0 0 12px 0 inset;
   border-radius: 2px 2px 30% 30%/2px 2px 100% 100%; }
 
+.timeline__time-controller__cell.cached {
+  border-top: 3px solid #4BDC4B; }
+
 .timeline__timetable {
   position: relative;
   min-height: 100%;

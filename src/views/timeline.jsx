@@ -77,10 +77,13 @@ var Timeline = React.createClass({
   },
 
   render() {
+    let _;
     let store = this.props.store;
     let comp = store.editingComposition;
 
     if (comp) {
+      let cachedFrames = (_ = store.compositionFrameCache[comp.id])? _ : {};
+
       let summary = <Summary composition={comp} />;
       let layers = this.state.layers.map((e) =>
         <Layer composition={comp} layer={e} key={e.id}
@@ -110,6 +113,7 @@ var Timeline = React.createClass({
                onWheel={this._onWheel("header")}>
             <div className="timeline__header" style={{width: this.state.timetableWidth + "px"}}>
               <TimeController composition={comp}
+                              cachedFrames={cachedFrames}
                               currentFrame={store.currentFrame} />
             </div>
           </div>

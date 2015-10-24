@@ -6,7 +6,9 @@ import _Renderable          from "src/stores/model/_renderable";
 import {classWithTraits}    from "src/utils/traitUtils";
 
 
-class Composition extends classWithTraits(null, _Selectable, _Renderable) {
+const Base = classWithTraits(null, _Selectable, _Renderable);
+
+class Composition extends Base {
   /**
    *
    * @param {string} id
@@ -40,16 +42,33 @@ class Composition extends classWithTraits(null, _Selectable, _Renderable) {
           throw Error("Canvas not created.");
         }
 
+        this.context.setTransform(1, 0, 0, 1, 0, 0);
+        this.context.globalAlpha = 1;
         this.context.clearRect(0, 0, this.width, this.height);
         Promise.all(
           this.layers.map((e) => e.capture(frame))
         ).then(
           (results) => {
-            results.reverse().forEach((cap) => {
-              if (cap) {
-                this.context.drawImage(cap, 0, 0);
+            for (var i = this.layers.length - 1; i >= 0; i--) {
+              let layer = this.layers[i];
+              let cap = results[i];
+              if (!cap) {
+                continue;
               }
-            });
+              let rad = layer.transform.rotation * Math.PI / 180;
+              this.context.setTransform(
+                layer.transform.scale.x * Math.cos(rad),
+                Math.sin(rad),
+                -Math.sin(rad),
+                layer.transform.scale.y * Math.cos(rad),
+                layer.transform.position.x,
+                layer.transform.position.y);
+              this.context.globalAlpha = layer.transform.opacity;
+              this.context.drawImage(
+                cap,
+                -layer.transform.anchorPoint.x,
+                -layer.transform.anchorPoint.y);
+            }
             resolve(this.canvas);
           },
           (error) => { throw error });

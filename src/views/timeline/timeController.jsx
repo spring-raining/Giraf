@@ -28,9 +28,12 @@ var TimeControllerCells = React.createClass({
                                 currentFrame={this.props.currentFrame} />);
       }
       else {
+        let isCached = this.props.cachedFrames.hasOwnProperty(i);
+        let className = "timeline__time-controller__cell"
+                      + (isCached? " cached" : "");
         cells.push(
           <FlexibleCell key={i} index={i} flexGrow={1}
-                        className="timeline__time-controller__cell"
+                        className={className}
                         onMouseDown={this._onMouseDown}
                         onMouseEnter={this._onMouseEnter}/>);
       }
@@ -66,20 +69,17 @@ export default React.createClass({
   propTypes() {
     return {
       composition: React.PropTypes.instanceOf(Composition).isRequired,
+      cachedFrames: React.PropTypes.object.isRequired,
       currentFrame: React.PropTypes.number,
     }
   },
 
   render() {
-    let content = (this.props.currentFrame)?
-      <TimeControllerHandle composition={this.props.composition}
-                            currentFrame={this.props.currentFrame} /> :
-      <TimeControllerCells composition={this.props.composition} />;
-
     return (
       <div className="timeline__time-controller">
         <TimeControllerCells composition={this.props.composition}
-                             currentFrame={this.props.currentFrame} />
+                             currentFrame={this.props.currentFrame}
+                             cachedFrames={this.props.cachedFrames} />
       </div>
     );
   },

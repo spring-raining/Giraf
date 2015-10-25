@@ -8,7 +8,7 @@ import {Composition}              from "src/stores/model/composition";
 
 var Preview = React.createClass({
   componentWillUpdate(nextProps, nextState) {
-    let selectingItem = nextProps.store.selectingItem;
+    let selectingItem = nextProps.store.get("selectingItem");
 
     if (this.refs.compositionContainer
     &&  !(selectingItem instanceof Composition)) {
@@ -18,7 +18,7 @@ var Preview = React.createClass({
 
   componentDidUpdate() {
     let store = this.props.store;
-    let selectingItem = store.selectingItem;
+    let selectingItem = store.get("selectingItem");
 
     if (selectingItem !== null) {
 
@@ -31,7 +31,7 @@ var Preview = React.createClass({
       if (selectingItem instanceof Footage
       &&  selectingItem.getFootageKind() === FootageKinds.VIDEO) {
         let dom = this.refs.video.getDOMNode();
-        if (store.playing) {
+        if (store.get("isPlaying")) {
           dom.play();
         }
         else {
@@ -43,19 +43,17 @@ var Preview = React.createClass({
   },
 
   _updatePreviewCompositionDOM(composition) {
-    var _;
     let store = this.props.store;
     if (!this.refs.compositionContainer) {
       return;
     }
     let dom = this.refs.compositionContainer.getDOMNode();
 
-    _ = store.compositionFrameCache;
-    let frameCache = !(_ = _[composition.id]) ? null
-                   : !(_ = _[store.currentFrame]) ? null
-                   : _;
+    let frameCache = store.get("compositionFrameCache",
+                               composition.id,
+                               store.get("currentFrame"));
     // lazy update mode
-    if (store.playing) {
+    if (store.get("isPlaying")) {
       if (frameCache) {
         this._flushDOM(dom);
         dom.appendChild(frameCache);
@@ -77,7 +75,7 @@ var Preview = React.createClass({
   },
 
   render() {
-    let selectingItem = this.props.store.selectingItem;
+    let selectingItem = this.props.store.get("selectingItem");
     let previewContainer;
     if (selectingItem === null) {
       previewContainer =

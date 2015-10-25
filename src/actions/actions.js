@@ -2,7 +2,7 @@
 
 import _Utility                       from "lodash/utility";
 
-import Dispatcher                     from "src/dispatcher";
+import Dispatcher                     from "src/dispatcher/dispatcher";
 import ActionConst                    from "src/actions/const";
 import GenUUID                        from "src/utils/genUUID";
 import SelectFile                     from "src/utils/selectFile";
@@ -240,8 +240,8 @@ export default {
   },
 
   togglePlay() {
-    let playing = Store.get("playing");
-    this.play(!playing);
+    let isPlaying = Store.get("isPlaying");
+    this.play(!isPlaying);
   },
 
   play(play) {

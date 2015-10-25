@@ -15,16 +15,18 @@ import Timeline               from "src/views/timeline";
 
 var App = React.createClass({
   getInitialState() {
-    return Store.getAll();
+    return {
+      store: Store
+    }
   },
 
   componentDidMount() {
+    this.state.store.addChangeListener(this._onChange);
     this.setKeyEvents();
-    Store.addChangeListener(this._onChange);
   },
 
   componentWillUnMount() {
-    Store.removeChangeListener(this._onChange);
+    this.state.store.removeChangeListener(this._onChange);
   },
 
   setKeyEvents() {
@@ -40,17 +42,17 @@ var App = React.createClass({
     return (
       <div className="app" data-giraf-dragging={dragging}>
         <div className="app__nav">
-          <Nav store={this.state} />
+          <Nav store={this.state.store} />
         </div>
         <div className="app__main">
           <Split split="vertical" minSize="30" defaultSize="30%">
-            <Project store={this.state} />
+            <Project store={this.state.store} />
             <Split split="horizontal" minSize="30" defaultSize="50%">
               <Split split="vertical">
-                <Effect store={this.state} />
-                <Preview store={this.state} />
+                <Effect store={this.state.store} />
+                <Preview store={this.state.store} />
               </Split>
-              <Timeline store={this.state} />
+              <Timeline store={this.state.store} />
             </Split>
           </Split>
         </div>
@@ -59,7 +61,9 @@ var App = React.createClass({
   },
 
   _onChange() {
-    this.setState(Store.getAll());
+    this.setState({
+      store: Store
+    });
   },
 });
 

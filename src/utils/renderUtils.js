@@ -85,8 +85,8 @@ function renderFrameAutomatically(composition,
           })
         ]).then(
           (result) => {
-            let playing = Store.get("playing");
-            if (!playing) {
+            let isPlaying = Store.get("isPlaying");
+            if (!isPlaying) {
               reject();
             }
             let nextFrame = (frame + 1 < composition.frame)? frame + 1 : 0;

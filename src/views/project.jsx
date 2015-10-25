@@ -10,15 +10,15 @@ var Project = React.createClass({
   render() {
     let store = this.props.store;
 
-    let footages = store.footages.map((e) => {
-      let isSelected = (store.selectingItem && e.id === store.selectingItem.id);
+    let footages = store.get("footages").map((e) => {
+      let isSelected = (e.id === store.get("selectingItem", "id"));
       return <Item item={e} key={e.id}
                    isSelected={isSelected}
                    isEdited={false} />;
     });
-    let comps = store.compositions.map((e) => {
-      let isSelected = (store.selectingItem && e.id === store.selectingItem.id);
-      let isEdited   = (store.editingComposition && e.id === store.editingComposition.id);
+    let comps = store.get("compositions").map((e) => {
+      let isSelected = (e.id === store.get("selectingItem", "id"));
+      let isEdited   = (e.id === store.get("editingComposition", "id"));
       return <Item item={e} key={e.id}
                    isSelected={isSelected}
                    isEdited={isEdited} />;

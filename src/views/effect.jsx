@@ -13,8 +13,8 @@ var Effect = React.createClass({
   },
 
   render() {
-    let comp  = this.props.store.editingComposition;
-    let layer = this.props.store.editingLayer;
+    let comp  = this.props.store.get("editingComposition");
+    let layer = this.props.store.get("editingLayer");
 
     // Layer edit mode
     if (comp && layer) {
@@ -92,7 +92,7 @@ var Effect = React.createClass({
   },
 
   _onAnchorPointXChanged(value) {
-    let layer = this.props.store.editingLayer;
+    let layer = this.props.store.get("editingLayer");
     layer.transform.anchorPoint.x = value;
     layer.update({
       transform: layer.transform,
@@ -100,7 +100,7 @@ var Effect = React.createClass({
   },
 
   _onAnchorPointYChanged(value) {
-    let layer = this.props.store.editingLayer;
+    let layer = this.props.store.get("editingLayer");
     layer.transform.anchorPoint.y = value;
     layer.update({
       transform: layer.transform,
@@ -108,7 +108,7 @@ var Effect = React.createClass({
   },
 
   _onPositionXChanged(value) {
-    let layer = this.props.store.editingLayer;
+    let layer = this.props.store.get("editingLayer");
     layer.transform.position.x = value;
     layer.update({
       transform: layer.transform,
@@ -116,7 +116,7 @@ var Effect = React.createClass({
   },
 
   _onPositionYChanged(value) {
-    let layer = this.props.store.editingLayer;
+    let layer = this.props.store.get("editingLayer");
     layer.transform.position.y = value;
     layer.update({
       transform: layer.transform,
@@ -124,7 +124,7 @@ var Effect = React.createClass({
   },
 
   _onScaleXChanged(value) {
-    let layer = this.props.store.editingLayer;
+    let layer = this.props.store.get("editingLayer");
     let scale = layer.transform.scale;
 
     if (this.state.isFixingAspect && scale.x !== 0) {
@@ -137,7 +137,7 @@ var Effect = React.createClass({
   },
 
   _onScaleYChanged(value) {
-    let layer = this.props.store.editingLayer;
+    let layer = this.props.store.get("editingLayer");
     let scale = layer.transform.scale;
 
     if (this.state.isFixingAspect && scale.y !== 0) {
@@ -156,7 +156,7 @@ var Effect = React.createClass({
   },
 
   _onRotationChanged(value) {
-    let layer = this.props.store.editingLayer;
+    let layer = this.props.store.get("editingLayer");
     layer.transform.rotation = value;
     layer.update({
       transform: layer.transform,
@@ -164,7 +164,7 @@ var Effect = React.createClass({
   },
 
   _onOpacityChanged(value) {
-    let layer = this.props.store.editingLayer;
+    let layer = this.props.store.get("editingLayer");
     layer.transform.opacity = value;
     layer.update({
       transform: layer.transform,

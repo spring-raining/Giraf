@@ -31,9 +31,8 @@ var Timeline = React.createClass({
   },
 
   componentWillReceiveProps(nextProps) {
-    let comp = nextProps.store.editingComposition;
     this.setState({
-      layers: (comp)? comp.layers : null,
+      layers: nextProps.store.get("editingComposition", "layers"),
     });
   },
 
@@ -43,13 +42,12 @@ var Timeline = React.createClass({
     this.headerDOM    = (_ = this.refs.header)? _.getDOMNode() : null;
     this.leftDOM      = (_ = this.refs.left)? _.getDOMNode() : null;
 
-    let comp = this.props.store.editingComposition;
-    let currentFrame = this.props.store.currentFrame;
-    if (comp != null) {
+    let comp = this.props.store.get("editingComposition");
+    let currentFrame = this.props.store.get("currentFrame");
+    if (comp !== null) {
       // start auto render
-      if (this.props.store.selectingItem.id === comp.id
-      &&  this.props.store.playing
-      &&  !prevProps.store.palying
+      if (this.props.store.get("selectingItem", "id") === comp.id
+      &&  this.props.store.get("isPlaying")
       &&  !this.state.executingAutoRender) {
         this.setState({
           executingAutoRender: true,
@@ -58,13 +56,13 @@ var Timeline = React.createClass({
       }
 
       // render current frame
-      else if (!this.props.store.playing && currentFrame !== null) {
+      else if (!this.props.store.get("isPlaying") && currentFrame !== null) {
         this._createFrameCache(comp, currentFrame);
       }
     }
 
     // end auto render
-    if (!this.props.store.playing && prevProps.store.playing) {
+    if (!this.props.store.get("isPlaying") && this.state.executingAutoRender) {
       this.setState({
         executingAutoRender: false,
       });
@@ -72,8 +70,10 @@ var Timeline = React.createClass({
   },
 
   _createFrameCache(composition, frame) {
-    let frameCache = this.props.store.compositionFrameCache[composition.id];
-    if (!frameCache || !frameCache[frame]) {
+    let frameCache = this.props.store.get("compositionFrameCache",
+                                          composition.id,
+                                          frame);
+    if (!frameCache) {
       Actions.renderFrame(composition, frame);
     }
   },
@@ -81,20 +81,20 @@ var Timeline = React.createClass({
   render() {
     let _;
     let store = this.props.store;
-    let comp = store.editingComposition;
+    let comp = store.get("editingComposition");
 
     if (comp) {
-      let cachedFrames = (_ = store.compositionFrameCache[comp.id])? _ : {};
+      let cachedFrames = (_ = store.get("compositionFrameCache", comp.id))? _ : {};
 
       let summary = <Summary composition={comp} />;
       let layers = this.state.layers.map((e) =>
         <Layer composition={comp} layer={e} key={e.id}
-               isEdited={store.editingLayer && e.id === store.editingLayer.id}
+               isEdited={e.id === store.get("editingLayer", "id")}
                onClick={this._onLayerClick} />
       );
       let layerHeaders = this.state.layers.map((e) =>
         <LayerHeader composition={comp} layer={e} key={e.id}
-                     isEdited={store.editingLayer && e.id === store.editingLayer.id}
+                     isEdited={e.id === store.get("editingLayer", "id")}
                      onClick={this._onLayerClick}
                      onDragStart={this._onLayerHeaderDragStart}
                      onDragEnter={this._onLayerHeaderDragEnter}
@@ -116,7 +116,7 @@ var Timeline = React.createClass({
             <div className="timeline__header" style={{width: this.state.timetableWidth + "px"}}>
               <TimeController composition={comp}
                               cachedFrames={cachedFrames}
-                              currentFrame={store.currentFrame} />
+                              currentFrame={store.get("currentFrame")} />
             </div>
           </div>
           <div className="timeline__left-container scroll-area"
@@ -133,7 +133,7 @@ var Timeline = React.createClass({
             <div className="timeline__timetable" style={{width: this.state.timetableWidth + "px"}}>
               {layers}
               <TimetableOverlay composition={comp}
-                                currentFrame={store.currentFrame} />
+                                currentFrame={store.get("currentFrame")} />
             </div>
           </div>
         </section>
@@ -178,7 +178,7 @@ var Timeline = React.createClass({
   },
 
   _onCreateLayerButtonClicked() {
-    let comp = this.props.store.editingComposition;
+    let comp = this.props.store.get("editingComposition");
     if (!comp) {
       return;
     }
@@ -201,11 +201,11 @@ var Timeline = React.createClass({
 
   _onDrop(e) {
     e.preventDefault();
-    let nowComp = this.props.store.editingComposition;
+    let nowComp = this.props.store.get("editingComposition");
     if (!nowComp) {
       return;
     }
-    let dropped = this.props.store.dragging;
+    let dropped = this.props.store.get("dragging");
     if (!dropped) {
       return;
     }
@@ -262,7 +262,7 @@ var Timeline = React.createClass({
 
   _onLayerHeaderDragEnd(layer, layerHeader) {
     return (e) => {
-      let comp = this.props.store.editingComposition;
+      let comp = this.props.store.get("editingComposition");
       if (!comp) {
         return;
       }

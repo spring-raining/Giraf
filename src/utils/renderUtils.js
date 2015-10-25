@@ -66,7 +66,6 @@ function renderFrameAutomatically(composition,
           }),
           new Promise((resolve_, reject_) => {
             let frameCache = Store.get("compositionFrameCache")[composition.id];
-            console.log(frameCache);
             if (!frameCache || !frameCache[frame]) {
               _createRenderedCanvasAsync(composition, frame).then(
                 (result) => {

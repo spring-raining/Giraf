@@ -1,5 +1,7 @@
 "use strict";
 
+import _Utility                       from "lodash/utility";
+
 import Dispatcher                     from "src/dispatcher";
 import ActionConst                    from "src/actions/const";
 import GenUUID                        from "src/utils/genUUID";
@@ -100,6 +102,7 @@ export default {
         layer: entity,
         index: index,
       });
+      this.clearFrameCache(parentComp, _Utility.range(entity.layerStart, entity.layerEnd));
     }
     else {
       createLayerAsync(parentComp, entity).then(
@@ -109,6 +112,7 @@ export default {
             layer: result,
             index: index,
           });
+          this.clearFrameCache(parentComp, _Utility.range(result.layerStart, result.layerEnd));
         },
         (error) => {
           console.error(error);
@@ -124,6 +128,9 @@ export default {
         actionType: ActionConst.UPDATE_LAYER,
         layer: layer
       });
+      let parentComp = Store.get("compositions")
+        .filter((e) => e.id === layer.parentCompId)[0];
+      this.clearFrameCache(parentComp, _Utility.range(layer.layerStart, layer.layerEnd));
     }
   },
 

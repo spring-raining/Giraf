@@ -2,6 +2,8 @@
 
 import React                      from "react";
 import KeyMirror                  from "keyMirror";
+import _Array                     from "lodash/array";
+import _Utility                   from "lodash/utility";
 
 import Actions                    from "src/actions/actions";
 import {Composition as ModelComp} from "src/stores/model/composition";
@@ -164,20 +166,14 @@ var LayerTimetable = React.createClass({
     return (e) => {
       e.stopPropagation();
       let layer = this.props.layer;
-      var i;
-      let fill = (a, b) => {
-        let arr = [];
-        for (var i = Math.min(a, b); i < Math.max(a, b); i++) {
-          arr.push(i);
-        }
-        return arr;
-      };
+      let fill = (a, b) => _Utility.range(Math.min(a, b), Math.max(a, b));
 
       if (target === draggingTarget.ENTITY) {
         let diff = this.getEntityDragDiff();
         if (diff !== 0) {
-          let changedFrames = fill(Math.min(layer.layerStart, layer.layerStart + diff),
-                                   Math.max(layer.layerEnd,   layer.layerEnd + diff));
+          let changedFrames = _Array.union(
+            fill(layer.layerStart,        layer.layerEnd),
+            fill(layer.layerStart + diff, layer.layerEnd + diff));
           Actions.clearFrameCache(this.props.composition, changedFrames);
         }
         layer.update({

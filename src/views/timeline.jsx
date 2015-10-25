@@ -1,6 +1,8 @@
 "use strict";
 
-import React from "react";
+import React                          from "react";
+import _Array                         from "lodash/array";
+import _Utility                       from "lodash/utility";
 
 import Actions                        from "src/actions/actions";
 import {Composition}                  from "src/stores/model/composition";
@@ -264,20 +266,17 @@ var Timeline = React.createClass({
       if (!comp) {
         return;
       }
-      let clearingFrames = new Array(comp.frame).fill(0);
-
+      let changedFrames = [];
       for (var i = 0; i < this.state.layers.length; i++) {
         let layer = this.state.layers[i];
         if (layer.id === comp.layers[i].id) {
           continue;
         }
-        for (var j = layer.layerStart; j < layer.layerEnd; j++) {
-          clearingFrames[i] += 1;
-        }
+        changedFrames = _Array.union(
+          changedFrames,
+          _Utility.range(layer.layerStart, layer.layerEnd));
       }
-      Actions.clearFrameCache(comp,
-        clearingFrames.map((e, i) => i)
-                      .filter((e) => clearingFrames[e] > 0));
+      Actions.clearFrameCache(comp, changedFrames);
 
       comp.update({layers: this.state.layers});
       this.setState({draggingLayer: null});

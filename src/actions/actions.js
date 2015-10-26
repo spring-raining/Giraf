@@ -26,7 +26,7 @@ export default {
     if (file) {
       Dispatcher.dispatch({
         actionType: ActionConst.IMPORT_FILE,
-        file: file
+        files: file
       });
     }
     else {
@@ -35,7 +35,7 @@ export default {
         for (let i=0; i < f.length; i++) files.push(f[i]);
         Dispatcher.dispatch({
           actionType: ActionConst.IMPORT_FILE,
-          file: files
+          files: files
         })
       });
     }

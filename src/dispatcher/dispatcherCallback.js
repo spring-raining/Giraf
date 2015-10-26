@@ -16,7 +16,7 @@ function dispatcherCallback(action) {
   const searchById = (list) => (id) => list.filter((e) => e.id === id)[0];
 
   if (action.actionType === ActionConst.IMPORT_FILE) {
-    action.file.forEach((e) => {
+    action.files.forEach((e) => {
       let f = new Footage(GenUUID(), e.name, e.size, e.type);
       if (FileLoader.check(f)) {
         Store.get("footages").push(f);

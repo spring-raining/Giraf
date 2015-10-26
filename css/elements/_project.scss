@@ -37,7 +37,11 @@
     }
 
     &.loading {
-      color: #888;
+      color: $color-project-loading-body;
+    }
+
+    &.dying {
+      color: $color-project-dying-body;
     }
 
     > * {

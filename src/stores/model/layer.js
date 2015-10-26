@@ -7,7 +7,9 @@ import _Renderable                    from "src/stores/model/_renderable";
 import {classWithTraits, hasTrait}    from "src/utils/traitUtils";
 
 
-class Layer extends classWithTraits(null, _Selectable) {
+const Base = classWithTraits(null, _Selectable);
+
+class Layer extends Base {
   /**
    *
    * @param {string} id

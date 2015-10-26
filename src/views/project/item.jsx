@@ -20,16 +20,23 @@ export default React.createClass({
   },
 
   render() {
-    var className = "project__item";
+    let className = "project__item";
 
     if (this.props.item instanceof Footage) {
-      className += " footage " + this.props.item.status
-                  + (this.props.isSelected? " selected" : "");
+      className += `
+        footage
+        ${this.props.item.status.toLowerCase()}
+        ${this.props.item.getFootageKind().toLowerCase()}
+        ${this.props.item.type}
+        ${this.props.isSelected? "selected" : ""}
+      `.replace("\s+", " ");
     }
     else if (this.props.item instanceof Composition) {
-      className += " composition "
-                  + (this.props.isSelected? " selected" : "")
-                  + (this.props.isEdited?   " edited" : "");
+      className += `
+        composition
+        ${this.props.isSelected? "selected" : ""}
+        ${this.props.isEdited?   "edited" : ""}
+      `.replace("\s+", " ");
     }
 
     return (

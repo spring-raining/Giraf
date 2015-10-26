@@ -23,7 +23,7 @@ export default {
           let img = document.createElement("img");
           img.onload = () => {
             resolve({
-              content: url,
+              objectURL: url,
               width: img.naturalWidth,
               height: img.naturalHeight,
             });
@@ -34,7 +34,7 @@ export default {
           let video = document.createElement("video");
           video.addEventListener("canplay", () => {
             resolve({
-              content: url,
+              objectURL: url,
               width: video.videoWidth,
               height: video.videoHeight,
             });
@@ -51,7 +51,7 @@ export default {
     p.then(
       (result) => {
         file.update({
-          content: result.content,
+          objectURL: result.objectURL,
           width: result.width,
           height: result.height,
         });

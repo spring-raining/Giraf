@@ -85,13 +85,13 @@ var Preview = React.createClass({
       if (selectingItem.getFootageKind() === FootageKinds.IMAGE) {
         previewContainer =
           <div className="preview__container preview__footage-container">
-            <img src={selectingItem.content} />
+            <img src={selectingItem.objectURL} />
           </div>;
       }
       else if (selectingItem.getFootageKind() === FootageKinds.VIDEO) {
         previewContainer =
           <div className="preview__container preview__footage-container">
-            <video controls src={selectingItem.content}
+            <video controls src={selectingItem.objectURL}
                    ref="video" />
           </div>;
       }

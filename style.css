@@ -574,7 +574,9 @@ nav, .nav {
       border: 2px solid #e2c710;
       border-radius: 2px; }
     .project .project__item.loading {
-      color: #888; }
+      color: rgba(235, 235, 235, 0.3); }
+    .project .project__item.dying {
+      color: #F78585; }
     .project .project__item > * {
       float: left; }
 

@@ -353,6 +353,10 @@ td,
 th {
   padding: 0; }
 
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
 .app {
   position: absolute;
   top: 0;
@@ -389,6 +393,10 @@ th {
     flex: 1;
     position: relative; }
 
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
 html, body, div, span, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 abbr, address, cite, code,
@@ -474,6 +482,10 @@ button {
 .pointer-disabled {
   pointer-events: none; }
 
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
 nav, .nav {
   width: 100%;
   height: 42px;
@@ -499,9 +511,12 @@ nav, .nav {
   nav .nav__text, .nav .nav__text {
     line-height: 42px; }
 
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
 .Resizer {
   opacity: .2;
-  z-index: 1;
   box-sizing: border-box;
   -moz-background-clip: padding;
   -webkit-background-clip: padding;
@@ -535,6 +550,10 @@ nav, .nav {
   width: 100%;
   height: 100%; }
 
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
 .project {
   color: #ebebeb;
   background-color: #666455; }
@@ -580,6 +599,10 @@ nav, .nav {
     .project .project__item > * {
       float: left; }
 
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
 .effect {
   color: #ebebeb;
   background-color: #494947; }
@@ -604,6 +627,10 @@ nav, .nav {
     margin-left: 50%;
     width: 50%; }
 
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
 .preview {
   color: #ebebeb;
   background-color: #262625; }
@@ -622,6 +649,10 @@ nav, .nav {
   .preview .preview__footage-container {
     background-color: #000; }
 
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
 .timeline {
   color: #ebebeb;
   background-color: #33322f;
@@ -635,7 +666,7 @@ nav, .nav {
     overflow: scroll; }
 
 .timeline__summary {
-  z-index: 4;
+  z-index: 2005;
   position: absolute;
   width: 180px;
   height: 40px;
@@ -643,13 +674,13 @@ nav, .nav {
   background-color: #33322f; }
 
 .timeline__header-container {
-  z-index: 3;
+  z-index: 2004;
   top: 0;
   left: 180px;
   right: 0; }
 
 .timeline__left-container {
-  z-index: 2;
+  z-index: 2003;
   top: 0;
   bottom: 0;
   left: 0;
@@ -657,7 +688,7 @@ nav, .nav {
   padding-top: 40px; }
 
 .timeline__timetable-container {
-  z-index: 1;
+  z-index: 2002;
   top: 0;
   bottom: 0;
   left: 180px;
@@ -785,26 +816,31 @@ nav, .nav {
   .timeline__layer.edited .timeline__layer-cell {
     background-color: #53514c; }
 
-.timeline__layer-timetable > * {
-  width: 0; }
-
 .timeline__layer-timetable .timeline__layer-timetable__entity {
-  position: relative;
   background-color: #A26D6D; }
-  .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__start,
-  .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__end {
+
+.timeline__layer-timetable-area {
+  position: relative;
+  width: 0; }
+  .timeline__layer-timetable-area .timeline__layer-timetable-area__left-handle,
+  .timeline__layer-timetable-area .timeline__layer-timetable-area__right-handle {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 20px; }
-  .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__start {
+    width: 20px;
+    z-index: 2006; }
+  .timeline__layer-timetable-area .timeline__layer-timetable-area__left-handle {
     left: -10px; }
-  .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable__entity__end {
+  .timeline__layer-timetable-area .timeline__layer-timetable-area__right-handle {
     right: -10px; }
 
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
 .menu {
   position: fixed;
-  z-index: 100; }
+  z-index: 3001; }
   .menu__li > .menu {
     position: absolute;
     top: 0;

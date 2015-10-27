@@ -38,6 +38,17 @@ $color-menu-bg:                     $color-nav-bg;
 $color-menu-body:                   $color-white;
 $color-menu-disabled:               $color-nav-body;
 
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
+$z-order-global:                    base timeline menu;
+$z-order: (
+        menu:                       base,
+        timeline:                   base timetable left header summary timetable-handle,
+        base:                       base,
+);
+
 $nav-height:                        42px;
 $nav-li-padding:                    0 20px;
 
@@ -107,4 +118,10 @@ $timeline-layer-handle-width:       20px;
   border-radius: 2px;
   margin: 4px;
   padding: 4px;
+}
+
+@mixin calculate-z-index($global-tag, $local-tag) {
+  $global: index($z-order-global, $global-tag);
+  $local: index(map-get($z-order, $global-tag), $local-tag);
+  z-index: $global * 1000 + $local;
 }

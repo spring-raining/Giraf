@@ -1,6 +1,7 @@
 "use strict";
 
 import Actions                        from "src/actions/actions";
+import Composition                    from "src/stores/model/composition";
 import Footage                        from "src/stores/model/footage";
 import _Selectable                    from "src/stores/model/_selectable";
 import _Renderable                    from "src/stores/model/_renderable";
@@ -33,6 +34,11 @@ class Layer extends Base {
     this.solo = false;
     this.repeatBefore = false;
     this.repeatAfter = false;
+  }
+
+  isAnimatable() {
+    return this.entity instanceof Composition
+        || (this.entity instanceof Footage && this.entity.isAnimatable());
   }
 
   update(obj) {

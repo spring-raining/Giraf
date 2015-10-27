@@ -16,7 +16,7 @@
 }
 
 .timeline__summary {
-  z-index: 4;
+  @include calculate-z-index(timeline, summary);
   position: absolute;
   width: $timeline-summary-width;
   height: $timeline-summary-height;
@@ -25,13 +25,13 @@
 }
 
 .timeline__header-container {
-  z-index: 3;
+  @include calculate-z-index(timeline, header);
   top: 0;
   left: $timeline-summary-width;
   right: 0;
 }
 .timeline__left-container {
-  z-index: 2;
+  @include calculate-z-index(timeline, left);
   top: 0;
   bottom: 0;
   left: 0;
@@ -40,7 +40,7 @@
 }
 
 .timeline__timetable-container {
-  z-index: 1;
+  @include calculate-z-index(timeline, timetable);
   top: 0;
   bottom: 0;
   left: $timeline-summary-width;
@@ -157,28 +157,29 @@
 }
 
 .timeline__layer-timetable {
-  & > * {
-    width: 0;
+  .timeline__layer-timetable__entity {
+    background-color: $color-timeline-layer-entity-bg;
+  }
+}
+
+.timeline__layer-timetable-area {
+  position: relative;
+  width: 0;
+
+  .timeline__layer-timetable-area__left-handle,
+  .timeline__layer-timetable-area__right-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: $timeline-layer-handle-width;
+    @include calculate-z-index(timeline, timetable-handle);
   }
 
-  .timeline__layer-timetable__entity {
-    position: relative;
-    background-color: $color-timeline-layer-entity-bg;
+  .timeline__layer-timetable-area__left-handle {
+    left: - $timeline-layer-handle-width / 2;
+  }
 
-    .timeline__layer-timetable__entity__start,
-    .timeline__layer-timetable__entity__end {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: $timeline-layer-handle-width;
-    }
-
-    .timeline__layer-timetable__entity__start {
-      left: - $timeline-layer-handle-width / 2;
-    }
-
-    .timeline__layer-timetable__entity__end {
-      right: - $timeline-layer-handle-width / 2;
-    }
+  .timeline__layer-timetable-area__right-handle {
+    right: - $timeline-layer-handle-width / 2;
   }
 }

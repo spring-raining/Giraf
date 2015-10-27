@@ -2,7 +2,7 @@
 
 .menu {
   position: fixed;
-  z-index: 100;
+  @include calculate-z-index(menu, base);
 
   .menu__li > & {
     position: absolute;

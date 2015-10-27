@@ -16,6 +16,75 @@ const draggingTarget = KeyMirror({
   ENTITY: null,
   ENTITY_START: null,
   ENTITY_END: null,
+  LAYER: null,
+  LAYER_START: null,
+  LAYER_END: null,
+});
+
+var LayerTimetableArea = React.createClass({
+  propTypes() {
+    return  {
+      flexGrow:         React.PropTypes.number.isRequired,
+      className:        React.PropTypes.string,
+      onLeftDragStart:  React.PropTypes.func,
+      onLeftDrag:       React.PropTypes.func,
+      onLeftDragEnd:    React.PropTypes.func,
+      onBodyDragStart:  React.PropTypes.func,
+      onBodyDrag:       React.PropTypes.func,
+      onBodyDragEnd:    React.PropTypes.func,
+      onRightDragStart: React.PropTypes.func,
+      onRightDrag:      React.PropTypes.func,
+      onRightDragEnd:   React.PropTypes.func,
+    }
+  },
+
+  render() {
+    let className = "timeline__layer-timetable-area " + this.props.className;
+    let isBodyDraggable = this.props.onBodyDragStart
+                       || this.props.onBodyDrag
+                       || this.props.onBodyDragEnd;
+    let leftHandle = null;
+    let rightHandle = null;
+
+    if (this.props.onLeftDragStart
+    ||  this.props.onLeftDrag
+    ||  this.props.onLeftDragEnd) {
+      leftHandle = (
+        <div className="timeline__layer-timetable-area__left-handle"
+             draggable="true"
+             onDragStart={this.props.onLeftDragStart}
+             onDrag={this.props.onLeftDrag}
+             onDragEnd={this.props.onLeftDragEnd}>
+        </div>
+      );
+    }
+
+    if (this.props.onRightDragStart
+    ||  this.props.onRightDrag
+    ||  this.props.onRightDragEnd) {
+      rightHandle = (
+        <div className="timeline__layer-timetable-area__right-handle"
+             draggable="true"
+             onDragStart={this.props.onRightDragStart}
+             onDrag={this.props.onRightDrag}
+             onDragEnd={this.props.onRightDragEnd}>
+        </div>
+      );
+    }
+
+    return (
+      <div className={className}
+           style={{flexGrow: this.props.flexGrow}}
+           draggable={isBodyDraggable}
+           onDragStart={this.props.onBodyDragStart}
+           onDrag={this.props.onBodyDrag}
+           onDragEnd={this.props.onBodyDragEnd}>
+        {this.props.children}
+        {leftHandle}
+        {rightHandle}
+      </div>
+    );
+  },
 });
 
 var LayerTimetable = React.createClass({
@@ -93,32 +162,25 @@ var LayerTimetable = React.createClass({
     return (
       <div className="timeline__layer-timetable timeline__layer-flex"
            data-giraf-dragging={this.state.dragging}>
-        <div className="timeline__layer-timetable__before"
-             style={{flexGrow: layerPos.entityStart}}>
-        </div>
+        <LayerTimetableArea className="timeline__layer-timetable__before pointer-disable"
+                            flexGrow={layerPos.entityStart} />
 
-        <div className="timeline__layer-timetable__entity"
-             style={{flexGrow: layerPos.entityEnd - layerPos.entityStart}}
-             draggable="true"
-             onDragStart={this._onDragStart(draggingTarget.ENTITY)}
-             onDrag={this._onDrag(draggingTarget.ENTITY)}
-             onDragEnd={this._onDragEnd(draggingTarget.ENTITY)}>
+        <LayerTimetableArea className="timeline__layer-timetable__entity"
+                            flexGrow={layerPos.entityEnd - layerPos.entityStart}
+                            onLeftDragStart={this._onDragStart(draggingTarget.ENTITY_START)}
+                            onLeftDrag={this._onDrag(draggingTarget.ENTITY_START)}
+                            onLeftDragEnd={this._onDragEnd(draggingTarget.ENTITY_START)}
+                            onBodyDragStart={this._onDragStart(draggingTarget.ENTITY)}
+                            onBodyDrag={this._onDrag(draggingTarget.ENTITY)}
+                            onBodyDragEnd={this._onDragEnd(draggingTarget.ENTITY)}
+                            onRightDragStart={this._onDragStart(draggingTarget.ENTITY_END)}
+                            onRightDrag={this._onDrag(draggingTarget.ENTITY_END)}
+                            onRightDragEnd={this._onDragEnd(draggingTarget.ENTITY_END)}>
           {layer.layerStart} - {layer.layerEnd}
-          <div className="timeline__layer-timetable__entity__start"
-               draggable="true"
-               onDragStart={this._onDragStart(draggingTarget.ENTITY_START)}
-               onDrag={this._onDrag(draggingTarget.ENTITY_START)}
-               onDragEnd={this._onDragEnd(draggingTarget.ENTITY_START)}></div>
-          <div className="timeline__layer-timetable__entity__end"
-               draggable="true"
-               onDragStart={this._onDragStart(draggingTarget.ENTITY_END)}
-               onDrag={this._onDrag(draggingTarget.ENTITY_END)}
-               onDragEnd={this._onDragEnd(draggingTarget.ENTITY_END)}></div>
-        </div>
+        </LayerTimetableArea>
 
-        <div className="timeline__layer-timetable__after"
-             style={{flexGrow: comp.frame - layerPos.entityEnd}}>
-        </div>
+        <LayerTimetableArea className="timeline__layer-timetable__after pointer-disable"
+                            flexGrow={comp.frame - layerPos.entityEnd} />
       </div>
     );
   },

@@ -82,6 +82,11 @@ class Footage extends Base {
     else                                        return FootageKinds.UNKNOWN;
   }
 
+  isAnimatable() {
+    return this.getFootageKind() === FootageKinds.VIDEO
+        || this.type === "image/gif";
+  }
+
   render(time) {
     return new Promise((resolve, reject) => {
       try {

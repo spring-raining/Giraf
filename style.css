@@ -817,7 +817,23 @@ nav, .nav {
     background-color: #53514c; }
 
 .timeline__layer-timetable .timeline__layer-timetable__entity {
-  background-color: #A26D6D; }
+  background-color: #A26D6D;
+  border-radius: 2px;
+  box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26); }
+  .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable-area__left-handle,
+  .timeline__layer-timetable .timeline__layer-timetable__entity .timeline__layer-timetable-area__right-handle {
+    z-index: 2006; }
+
+.timeline__layer-timetable .timeline__layer-timetable__layer-container {
+  background-color: rgba(224, 194, 194, 0.5);
+  border-radius: 2px;
+  box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26); }
+
+.timeline__layer-timetable .timeline__layer-timetable__layer-before .timeline__layer-timetable-area__left-handle,
+.timeline__layer-timetable .timeline__layer-timetable__layer-before .timeline__layer-timetable-area__right-handle,
+.timeline__layer-timetable .timeline__layer-timetable__layer-after .timeline__layer-timetable-area__left-handle,
+.timeline__layer-timetable .timeline__layer-timetable__layer-after .timeline__layer-timetable-area__right-handle {
+  z-index: 2007; }
 
 .timeline__layer-timetable-area {
   position: relative;
@@ -827,8 +843,7 @@ nav, .nav {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 20px;
-    z-index: 2006; }
+    width: 20px; }
   .timeline__layer-timetable-area .timeline__layer-timetable-area__left-handle {
     left: -10px; }
   .timeline__layer-timetable-area .timeline__layer-timetable-area__right-handle {

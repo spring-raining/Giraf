@@ -24,6 +24,7 @@ $color-timeline-edited-bg:          lighten($color-timeline-bg, 12%);
 $color-timeline-grid:               lighten($color-timeline-bg, 7%);
 $color-timeline-header-bg:          rgba(0, 0, 0, 0.7);
 $color-timeline-layer-entity-bg:    #A26D6D;
+$color-timeline-layer-layer-bg:     rgba(224, 194, 194, 0.5);
 $color-timeline-handle:             $color-giraf;
 $color-timeline-handle-shadow:      rgba(90, 30, 18, 0.5);
 $color-timeline-cell-cached:        #4BDC4B;
@@ -45,7 +46,8 @@ $color-menu-disabled:               $color-nav-body;
 $z-order-global:                    base timeline menu;
 $z-order: (
         menu:                       base,
-        timeline:                   base timetable left header summary timetable-handle,
+        timeline:                   base timetable left header summary
+                                    timetable-entity-handle timetable-layer-handle,
         base:                       base,
 );
 

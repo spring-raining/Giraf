@@ -56,7 +56,7 @@ class Footage extends Base {
     }
   }
 
-  update(obj) {
+  update(obj, fireAction = true) {
     Object.assign(this, obj);
 
     if (obj.objectURL) {
@@ -73,7 +73,9 @@ class Footage extends Base {
         }
       )
     }
-    Actions.updateFootage(this);
+    if (fireAction) {
+      Actions.updateFootage(this);
+    }
   }
 
   getFootageKind() {

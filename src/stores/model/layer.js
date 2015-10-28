@@ -1,14 +1,22 @@
 "use strict";
 
+import keyMirror                      from "keymirror";
+
 import Actions                        from "src/actions/actions";
-import Composition                    from "src/stores/model/composition";
-import Footage                        from "src/stores/model/footage";
+import {Composition}                  from "src/stores/model/composition";
+import {Footage}                      from "src/stores/model/footage";
 import _Selectable                    from "src/stores/model/_selectable";
 import _Renderable                    from "src/stores/model/_renderable";
 import {classWithTraits, hasTrait}    from "src/utils/traitUtils";
 
 
 const Base = classWithTraits(null, _Selectable);
+
+const LayerKinds = keyMirror({
+  UNKNOWN: null,
+  STILL: null,
+  ANIMATED: null,
+});
 
 class Layer extends Base {
   /**
@@ -36,13 +44,25 @@ class Layer extends Base {
     this.repeatAfter = false;
   }
 
-  isAnimatable() {
-    return this.entity instanceof Composition
-        || (this.entity instanceof Footage && this.entity.isAnimatable());
+  getLayerKind() {
+    if ((this.entity instanceof Footage && this.entity.isAnimatable())
+    ||  this.entity instanceof Composition) {
+      return LayerKinds.ANIMATED;
+    }
+    else if (this.entity instanceof Footage && !this.entity.isAnimatable()
+         ||  !this.entity) {
+      return LayerKinds.STILL;
+    }
+    else {
+      return LayerKinds.UNKNOWN;
+    }
   }
 
-  update(obj) {
-    Actions.updateLayer(Object.assign(this, obj));
+  update(obj, fireAction = true) {
+    Object.assign(this, obj);
+    if (fireAction) {
+      Actions.updateLayer(this);
+    }
   }
 
   capture(frame) {
@@ -56,8 +76,8 @@ class Layer extends Base {
           resolve(null);
         }
 
-        let r = this.layerEnd - this.layerStart;
-        let f = (frame + (r - (this.layerStart % r))) % r;
+        let r = this.entityEnd - this.entityStart;
+        let f = (frame + (r - (this.entityStart % r))) % r;
         this.entity.render(f).then(
           (result) => {
             resolve(result);
@@ -72,4 +92,5 @@ class Layer extends Base {
 
 export default {
   Layer: Layer,
+  LayerKinds: LayerKinds,
 };

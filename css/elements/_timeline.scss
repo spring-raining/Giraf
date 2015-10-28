@@ -159,6 +159,27 @@
 .timeline__layer-timetable {
   .timeline__layer-timetable__entity {
     background-color: $color-timeline-layer-entity-bg;
+    border-radius: 2px;
+    @include giraf-shadow(1);
+
+    .timeline__layer-timetable-area__left-handle,
+    .timeline__layer-timetable-area__right-handle {
+      @include calculate-z-index(timeline, timetable-entity-handle);
+    }
+  }
+
+  .timeline__layer-timetable__layer-container {
+    background-color: $color-timeline-layer-layer-bg;
+    border-radius: 2px;
+    @include giraf-shadow(1);
+  }
+
+  .timeline__layer-timetable__layer-before,
+  .timeline__layer-timetable__layer-after {
+    .timeline__layer-timetable-area__left-handle,
+    .timeline__layer-timetable-area__right-handle {
+      @include calculate-z-index(timeline, timetable-layer-handle);
+    }
   }
 }
 
@@ -172,7 +193,6 @@
     top: 0;
     bottom: 0;
     width: $timeline-layer-handle-width;
-    @include calculate-z-index(timeline, timetable-handle);
   }
 
   .timeline__layer-timetable-area__left-handle {

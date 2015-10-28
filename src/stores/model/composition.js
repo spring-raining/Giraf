@@ -27,12 +27,14 @@ class Composition extends Base {
     this._prepareCanvas(width, height);
   }
 
-  update(obj) {
+  update(obj, fireAction = true) {
     Object.assign(this, obj);
     if (obj.width > 0 && obj.height > 0) {
       this._prepareCanvas(obj.width, obj.height);
     }
-    Actions.updateComposition(this);
+    if (fireAction) {
+      Actions.updateComposition(this);
+    }
   }
 
   render(frame) {

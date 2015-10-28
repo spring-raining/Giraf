@@ -122,7 +122,7 @@ export default {
     }
   },
 
-  updateLayer(layer) {
+  updateLayer(layer, refreshFrameCache = true) {
     if (layer instanceof Layer) {
       Dispatcher.dispatch({
         actionType: ActionConst.UPDATE_LAYER,
@@ -130,7 +130,9 @@ export default {
       });
       let parentComp = Store.get("compositions")
         .filter((e) => e.id === layer.parentCompId)[0];
-      this.clearFrameCache(parentComp, _Utility.range(layer.layerStart, layer.layerEnd));
+      if (refreshFrameCache) {
+        this.clearFrameCache(parentComp, _Utility.range(layer.layerStart, layer.layerEnd));
+      }
     }
   },
 

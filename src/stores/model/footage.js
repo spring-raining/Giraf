@@ -105,7 +105,7 @@ class Footage extends Base {
           }
           else {
             let img = document.createElement("img");
-            img.src = this.content;
+            img.src = this.objectURL;
             img.onload = () => {
               this.context.drawImage(img, 0, 0);
               resolve(this.canvas);
@@ -120,7 +120,7 @@ class Footage extends Base {
               resolve(this.canvas);
             });
           });
-          video.src = this.content;
+          video.src = this.objectURL;
           video.currentTime = time;
         }
       } catch (e) {

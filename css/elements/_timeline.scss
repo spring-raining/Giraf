@@ -36,7 +36,6 @@
   top: 0;
   bottom: 0;
   left: 0;
-  padding-top: $timeline-summary-height;
   width: $timeline-summary-width;
 }
 
@@ -46,7 +45,6 @@
   bottom: 0;
   left: $timeline-summary-width;
   right: 0;
-  padding-top: $timeline-summary-height;
 }
 
 .timeline__header {
@@ -84,12 +82,14 @@
 
 .timeline__left {
   width: $timeline-summary-width;
+  padding-top: $timeline-summary-height;
 }
 
 .timeline__timetable {
   position: relative;
   min-height: 100%;
   min-width: 100%;
+  padding-top: $timeline-summary-height;
 }
 
 .timeline__timetable-overlay {
@@ -115,16 +115,62 @@
 .timeline__layer,
 .timeline__layer-header{
   height: $timeline-layer-height;
-  border-bottom: 1px solid $color-timeline-grid;
+  margin-top: 6px;
+  margin-bottom: 6px;
 }
 
-.timeline__layer-header,
+.timeline__left-container,
 .timeline__summary {
   border-right: 2px solid $color-timeline-grid;
 }
 
 .timeline__layer-header {
   background-color: $color-timeline-bg;
+  position: relative;
+  margin-left: 6px;
+  border-radius: 2px 0 0 2px;
+  @include giraf-shadow(2);
+
+  .timeline__layer-header__name {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 3px 8px;
+    font-size: $timeline-layer-header-font-size;
+    color: $color-timeline-layer-header-body;
+    @include font-smoothing();
+    @include single-line();
+  }
+  
+  .timeline__layer-header__buttons {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 3px 8px;
+
+    button {
+      margin: 0 8px 0 0;
+      padding: 0;
+      height: $timeline-layer-header-button-size;
+      width: $timeline-layer-header-button-size;
+      font-size: $timeline-layer-header-button-size - 10px;
+      color: $color-timeline-layer-header-button-body;
+      background: $color-timeline-layer-header-button-bg;
+      border: 1px solid $color-timeline-layer-header-button-border;
+      border-radius: 2px;
+      box-shadow: none;
+
+      &.on {
+        color: $color-timeline-layer-header-button-on-body;
+        text-shadow: 0 0 2px $color-timeline-layer-header-button-on-body,
+                     0 0 4px $color-timeline-layer-header-button-on-body,
+                     0 0 8px $color-timeline-layer-header-button-on-body;
+        background: $color-timeline-layer-header-button-on-bg;
+        border: 1px solid $color-timeline-layer-header-button-on-border;
+      }
+    }
+  }
 
   &.edited {
     background-color: $color-timeline-edited-bg;
@@ -133,6 +179,13 @@
 
 .timeline__layer {
   position: relative;
+  @include giraf-shadow(2);
+
+  &.edited {
+    .timeline__layer-timetable__entity {
+      background-color: $color-timeline-edited-layer-entity-bg;
+    }
+  }
 }
 
 .timeline__layer-flex-container {

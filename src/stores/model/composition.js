@@ -47,12 +47,17 @@ class Composition extends Base {
         this.context.setTransform(1, 0, 0, 1, 0, 0);
         this.context.globalAlpha = 1;
         this.context.clearRect(0, 0, this.width, this.height);
+        const _ = this.layers.filter((e) => e.solo);
+        const renderingLayers = (_.length !== 0)
+          ? _.filter((e) => e.visible)
+          : this.layers.filter((e) => e.visible);
+
         Promise.all(
-          this.layers.map((e) => e.capture(frame))
+          renderingLayers.map((e) => e.capture(frame))
         ).then(
           (results) => {
-            for (var i = this.layers.length - 1; i >= 0; i--) {
-              let layer = this.layers[i];
+            for (var i = renderingLayers.length - 1; i >= 0; i--) {
+              let layer = renderingLayers[i];
               let cap = results[i];
               if (!cap) {
                 continue;

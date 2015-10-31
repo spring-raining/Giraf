@@ -25,6 +25,24 @@ export default React.createClass({
     let layer = this.props.layer;
     let className = "timeline__layer-header"
                   + (this.props.isEdited? " edited" : "");
+    let visibleButton = (layer.visible)
+      ? <button className="timeline__layer-header__visible-button on"
+                onClick={this._onCheckboxButtonClick("visible")(true)}>
+        +
+        </button>
+      : <button className="timeline__layer-header__visible-button"
+                onClick={this._onCheckboxButtonClick("visible")(false)}>
+        -
+        </button>;
+    let soloButton = (layer.solo)
+      ? <button className="timeline__layer-header__solo-button on"
+                onClick={this._onCheckboxButtonClick("solo")(true)}>
+        |
+        </button>
+      : <button className="timeline__layer-header__solo-button"
+                onClick={this._onCheckboxButtonClick("solo")(false)}>
+        .
+        </button>;
 
     return (
       <div className={className} draggable="true"
@@ -33,6 +51,10 @@ export default React.createClass({
            onDragEnter={this._onDragEnter}
            onDragEnd={this._onDragEnd}>
         <span className="timeline__layer-header__name">{layer.name}</span>
+        <div className="timeline__layer-header__buttons">
+          {visibleButton}
+          {soloButton}
+        </div>
       </div>
     );
   },
@@ -55,4 +77,31 @@ export default React.createClass({
     e.stopPropagation();
     this.props.onDragEnd(this.props.layer, this)(e);
   },
+
+  _onCheckboxButtonClick(target) {
+    return (status) => (e) => {
+      if (target === "visible" && status) {
+        this.props.layer.update({
+          visible: false,
+          solo: false,
+        });
+      }
+      else if (target === "visible" && !status) {
+        this.props.layer.update({
+          visible: true,
+        });
+      }
+      else if (target === "solo" && status) {
+        this.props.layer.update({
+          solo: false,
+        });
+      }
+      else if (target === "solo" && !status) {
+        this.props.layer.update({
+          visible:true,
+          solo: true,
+        });
+      }
+    };
+  }
 });

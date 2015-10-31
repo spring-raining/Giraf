@@ -685,7 +685,6 @@ nav, .nav {
   top: 0;
   bottom: 0;
   left: 0;
-  padding-top: 40px;
   width: 180px; }
 
 .timeline__timetable-container {
@@ -693,8 +692,7 @@ nav, .nav {
   top: 0;
   bottom: 0;
   left: 180px;
-  right: 0;
-  padding-top: 40px; }
+  right: 0; }
 
 .timeline__header {
   background-color: rgba(0, 0, 0, 0.7);
@@ -732,12 +730,14 @@ nav, .nav {
   border-top: 3px solid #4BDC4B; }
 
 .timeline__left {
-  width: 180px; }
+  width: 180px;
+  padding-top: 40px; }
 
 .timeline__timetable {
   position: relative;
   min-height: 100%;
-  min-width: 100%; }
+  min-width: 100%;
+  padding-top: 40px; }
 
 .timeline__timetable-overlay {
   position: absolute;
@@ -769,20 +769,63 @@ nav, .nav {
 
 .timeline__layer,
 .timeline__layer-header {
-  height: 80px;
-  border-bottom: 1px solid #464440; }
+  height: 48px;
+  margin-top: 6px;
+  margin-bottom: 6px; }
 
-.timeline__layer-header,
+.timeline__left-container,
 .timeline__summary {
   border-right: 2px solid #464440; }
 
 .timeline__layer-header {
-  background-color: #33322f; }
+  background-color: #33322f;
+  position: relative;
+  margin-left: 6px;
+  border-radius: 2px 0 0 2px;
+  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19), 0 8px 17px 0 rgba(0, 0, 0, 0.2); }
+  .timeline__layer-header .timeline__layer-header__name {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 3px 8px;
+    font-size: 12px;
+    color: #c9c9c9;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; }
+  .timeline__layer-header .timeline__layer-header__buttons {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 3px 8px; }
+    .timeline__layer-header .timeline__layer-header__buttons button {
+      margin: 0 8px 0 0;
+      padding: 0;
+      height: 18px;
+      width: 18px;
+      font-size: 8px;
+      color: #797979;
+      background: linear-gradient(0deg, transparent, rgba(230, 230, 230, 0.1));
+      border: 1px solid #5e5e5e;
+      border-radius: 2px;
+      box-shadow: none; }
+      .timeline__layer-header .timeline__layer-header__buttons button.on {
+        color: #ff3333;
+        text-shadow: 0 0 2px #ff3333, 0 0 4px #ff3333, 0 0 8px #ff3333;
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6));
+        border: 1px solid #5e5e5e; }
   .timeline__layer-header.edited {
     background-color: #53514c; }
 
 .timeline__layer {
-  position: relative; }
+  position: relative;
+  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19), 0 8px 17px 0 rgba(0, 0, 0, 0.2); }
+  .timeline__layer.edited .timeline__layer-timetable__entity {
+    background-color: #b68c8c; }
 
 .timeline__layer-flex-container {
   position: absolute;

@@ -173,7 +173,6 @@ var LayerTimetable = React.createClass({
                                 onRightDragStart={this._onDragStart(draggingTarget.ENTITY_END)}
                                 onRightDrag={this._onDrag(draggingTarget.ENTITY_END)}
                                 onRightDragEnd={this._onDragEnd(draggingTarget.ENTITY_END)}>
-              {layer.layerStart} - {layer.layerEnd}
             </LayerTimetableArea>
 
             <LayerTimetableArea className="timeline__layer-timetable__layer-after"
@@ -209,7 +208,6 @@ var LayerTimetable = React.createClass({
                               onRightDragStart={this._onDragStart(draggingTarget.LAYER_END)}
                               onRightDrag={this._onDrag(draggingTarget.LAYER_END)}
                               onRightDragEnd={this._onDragEnd(draggingTarget.LAYER_END)}>
-            {layer.layerStart} - {layer.layerEnd}
           </LayerTimetableArea>
 
           <LayerTimetableArea className="timeline__layer-timetable__after pointer-disable"

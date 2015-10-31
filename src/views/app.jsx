@@ -30,8 +30,10 @@ var App = React.createClass({
   },
 
   setKeyEvents() {
+    // To prevent default browser behavior, return false.
     Mousetrap.bind("space", () => {
       Actions.togglePlay();
+      return false;
     });
   },
 

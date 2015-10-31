@@ -11,7 +11,7 @@
 
   .scroll-area {
     position: absolute;
-    overflow: scroll;
+    overflow: hidden;
   }
 }
 
@@ -29,14 +29,15 @@
   top: 0;
   left: $timeline-summary-width;
   right: 0;
+  height: $timeline-summary-height;
 }
 .timeline__left-container {
   @include calculate-z-index(timeline, left);
   top: 0;
   bottom: 0;
   left: 0;
-  width: $timeline-summary-width;
   padding-top: $timeline-summary-height;
+  width: $timeline-summary-width;
 }
 
 .timeline__timetable-container {
@@ -79,6 +80,10 @@
   &.cached {
     border-top: 3px solid $color-timeline-cell-cached;
   }
+}
+
+.timeline__left {
+  width: $timeline-summary-width;
 }
 
 .timeline__timetable {

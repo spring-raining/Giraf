@@ -663,7 +663,7 @@ nav, .nav {
   right: 0; }
   .timeline .scroll-area {
     position: absolute;
-    overflow: scroll; }
+    overflow: hidden; }
 
 .timeline__summary {
   z-index: 2005;
@@ -677,15 +677,16 @@ nav, .nav {
   z-index: 2004;
   top: 0;
   left: 180px;
-  right: 0; }
+  right: 0;
+  height: 40px; }
 
 .timeline__left-container {
   z-index: 2003;
   top: 0;
   bottom: 0;
   left: 0;
-  width: 180px;
-  padding-top: 40px; }
+  padding-top: 40px;
+  width: 180px; }
 
 .timeline__timetable-container {
   z-index: 2002;
@@ -729,6 +730,9 @@ nav, .nav {
 
 .timeline__time-controller__cell.cached {
   border-top: 3px solid #4BDC4B; }
+
+.timeline__left {
+  width: 180px; }
 
 .timeline__timetable {
   position: relative;
@@ -890,3 +894,17 @@ nav, .nav {
     margin: 0 6px; }
   .menu .menu__disabled {
     color: #a3a3a3; }
+
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
+.scroll-box {
+  width: 100%;
+  height: 100%;
+  overflow: hidden; }
+  .scroll-box .scroll {
+    width: 100%;
+    height: 100%;
+    box-sizing: content-box;
+    padding: 0 30px 30px 0; }

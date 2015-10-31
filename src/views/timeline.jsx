@@ -110,30 +110,47 @@ var Timeline = React.createClass({
           <div className="timeline__summary">
             {summary}
           </div>
-          <div className="timeline__header-container scroll-area"
-               ref="header"
-               onWheel={this._onWheel("header")}>
-            <div className="timeline__header" style={{width: this.state.timetableWidth + "px"}}>
-              <TimeController composition={comp}
-                              cachedFrames={cachedFrames}
-                              currentFrame={store.get("currentFrame")} />
+          <div className="timeline__header-container scroll-area">
+            <div className="scroll-box">
+              <div className="scroll"
+                   style={{overflowX: "scroll", overflowY: "hidden"}}
+                   ref="header"
+                   onWheel={this._onWheel("header")}>
+                <div className="timeline__header"
+                     style={{width:this.state.timetableWidth + "px"}}>
+                  <TimeController composition={comp}
+                                  cachedFrames={cachedFrames}
+                                  currentFrame={store.get("currentFrame")} />
+                </div>
+              </div>
             </div>
           </div>
-          <div className="timeline__left-container scroll-area"
-               ref="left"
-               onWheel={this._onWheel("left")}>
-            <div className="timeline__left">
-              {layerHeaders}
-              <button onClick={this._onCreateLayerButtonClicked}>Create Layer</button>
+          <div className="timeline__left-container scroll-area">
+            <div className="scroll-box">
+              <div className="scroll"
+                   style={{overflowX: "hidden", overflowY: "scroll"}}
+                   ref="left"
+                   onWheel={this._onWheel("left")}>
+                <div className="timeline__left">
+                  {layerHeaders}
+                  <button onClick={this._onCreateLayerButtonClicked}>Create Layer</button>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="timeline__timetable-container scroll-area"
-               ref="timetable"
-               onWheel={this._onWheel("timetable")}>
-            <div className="timeline__timetable" style={{width: this.state.timetableWidth + "px"}}>
-              {layers}
-              <TimetableOverlay composition={comp}
-                                currentFrame={store.get("currentFrame")} />
+          <div className="timeline__timetable-container scroll-area">
+            <div className="scroll-box">
+              <div className="scroll"
+                   style={{overflowX: "scroll", overflowY: "scroll"}}
+                   ref="timetable"
+                   onWheel={this._onWheel("timetable")}>
+                <div className="timeline__timetable"
+                     style={{width: this.state.timetableWidth + "px"}}>
+                  {layers}
+                  <TimetableOverlay composition={comp}
+                                    currentFrame={store.get("currentFrame")} />
+                </div>
+              </div>
             </div>
           </div>
         </section>

@@ -16,12 +16,39 @@
 }
 
 .timeline__summary {
+  @include giraf-shadow(2);
   @include calculate-z-index(timeline, summary);
+  @include font-smoothing();
   position: absolute;
   width: $timeline-summary-width;
   height: $timeline-summary-height;
   overflow: hidden;
   background-color: $color-timeline-bg;
+  color: $color-timeline-layer-header-body;
+  font-size: 12px;
+
+  .timeline__summary__name {
+    @include single-line();
+    position: absolute;
+    top: 0;
+    margin: 0 0 0 6px;
+    font-weight: 700;
+  }
+
+  .timeline__summary__info {
+    position: absolute;
+    bottom: 0;
+    margin: 0 0 2px 6px;
+
+    span {
+      margin: 0 6px 0 0;
+    }
+  }
+
+  .timeline__summary__badge {
+    @include giraf-badge($color-timeline-layer-header-body, $color-timeline-bg, 20px, 12px);
+    font-weight: 700;
+  }
 }
 
 .timeline__header-container {

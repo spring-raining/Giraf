@@ -666,12 +666,44 @@ nav, .nav {
     overflow: hidden; }
 
 .timeline__summary {
+  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19), 0 8px 17px 0 rgba(0, 0, 0, 0.2);
   z-index: 2005;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   position: absolute;
   width: 180px;
   height: 40px;
   overflow: hidden;
-  background-color: #33322f; }
+  background-color: #33322f;
+  color: #c9c9c9;
+  font-size: 12px; }
+  .timeline__summary .timeline__summary__name {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    position: absolute;
+    top: 0;
+    margin: 0 0 0 6px;
+    font-weight: 700; }
+  .timeline__summary .timeline__summary__info {
+    position: absolute;
+    bottom: 0;
+    margin: 0 0 2px 6px; }
+    .timeline__summary .timeline__summary__info span {
+      margin: 0 6px 0 0; }
+  .timeline__summary .timeline__summary__badge {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    padding: 0;
+    padding-top: 1px;
+    color: #33322f;
+    background-color: #c9c9c9;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: 700; }
 
 .timeline__header-container {
   z-index: 2004;

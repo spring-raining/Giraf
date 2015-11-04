@@ -132,6 +132,19 @@ $timeline-layer-header-button-size: 18px;
   padding: 4px;
 }
 
+@mixin giraf-badge($background-color, $color, $size: 26px, $font-size: 12px) {
+  display: inline-block;
+  width: $size;
+  height: $size;
+  font-size: $font-size;
+  padding: 0;
+  padding-top: ($size - $font-size - 6px) / 2;
+  color: $color;
+  background-color: $background-color;
+  border-radius: 50%;
+  text-align: center;
+}
+
 @mixin calculate-z-index($global-tag, $local-tag) {
   $global: index($z-order-global, $global-tag);
   $local: index(map-get($z-order, $global-tag), $local-tag);

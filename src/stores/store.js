@@ -4,7 +4,6 @@ import { EventEmitter }                       from "events";
 import _Array                                 from "lodash/array";
 import _Lang                                  from "lodash/lang";
 
-import History                                from "src/stores/history";
 import {State}                                from "src/stores/model/state";
 
 
@@ -29,7 +28,7 @@ const Store = Object.assign({}, EventEmitter.prototype, {
     return _;
   },
 
-  getAll: function() {
+  getState: function() {
     return this._state;
   },
 
@@ -60,16 +59,8 @@ const Store = Object.assign({}, EventEmitter.prototype, {
     delete _[_Array.last(flattenKeys)];
   },
 
-  save: function(actionType, actionParam) {
-
-  },
-
-  undo: function() {
-
-  },
-
-  redo: function() {
-
+  update: function(obj) {
+    this._state.update(obj);
   },
 
   emitChange: function() {

@@ -23,6 +23,7 @@
     "babelify": "^6.3.0",
     "bourbon": "^4.2.5",
     "browserify": "^11.1.0",
+    "deep-diff": "^0.3.3",
     "flux": "^2.1.1",
     "gulp": "^3.9.0",
     "gulp-sass": "^2.0.4",

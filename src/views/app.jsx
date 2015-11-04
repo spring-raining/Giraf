@@ -35,6 +35,16 @@ var App = React.createClass({
       Actions.togglePlay();
       return false;
     });
+
+    Mousetrap.bind("mod+z", () => {
+      Actions.undo();
+      return false;
+    });
+
+    Mousetrap.bind("mod+shift+z", () => {
+      Actions.redo();
+      return false;
+    });
   },
 
   render() {

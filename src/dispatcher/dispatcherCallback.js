@@ -5,6 +5,7 @@ import { EventEmitter } from "events";
 import ActionConst          from "src/actions/const";
 import GenUUID              from "src/utils/genUUID";
 import FileLoader           from "src/utils/fileLoader";
+import History              from "src/stores/history";
 import Store                from "src/stores/store";
 import {Footage}            from "src/stores/model/footage";
 
@@ -26,6 +27,7 @@ function dispatcherCallback(action) {
         console.warn("File load failed : " + e.name);
       }
     });
+    History.save(action.actionType, false);
     Store.emitChange();
   }
 
@@ -59,6 +61,13 @@ function dispatcherCallback(action) {
 
   else if (action.actionType === ActionConst.CREATE_COMPOSITION) {
     Store.push("compositions")(action.composition);
+    Store.update({
+      selectingItem: action.composition,
+      editingComposition: action.composition,
+      editingLayer: null,
+      isPlaying: false,
+    });
+    History.save(action.actionType, false);
     Store.emitChange();
   }
 
@@ -67,6 +76,12 @@ function dispatcherCallback(action) {
       Store.set("compositions")(Store.get("compositions").map((e) => {
         return (e.id === action.composition.id)? action.composition : e;
       }));
+      Store.update({
+        selectingItem: action.composition,
+        editingComposition: action.composition,
+        isPlaying: false,
+      });
+      History.save(action.actionType, false);
       Store.emitChange();
     }
   }
@@ -75,6 +90,13 @@ function dispatcherCallback(action) {
     let comp = searchById(Store.get("compositions"))(action.layer.parentCompId);
     if (comp) {
       comp.layers = [action.layer].concat(comp.layers);
+      Store.update({
+        selectingItem: comp,
+        editingComposition: comp,
+        editingLayer: action.layer,
+        isPlaying: false,
+      });
+      History.save(action.actionType, false);
       Store.emitChange();
     }
   }
@@ -85,6 +107,13 @@ function dispatcherCallback(action) {
       comp.layers = comp.layers.map((e) => {
         return (e.id === action.layer.id)? action.layer : e;
       });
+      Store.update({
+        selectingItem: comp,
+        editingComposition: comp,
+        editingLayer: action.layer,
+        isPlaying: false,
+      });
+      History.save(action.actionType, false);
       Store.emitChange();
     }
   }
@@ -130,11 +159,17 @@ function dispatcherCallback(action) {
   }
 
   else if (action.actionType === ActionConst.UNDO) {
-
+    for (let i = 0; i < action.repeat; i++) {
+      History.undo();
+    }
+    Store.emitChange();
   }
 
   else if (action.actionType === ActionConst.REDO) {
-
+    for (let i = 0; i < action.repeat; i++) {
+      History.redo();
+    }
+    Store.emitChange();
   }
 }
 

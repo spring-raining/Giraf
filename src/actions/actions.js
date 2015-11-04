@@ -257,7 +257,7 @@ export default {
   },
 
   undo(repeat = 1) {
-    if (typeof(frame) !== "number" || repeat < 1) {
+    if (typeof(repeat) !== "number" || repeat < 1) {
       return;
     }
     Dispatcher.dispatch({
@@ -267,7 +267,7 @@ export default {
   },
 
   redo(repeat = 1) {
-    if (typeof(frame) !== "number" || repeat < 1) {
+    if (typeof(repeat) !== "number" || repeat < 1) {
       return;
     }
     Dispatcher.dispatch({

@@ -5,6 +5,7 @@ import keyMirror                        from "keymirror";
 import Actions                          from "src/actions/actions";
 import _Selectable                      from "src/stores/model/_selectable";
 import _Renderable                      from "src/stores/model/_renderable";
+import ModelBase                        from "src/stores/model/modelBase";
 import {classWithTraits}                from "src/utils/traitUtils";
 import readGIF                          from "src/utils/readGIF";
 
@@ -22,7 +23,7 @@ const FootageKinds = keyMirror({
   VIDEO: null,
 });
 
-const Base = classWithTraits(null, _Selectable, _Renderable);
+const Base = classWithTraits(ModelBase, _Selectable, _Renderable);
 
 class Footage extends Base {
   /**
@@ -37,44 +38,114 @@ class Footage extends Base {
    */
   constructor(id, name, size, type, objectURL=null, width=null, height=null) {
     super();
-    Object.assign(this, {
-      id, name, size, type, objectURL, width, height
-    });
-    this.status = StatusTypes.LOADING;
+    this._id = id;
+    this._name = name;
+    this._size = size;
+    this._type = type;
+    this._objectURL = objectURL;
+    this._width = width;
+    this._height = height;
+    this._status = StatusTypes.LOADING;
     if (objectURL && width && height) {
       _loadContent(objectURL, type, width, height).then(
         (result) => {
-          this.status = StatusTypes.NORMAL;
+          super.assign("_status", StatusTypes.NORMAL);
           Actions.updateFootage(this);
         },
         (error) => {
           console.log(error);
-          this.status = StatusTypes.DYING;
+          super.assign("_status", StatusTypes.DYING);
           Actions.updateFootage(this);
         }
       );
     }
   }
 
-  update(obj, fireAction = true) {
-    Object.assign(this, obj);
+  get id() {
+    return this._id;
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  set name(name) {
+    super.assign("_name", name);
+  }
+
+  get size() {
+    return this._size;
+  }
+
+  set size(size) {
+    super.assign("_size", size);
+  }
+
+  get type() {
+    return this._type;
+  }
+
+  set type(type) {
+    super.assign("_type", type);
+  }
+
+  get objectURL() {
+    return this._objectURL;
+  }
+
+  set objectURL(objectURL) {
+    super.assign("_objectURL", objectURL);
+  }
+
+  get width() {
+    return this._width;
+  }
+
+  set width(width) {
+    console.warn("Setting width directly is not recommended. Please use updateSize(width, height)");
+    this.updateSize(width, this.height);
+  }
+
+  get height() {
+    return this._height;
+  }
+
+  set height(height) {
+    console.warn("Setting height directly is not recommended. Please use updateSize(width, height)");
+    this.updateSize(this.width, height);
+  }
+
+  get status() {
+    return this._status;
+  }
+
+  update(obj = {}, fireAction = true) {
+    super.update(obj);
 
     if (obj.objectURL) {
-      this.status = StatusTypes.LOADING;
+      super.assign("_status", StatusTypes.LOADING);
       this._loadContent(obj.objectURL, this.type, this.width, this.height).then(
         (result) => {
-          this.status = StatusTypes.NORMAL;
+          super.assign("_status", StatusTypes.NORMAL);
           Actions.updateFootage(this);
         },
         (error) => {
           console.log(error);
-          this.status = StatusTypes.DYING;
+          super.assign("_status", StatusTypes.DYING);
           Actions.updateFootage(this);
         }
       )
     }
     if (fireAction) {
       Actions.updateFootage(this);
+    }
+  }
+
+  updateSize(width, height) {
+    if (width !== this._width || height !== this._height) {
+      super.assign("_width", width);
+      super.assign("_height", height);
+      //this._prepareCanvas(width, height);
     }
   }
 

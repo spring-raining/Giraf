@@ -94,33 +94,25 @@ var Effect = React.createClass({
   _onAnchorPointXChanged(value) {
     let layer = this.props.store.get("editingLayer");
     layer.transform.anchorPoint.x = value;
-    layer.update({
-      transform: layer.transform,
-    });
+    layer.update();
   },
 
   _onAnchorPointYChanged(value) {
     let layer = this.props.store.get("editingLayer");
     layer.transform.anchorPoint.y = value;
-    layer.update({
-      transform: layer.transform,
-    });
+    layer.update();
   },
 
   _onPositionXChanged(value) {
     let layer = this.props.store.get("editingLayer");
     layer.transform.position.x = value;
-    layer.update({
-      transform: layer.transform,
-    });
+    layer.update();
   },
 
   _onPositionYChanged(value) {
     let layer = this.props.store.get("editingLayer");
     layer.transform.position.y = value;
-    layer.update({
-      transform: layer.transform,
-    });
+    layer.update();
   },
 
   _onScaleXChanged(value) {
@@ -131,9 +123,7 @@ var Effect = React.createClass({
       layer.transform.scale.y = Math.round(100 * value * scale.y / scale.x) / 100;
     }
     layer.transform.scale.x = value;
-    layer.update({
-      transform: layer.transform,
-    });
+    layer.update();
   },
 
   _onScaleYChanged(value) {
@@ -144,9 +134,7 @@ var Effect = React.createClass({
       layer.transform.scale.x = Math.round(100 * value * scale.x / scale.y) / 100;
     }
     layer.transform.scale.y = value;
-    layer.update({
-      transform: layer.transform,
-    });
+    layer.update();
   },
 
   _onScaleIsFixingAspectChanged(value) {
@@ -158,17 +146,13 @@ var Effect = React.createClass({
   _onRotationChanged(value) {
     let layer = this.props.store.get("editingLayer");
     layer.transform.rotation = value;
-    layer.update({
-      transform: layer.transform,
-    });
+    layer.update();
   },
 
   _onOpacityChanged(value) {
     let layer = this.props.store.get("editingLayer");
     layer.transform.opacity = value;
-    layer.update({
-      transform: layer.transform,
-    });
+    layer.update();
   },
 });
 

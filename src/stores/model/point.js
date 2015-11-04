@@ -1,12 +1,15 @@
 "use strict";
 
+import ModelBase            from "src/stores/model/modelBase";
 
-class Point {
+
+class Point extends ModelBase {
   constructor(points) {
+    super();
     if (points.length === 2) {
-      this.value = points;
-      this.x = points[0];
-      this.y = points[1];
+      this._value = points;
+      this._x = points[0];
+      this._y = points[1];
     }
     else {
       throw new TypeError("Invalid argument length.");
@@ -14,7 +17,23 @@ class Point {
   }
 
   get() {
-    return this.value;
+    return [].concat(this._value);
+  }
+
+  get x() {
+    return this._x;
+  }
+
+  set x(x) {
+    super.assign("_x", x);
+  }
+
+  get y() {
+    return this._y;
+  }
+
+  set y(y) {
+    super.assign("_y", y);
   }
 }
 

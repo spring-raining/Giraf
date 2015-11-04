@@ -49,9 +49,8 @@ var Preview = React.createClass({
     }
     let dom = this.refs.compositionContainer.getDOMNode();
 
-    let frameCache = store.get("compositionFrameCache",
-                               composition.id,
-                               store.get("currentFrame"));
+    let frameCache = store.get("frameCache")
+                          .getFrameCache(composition, store.get("currentFrame"));
     // lazy update mode
     if (store.get("isPlaying")) {
       if (frameCache) {

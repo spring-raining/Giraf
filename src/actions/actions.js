@@ -254,10 +254,26 @@ export default {
       actionType: ActionConst.PLAY,
       play: play,
     });
-    //let selectingItem = Store.get("selectingItem");
-    //if (play && selectingItem instanceof Composition) {
-    //  this._renderFrameAutomatically(selectingItem);
-    //}
+  },
+
+  undo(repeat = 1) {
+    if (typeof(frame) !== "number" || repeat < 1) {
+      return;
+    }
+    Dispatcher.dispatch({
+      actionType: ActionConst.UNDO,
+      repeat: repeat,
+    });
+  },
+
+  redo(repeat = 1) {
+    if (typeof(frame) !== "number" || repeat < 1) {
+      return;
+    }
+    Dispatcher.dispatch({
+      actionType: ActionConst.REDO,
+      repeat: repeat,
+    });
   },
 
   _createCanvasWithRenderedFrame(composition, frame) {

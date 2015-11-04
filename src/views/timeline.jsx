@@ -70,9 +70,8 @@ var Timeline = React.createClass({
   },
 
   _createFrameCache(composition, frame) {
-    let frameCache = this.props.store.get("compositionFrameCache",
-                                          composition.id,
-                                          frame);
+    let frameCache = this.props.store.get("frameCache")
+                                     .getFrameCache(composition, frame);
     if (!frameCache) {
       Actions.renderFrame(composition, frame);
     }
@@ -84,7 +83,7 @@ var Timeline = React.createClass({
     let comp = store.get("editingComposition");
 
     if (comp) {
-      let cachedFrames = (_ = store.get("compositionFrameCache", comp.id))? _ : {};
+      let cachedFrames = store.get("frameCache").getAllFrameCache(comp);
 
       let summary = <Summary composition={comp} />;
       let layers = this.state.layers.map((e) =>

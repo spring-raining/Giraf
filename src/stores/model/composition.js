@@ -3,10 +3,11 @@
 import Actions              from "src/actions/actions";
 import _Selectable          from "src/stores/model/_selectable";
 import _Renderable          from "src/stores/model/_renderable";
+import ModelBase            from "src/stores/model/modelBase";
 import {classWithTraits}    from "src/utils/traitUtils";
 
 
-const Base = classWithTraits(null, _Selectable, _Renderable);
+const Base = classWithTraits(ModelBase, _Selectable, _Renderable);
 
 class Composition extends Base {
   /**
@@ -20,20 +21,86 @@ class Composition extends Base {
    */
   constructor(id, name, width, height, frame, fps) {
     super();
-    Object.assign(this, {
-      id, name, width, height, frame, fps
-    });
-    this.layers = [];
+    this._id = id;
+    this._name = name;
+    this._width = width;
+    this._height = height;
+    this._frame = frame;
+    this._fps = fps;
+    this._layers = [];
+
     this._prepareCanvas(width, height);
   }
 
-  update(obj, fireAction = true) {
-    Object.assign(this, obj);
+  get id() {
+    return this._id;
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  set name(name) {
+    super.assign("_name", name);
+  }
+
+  get width() {
+    return this._width;
+  }
+
+  set width(width) {
+    console.warn("Setting width directly is not recommended. Please use updateSize(width, height)");
+    this.updateSize(width, this.height);
+  }
+
+  get height() {
+    return this._height;
+  }
+
+  set height(height) {
+    console.warn("Setting height directly is not recommended. Please use updateSize(width, height)");
+    this.updateSize(this.width, height);
+  }
+
+  get frame() {
+    return this._frame;
+  }
+
+  set frame(frame) {
+    super.assign("_frame", frame);
+  }
+
+  get fps() {
+    return this._fps;
+  }
+
+  set fps(fps) {
+    super.assign("_fps", fps);
+  }
+
+  get layers() {
+    return [].concat(this._layers);
+  }
+
+  set layers(layers) {
+    super.assign("_layers", layers);
+  }
+
+  update(obj = {}, fireAction = true) {
+    super.update(obj);
     if (obj.width > 0 && obj.height > 0) {
       this._prepareCanvas(obj.width, obj.height);
     }
     if (fireAction) {
       Actions.updateComposition(this);
+    }
+  }
+
+  updateSize(width, height) {
+    if (width !== this._width || height !== this._height) {
+      super.assign("_width", width);
+      super.assign("_height", height);
+      this._prepareCanvas(width, height);
     }
   }
 

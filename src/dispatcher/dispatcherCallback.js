@@ -19,7 +19,7 @@ function dispatcherCallback(action) {
     action.files.forEach((e) => {
       let f = new Footage(GenUUID(), e.name, e.size, e.type);
       if (FileLoader.check(f)) {
-        Store.get("footages").push(f);
+        Store.push("footages")(f);
         FileLoader.run(f, e);
       }
       else {
@@ -58,7 +58,7 @@ function dispatcherCallback(action) {
   }
 
   else if (action.actionType === ActionConst.CREATE_COMPOSITION) {
-    Store.get("compositions").push(action.composition);
+    Store.push("compositions")(action.composition);
     Store.emitChange();
   }
 
@@ -74,7 +74,7 @@ function dispatcherCallback(action) {
   else if (action.actionType === ActionConst.CREATE_LAYER) {
     let comp = searchById(Store.get("compositions"))(action.layer.parentCompId);
     if (comp) {
-      comp.layers.splice(action.index, 0, action.layer);
+      comp.layers = [action.layer].concat(comp.layers);
       Store.emitChange();
     }
   }
@@ -109,14 +109,15 @@ function dispatcherCallback(action) {
   }
 
   else if (action.actionType === ActionConst.RENDER_FRAME) {
-    Store.set("compositionFrameCache", action.composition.id, action.frame)
-             (action.canvas);
+    Store.get("frameCache")
+         .addFrameCache(action.composition, action.frame, action.canvas);
     Store.emitChange();
   }
 
   else if (action.actionType === ActionConst.CLEAR_FRAME_CACHE) {
     action.frames.forEach((e) => {
-      Store.remove("compositionFrameCache", action.composition.id, e);
+      Store.get("frameCache")
+           .removeFrameCache(action.composition, e);
     });
     Store.emitChange();
   }
@@ -126,6 +127,14 @@ function dispatcherCallback(action) {
       Store.set("isPlaying")(action.play);
       Store.emitChange();
     }
+  }
+
+  else if (action.actionType === ActionConst.UNDO) {
+
+  }
+
+  else if (action.actionType === ActionConst.REDO) {
+
   }
 }
 

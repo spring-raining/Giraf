@@ -171,6 +171,13 @@ function dispatcherCallback(action) {
     }
     Store.emitChange();
   }
+
+  else if (action.actionType === ActionConst.UPDATE_EXPANDING_MENU_ID) {
+    Store.update({
+      expandingMenuId: action.id,
+    });
+    Store.emitChange();
+  }
 }
 
 export default dispatcherCallback;

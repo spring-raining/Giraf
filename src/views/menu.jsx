@@ -1,10 +1,10 @@
 "use strict";
 
-import React from "react";
+import React                  from "react";
 
 
-var Menu = React.createClass({
-  propTypes () {
+const MenuPart = React.createClass({
+  propTypes() {
     return {
       content: React.PropTypes.array.isRequired,
       expand:  React.PropTypes.bool.isRequired,
@@ -21,11 +21,11 @@ var Menu = React.createClass({
     let convert = (content) => {
       let list = content.map((e, i) => {
         let child = (!e.child)? null :
-          <Menu content={e.child}
-                expand={i === this.state.expandingChild} />;
+          <MenuPart content={e.child}
+                    expand={i === this.state.expandingChild} />;
         let className = "menu__li"
-                      + ((e.child)? " menu__expandable" : "")
-                      + ((e.disabled)? " menu__disabled" : "");
+          + ((e.child)? " menu__expandable" : "")
+          + ((e.disabled)? " menu__disabled" : "");
         return (
           <li className={className} key={i}
               onClick={this._onClick(e.onClick)}
@@ -38,7 +38,7 @@ var Menu = React.createClass({
       return <ul className="menu__ul">{list}</ul>;
     };
     let className = "menu"
-                  + ((this.props.expand)? "" : " hidden");
+      + ((this.props.expand)? "" : " hidden");
 
     return (
       <div className={className}>
@@ -60,6 +60,27 @@ var Menu = React.createClass({
         action();
       }
     }
+  },
+});
+
+const Menu = React.createClass({
+  propTypes() {
+    return {
+      content:  React.PropTypes.array.isRequired,
+      expand:   React.PropTypes.bool.isRequired,
+    };
+  },
+
+  render() {
+    const menuPart = (!this.props.expand)? null
+      : <MenuPart content={this.props.content}
+                  expand={true} />;
+
+    return (
+      <div className="menu__container">
+        {menuPart}
+      </div>
+    );
   },
 });
 

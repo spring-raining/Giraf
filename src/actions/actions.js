@@ -276,6 +276,13 @@ export default {
     });
   },
 
+  updateExpandingMenuId(id) {
+    Dispatcher.dispatch({
+      actionType: ActionConst.UPDATE_EXPANDING_MENU_ID,
+      id: id,
+    });
+  },
+
   _createCanvasWithRenderedFrame(composition, frame) {
     return new Promise((resolve,reject) => {
       try {

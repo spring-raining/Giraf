@@ -52,7 +52,8 @@ var App = React.createClass({
     let dragging = (_ = this.state.dragging)? _.type : null;
 
     return (
-      <div className="app" data-giraf-dragging={dragging}>
+      <div className="app" data-giraf-dragging={dragging}
+           onClick={this._onClick}>
         <div className="app__nav">
           <Nav store={this.state.store} />
         </div>
@@ -77,6 +78,10 @@ var App = React.createClass({
       store: Store
     });
   },
+
+  _onClick(e) {
+    Actions.updateExpandingMenuId(null);
+  }
 });
 
 export default App;

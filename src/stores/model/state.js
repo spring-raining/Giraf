@@ -21,6 +21,7 @@ class State extends ModelBase {
     this._currentFrame = null;
     this._frameCache = new FrameCacheHolder();
     this._isPlaying = false;
+    this._expandingMenuId = null;
   }
 
   get footages() {
@@ -89,6 +90,14 @@ class State extends ModelBase {
 
   set isPlaying(isPlaying) {
     super.assign("_isPlaying", isPlaying);
+  }
+
+  get expandingMenuId() {
+    return this._expandingMenuId;
+  }
+
+  set expandingMenuId(expandingMenuId) {
+    super.assign("_expandingMenuId", expandingMenuId);
   }
 }
 

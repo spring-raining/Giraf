@@ -21,4 +21,5 @@ export default keyMirror({
   PLAY: null,
   UNDO: null,
   REDO: null,
+  UPDATE_EXPANDING_MENU_ID: null,
 });

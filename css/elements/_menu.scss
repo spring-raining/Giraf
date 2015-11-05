@@ -3,6 +3,18 @@
 .menu {
   position: fixed;
   @include calculate-z-index(menu, base);
+  @include giraf-anime(all, 0.1s);
+  @include reveal(0.1s) {
+    0% {
+      opacity: 0;
+      @include transform(translate3d(-10px, 0 , 0));
+    }
+
+    100% {
+      opacity: 1;
+      @include transform(translate3d(0, 0, 0));
+    }
+  }
 
   .menu__li > & {
     position: absolute;

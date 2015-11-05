@@ -452,9 +452,9 @@ a {
     text-decoration: underline; }
 
 button {
-  -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26);
   color: #222222;
   background-color: #e2c710;
@@ -469,6 +469,7 @@ button {
     background-color: #efd41d; }
 
 .hidden {
+  opacity: 0 !important;
   display: none !important; }
 
 .panel {
@@ -502,12 +503,19 @@ nav, .nav {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     display: block;
     float: left;
     height: 100%;
     padding: 0 20px;
     cursor: default; }
+    nav .nav__li.active,
+    nav .nav__li:hover, .nav .nav__li.active,
+    .nav .nav__li:hover {
+      color: #ebebeb; }
   nav .nav__text, .nav .nav__text {
     line-height: 42px; }
 
@@ -934,7 +942,69 @@ nav, .nav {
  */
 .menu {
   position: fixed;
-  z-index: 3001; }
+  z-index: 3001;
+  -webkit-transition: all, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-animation: reveal-start 0.001s linear, reveal-fade-in 0.1s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
+  -moz-animation: reveal-start 0.001s linear, reveal-fade-in 0.1s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
+  animation: reveal-start 0.001s linear, reveal-fade-in 0.1s cubic-bezier(0.4, 0, 0.2, 1) 0.001s; }
+
+@-webkit-keyframes reveal-start {
+  0% {
+    display: none;
+    opacity: 0; }
+  100% {
+    display: block;
+    opacity: 0; } }
+
+@-moz-keyframes reveal-start {
+  0% {
+    display: none;
+    opacity: 0; }
+  100% {
+    display: block;
+    opacity: 0; } }
+
+@keyframes reveal-start {
+  0% {
+    display: none;
+    opacity: 0; }
+  100% {
+    display: block;
+    opacity: 0; } }
+
+@-webkit-keyframes reveal-fade-in {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(-10px, 0, 0); }
+  100% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0); } }
+
+@-moz-keyframes reveal-fade-in {
+  0% {
+    opacity: 0;
+    -moz-transform: translate3d(-10px, 0, 0); }
+  100% {
+    opacity: 1;
+    -moz-transform: translate3d(0, 0, 0); } }
+
+@keyframes reveal-fade-in {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(-10px, 0, 0);
+    -moz-transform: translate3d(-10px, 0, 0);
+    -ms-transform: translate3d(-10px, 0, 0);
+    -o-transform: translate3d(-10px, 0, 0);
+    transform: translate3d(-10px, 0, 0); }
+  100% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0); } }
   .menu__li > .menu {
     position: absolute;
     top: 0;

@@ -1,44 +1,62 @@
 "use strict";
 
-import React from "react";
+import React                  from "react";
 
-import Menu from "./menu";
+import Actions                from "src/actions/actions";
+import Menu                   from "src/views/menu";
+import genUUID                from "src/utils/genUUID";
 
 
 var Nav = React.createClass({
   getInitialState() {
     return {
-      expandingChild: null,
+      //expandingChild: null,
     };
   },
 
   content: [
-    {name: "あああ", child:[
-      {name: "aaaa"},
-      {name: "bbbbb", child: [
-        {name: "hogehoge"},
-        {name: "fugafuga"},
-      ]},
-      {name: "cccccc", disabled: true},
-    ]},
-    {name: "いいい", child: [
-
-    ]},
-    {name: "ううう", child: [
-
-    ]},
+    {
+      name: "あああ",
+      id: genUUID(),
+      child: [
+        {name: "aaaa"},
+        {
+          name: "bbbbb",
+          child: [
+            {name: "hogehoge"},
+            {name: "fugafuga"},
+          ]
+        },
+        {name: "cccccc", disabled: true},
+      ],
+    }, {
+      name: "いいい",
+      id: genUUID(),
+      child: [],
+    }, {
+      name: "ううう",
+      id: genUUID(),
+      child: [],
+    },
   ],
 
   render() {
-    let list = this.content.map((e, i) =>
-      <li className="nav__li" key={i}
-          onMouseOver={this._onMouseOver(i)}
-          onClick={this._onClick(i)}>
-        <span className="nav__text">{e.name}</span>
-        <Menu content={e.child}
-              expand={i === this.state.expandingChild} />
-      </li>
-    );
+    const expandMenuId = this.props.store.get("expandingMenuId");
+
+    let list = this.content.map((e) => {
+      const className = "nav__li"
+                      + ((expandMenuId === e.id)? " active" : "");
+      return (
+        <li className={className}
+            key={e.id}
+            onMouseOver={this._onMouseOver(e.id)}
+            onClick={this._onClick(e.id)}>
+          <span className="nav__text">{e.name}</span>
+          <Menu content={e.child}
+                expand={expandMenuId === e.id}/>
+        </li>
+      );
+    });
 
     return (
       <nav className="nav panel">
@@ -49,17 +67,29 @@ var Nav = React.createClass({
     );
   },
 
-  _onMouseOver(index) {
+  _onMouseOver(id) {
     return (e) => {
-      let c = (this.state.expandingChild === null)? null : index;
-      this.setState({expandingChild: c});
+      //let c = (this.state.expandingChild === null)? null : index;
+      //this.setState({expandingChild: c});
+      const expandingMenuId = this.props.store.get("expandingMenuId");
+      if (expandingMenuId) {
+        Actions.updateExpandingMenuId(id);
+      }
     }
   },
 
-  _onClick(index) {
+  _onClick(id) {
     return (e) => {
-      let c = (index === this.state.expandingChild)? null : index;
-      this.setState({expandingChild: c});
+      //let c = (index === this.state.expandingChild)? null : index;
+      //this.setState({expandingChild: c});
+      e.stopPropagation();
+      const expandingMenuId = this.props.store.get("expandingMenuId");
+      if (id === expandingMenuId) {
+        Actions.updateExpandingMenuId(null);
+      }
+      else {
+        Actions.updateExpandingMenuId(id);
+      }
     }
   },
 });

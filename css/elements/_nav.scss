@@ -16,6 +16,7 @@ nav, .nav {
 
   .nav__li {
     @include user-select(none);
+    @include giraf-anime();
 
     position: relative;
     display: block;
@@ -23,6 +24,11 @@ nav, .nav {
     height: 100%;
     padding: $nav-li-padding;
     cursor: default;
+
+    &.active,
+    &:hover {
+      color: $color-nav-active-body;
+    }
   }
 
   .nav__text {

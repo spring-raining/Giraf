@@ -51,6 +51,9 @@ var App = React.createClass({
     var _;
     let dragging = (_ = this.state.dragging)? _.type : null;
 
+    const modal = !(_ = this.state.store.get("modal"))? null :
+      <div className="app__modal">{_}</div>;
+
     return (
       <div className="app" data-giraf-dragging={dragging}
            onClick={this._onClick}>
@@ -69,6 +72,7 @@ var App = React.createClass({
             </Split>
           </Split>
         </div>
+        {modal}
       </div>
     );
   },

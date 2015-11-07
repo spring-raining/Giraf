@@ -5,6 +5,7 @@ $color-white:                       rgb(235, 235, 235);
 $color-white-sub:                   rgb(207, 207, 207);
 $color-black:                       rgb(34, 34, 34);
 $color-a:                           $color-giraf;
+$color-link:                        rgb(74, 115, 240);
 
 $color-nav-bg:                      $color-black;
 $color-nav-body:                    rgb(163, 163, 163);
@@ -47,14 +48,18 @@ $color-project-dying-body:          #F78585;
 $color-menu-bg:                     $color-nav-bg;
 $color-menu-body:                   $color-white;
 $color-menu-disabled:               $color-nav-body;
+$color-modal-bg:                    $color-white;
+$color-modal-body:                   $color-black;
+$color-modal-wall-bg:               rgba(127, 127, 127, 0.5);
 
 /*
  *  Lists of z-index order.
  *  A later tag will make upper than an early tag.
  */
-$z-order-global:                    base timeline menu;
+$z-order-global:                    base timeline modal menu;
 $z-order: (
         menu:                       base,
+        modal:                      wall body,
         timeline:                   base timetable left header summary
                                     timetable-entity-handle timetable-layer-handle,
         base:                       base,
@@ -174,11 +179,11 @@ $timeline-layer-header-button-size: 18px;
   text-overflow: ellipsis;
 }
 
-@mixin reveal($duration: 0.2s, $reveal-display: block) {
-  @include animation(reveal-start 0.001s linear,
-                     reveal-fade-in $duration cubic-bezier(0.4, 0, 0.2, 1) 0.001s);
+@mixin reveal($name, $duration: 0.2s, $reveal-display: block) {
+  @include animation(#{$name}-reveal-start 0.001s linear,
+                     #{$name}-reveal-fade-in $duration cubic-bezier(0.4, 0, 0.2, 1) 0.001s);
 
-  @include keyframes(reveal-start) {
+  @include keyframes(#{$name}-reveal-start) {
     0% {
       display: none;
       opacity: 0;
@@ -190,7 +195,7 @@ $timeline-layer-header-button-size: 18px;
     }
   }
 
-  @include keyframes(reveal-fade-in) {
+  @include keyframes(#{$name}-reveal-fade-in) {
     @content;
   }
 }

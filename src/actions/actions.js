@@ -4,10 +4,11 @@ import _Utility                       from "lodash/utility";
 
 import Dispatcher                     from "src/dispatcher/dispatcher";
 import ActionConst                    from "src/actions/const";
+import createCompositionAsync         from "src/actions/task/createCompositionAsync";
+import createLayerAsync               from "src/actions/task/createLayerAsync";
 import GenUUID                        from "src/utils/genUUID";
 import SelectFile                     from "src/utils/selectFile";
 import {hasTrait}                     from "src/utils/traitUtils";
-import createLayerAsync               from "src/utils/createLayerAsync";
 import {renderFrameAsync, renderFrameAutomatically as autoRender}
                                       from "src/utils/renderUtils";
 import Store                          from "src/stores/store";
@@ -58,13 +59,25 @@ export default {
   },
 
   createComposition(composition = null) {
-    let comp = (composition !== null)? composition
-      : new Composition(GenUUID(), "new composition", 400, 300, 48, 12);
-    if (comp instanceof Composition) {
+    if (composition instanceof Composition) {
       Dispatcher.dispatch({
         actionType: ActionConst.CREATE_COMPOSITION,
-        composition: comp
+        composition: composition,
       });
+    }
+    else {
+      createCompositionAsync().then(
+        (result) => {
+          Dispatcher.dispatch({
+            actionType: ActionConst.CREATE_COMPOSITION,
+            composition: result,
+          });
+        },
+        (error) => {
+          console.error(error);
+          console.warn("Failed to create composition.")
+        }
+      )
     }
   },
 
@@ -280,6 +293,13 @@ export default {
     Dispatcher.dispatch({
       actionType: ActionConst.UPDATE_EXPANDING_MENU_ID,
       id: id,
+    });
+  },
+
+  updateModal(modal) {
+    Dispatcher.dispatch({
+      actionType: ActionConst.UPDATE_MODAL,
+      modal: modal,
     });
   },
 

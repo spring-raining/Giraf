@@ -178,6 +178,13 @@ function dispatcherCallback(action) {
     });
     Store.emitChange();
   }
+
+  else if (action.actionType === ActionConst.UPDATE_MODAL) {
+    Store.update({
+      modal: action.modal,
+    });
+    Store.emitChange();
+  }
 }
 
 export default dispatcherCallback;

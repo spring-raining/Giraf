@@ -19,8 +19,13 @@ var Nav = React.createClass({
       name: "あああ",
       id: genUUID(),
       child: [
-        {name: "aaaa"},
         {
+          name: "コンポジションを作成",
+          onClick: () => {
+            Actions.updateExpandingMenuId(null);
+            Actions.createComposition();
+          }
+        }, {
           name: "bbbbb",
           child: [
             {name: "hogehoge"},

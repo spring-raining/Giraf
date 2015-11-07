@@ -392,6 +392,12 @@ th {
     -ms-flex: 1;
     flex: 1;
     position: relative; }
+  .app .app__modal {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0; }
 
 /*
  *  Lists of z-index order.
@@ -942,15 +948,15 @@ nav, .nav {
  */
 .menu {
   position: fixed;
-  z-index: 3001;
+  z-index: 4001;
   -webkit-transition: all, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
   -moz-transition: all, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
   transition: all, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
-  -webkit-animation: reveal-start 0.001s linear, reveal-fade-in 0.1s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
-  -moz-animation: reveal-start 0.001s linear, reveal-fade-in 0.1s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
-  animation: reveal-start 0.001s linear, reveal-fade-in 0.1s cubic-bezier(0.4, 0, 0.2, 1) 0.001s; }
+  -webkit-animation: menu-reveal-start 0.001s linear, menu-reveal-fade-in 0.1s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
+  -moz-animation: menu-reveal-start 0.001s linear, menu-reveal-fade-in 0.1s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
+  animation: menu-reveal-start 0.001s linear, menu-reveal-fade-in 0.1s cubic-bezier(0.4, 0, 0.2, 1) 0.001s; }
 
-@-webkit-keyframes reveal-start {
+@-webkit-keyframes menu-reveal-start {
   0% {
     display: none;
     opacity: 0; }
@@ -958,7 +964,7 @@ nav, .nav {
     display: block;
     opacity: 0; } }
 
-@-moz-keyframes reveal-start {
+@-moz-keyframes menu-reveal-start {
   0% {
     display: none;
     opacity: 0; }
@@ -966,7 +972,7 @@ nav, .nav {
     display: block;
     opacity: 0; } }
 
-@keyframes reveal-start {
+@keyframes menu-reveal-start {
   0% {
     display: none;
     opacity: 0; }
@@ -974,7 +980,7 @@ nav, .nav {
     display: block;
     opacity: 0; } }
 
-@-webkit-keyframes reveal-fade-in {
+@-webkit-keyframes menu-reveal-fade-in {
   0% {
     opacity: 0;
     -webkit-transform: translate3d(-10px, 0, 0); }
@@ -982,7 +988,7 @@ nav, .nav {
     opacity: 1;
     -webkit-transform: translate3d(0, 0, 0); } }
 
-@-moz-keyframes reveal-fade-in {
+@-moz-keyframes menu-reveal-fade-in {
   0% {
     opacity: 0;
     -moz-transform: translate3d(-10px, 0, 0); }
@@ -990,7 +996,7 @@ nav, .nav {
     opacity: 1;
     -moz-transform: translate3d(0, 0, 0); } }
 
-@keyframes reveal-fade-in {
+@keyframes menu-reveal-fade-in {
   0% {
     opacity: 0;
     -webkit-transform: translate3d(-10px, 0, 0);
@@ -1053,3 +1059,184 @@ nav, .nav {
     height: 100%;
     box-sizing: content-box;
     padding: 0 30px 30px 0; }
+
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
+.modal__wall {
+  z-index: 3001;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-color: rgba(127, 127, 127, 0.5);
+  -webkit-animation: modal__wall-reveal-start 0.001s linear, modal__wall-reveal-fade-in 0.2s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
+  -moz-animation: modal__wall-reveal-start 0.001s linear, modal__wall-reveal-fade-in 0.2s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
+  animation: modal__wall-reveal-start 0.001s linear, modal__wall-reveal-fade-in 0.2s cubic-bezier(0.4, 0, 0.2, 1) 0.001s; }
+
+@-webkit-keyframes modal__wall-reveal-start {
+  0% {
+    display: none;
+    opacity: 0; }
+  100% {
+    display: block;
+    opacity: 0; } }
+
+@-moz-keyframes modal__wall-reveal-start {
+  0% {
+    display: none;
+    opacity: 0; }
+  100% {
+    display: block;
+    opacity: 0; } }
+
+@keyframes modal__wall-reveal-start {
+  0% {
+    display: none;
+    opacity: 0; }
+  100% {
+    display: block;
+    opacity: 0; } }
+
+@-webkit-keyframes modal__wall-reveal-fade-in {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+
+@-moz-keyframes modal__wall-reveal-fade-in {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+
+@keyframes modal__wall-reveal-fade-in {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+
+.modal {
+  box-shadow: 0 17px 50px 0 rgba(0, 0, 0, 0.19), 0 12px 15px 0 rgba(0, 0, 0, 0.24);
+  display: block;
+  border: 0;
+  border-radius: 2px;
+  margin: 4px;
+  padding: 4px;
+  z-index: 3002;
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  box-orient: vertical;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  box-direction: normal;
+  -webkit-flex-direction: column;
+  -moz-flex-direction: column;
+  flex-direction: column;
+  -ms-flex-direction: column;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  left: 20px;
+  bottom: 20px;
+  margin: auto;
+  padding: 0;
+  max-width: 800px;
+  max-height: 800px;
+  color: #222222;
+  background-color: #ebebeb;
+  -webkit-animation: modal-reveal-start 0.001s linear, modal-reveal-fade-in 0.2s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
+  -moz-animation: modal-reveal-start 0.001s linear, modal-reveal-fade-in 0.2s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
+  animation: modal-reveal-start 0.001s linear, modal-reveal-fade-in 0.2s cubic-bezier(0.4, 0, 0.2, 1) 0.001s; }
+
+@-webkit-keyframes modal-reveal-start {
+  0% {
+    display: none;
+    opacity: 0; }
+  100% {
+    display: block;
+    opacity: 0; } }
+
+@-moz-keyframes modal-reveal-start {
+  0% {
+    display: none;
+    opacity: 0; }
+  100% {
+    display: block;
+    opacity: 0; } }
+
+@keyframes modal-reveal-start {
+  0% {
+    display: none;
+    opacity: 0; }
+  100% {
+    display: block;
+    opacity: 0; } }
+
+@-webkit-keyframes modal-reveal-fade-in {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale(0.9, 0.7); }
+  100% {
+    opacity: 1;
+    -webkit-transform: scale(1); } }
+
+@-moz-keyframes modal-reveal-fade-in {
+  0% {
+    opacity: 0;
+    -moz-transform: scale(0.9, 0.7); }
+  100% {
+    opacity: 1;
+    -moz-transform: scale(1); } }
+
+@keyframes modal-reveal-fade-in {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale(0.9, 0.7);
+    -moz-transform: scale(0.9, 0.7);
+    -ms-transform: scale(0.9, 0.7);
+    -o-transform: scale(0.9, 0.7);
+    transform: scale(0.9, 0.7); }
+  100% {
+    opacity: 1;
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -ms-transform: scale(1);
+    -o-transform: scale(1);
+    transform: scale(1); } }
+
+.modal__title {
+  height: 60px;
+  line-height: 60px;
+  padding: 0 5%;
+  overflow: hidden;
+  font-size: 18px; }
+
+.modal__content {
+  -webkit-flex-grow: 1;
+  -moz-flex-grow: 1;
+  flex-grow: 1;
+  -ms-flex-positive: 1;
+  padding: 0 5%; }
+
+.modal__footer {
+  height: 60px;
+  padding: 0 5%;
+  overflow: hidden; }
+
+.modal-button-set {
+  height: 100%;
+  padding: 10px 0;
+  text-align: right; }
+  .modal-button-set > button {
+    margin: 0 10px;
+    box-shadow: none;
+    background: transparent;
+    color: #4a73f0; }

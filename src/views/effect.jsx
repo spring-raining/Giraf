@@ -2,7 +2,8 @@
 
 import React                              from "react";
 
-import {Checkbox, Number, Range}          from "src/views/effect/modules";
+import {Checkbox, Number, Range, ScriptArea}
+                                          from "src/views/effect/modules";
 
 
 var Effect = React.createClass({
@@ -70,6 +71,13 @@ var Effect = React.createClass({
                    max="1"
                    step="0.01"
                    onChange={this._onOpacityChanged} />
+          </fieldset>
+          <fieldset>
+            <legend>効果</legend>
+            <ScriptArea name="script"
+                        value={layer.scriptString}
+                        rows="10"
+                        onChange={this._onScriptChanged} />
           </fieldset>
         </section>
       );
@@ -152,6 +160,13 @@ var Effect = React.createClass({
   _onOpacityChanged(value) {
     let layer = this.props.store.get("editingLayer");
     layer.transform.opacity = value;
+    layer.update();
+  },
+
+
+  _onScriptChanged(value) {
+    let layer = this.props.store.get("editingLayer");
+    layer.scriptString = value;
     layer.update();
   },
 });

@@ -3,7 +3,7 @@
 import React from "react";
 
 
-var Checkbox = React.createClass({
+const Checkbox = React.createClass({
   propType() {
     return {
       name:     React.PropTypes.string.isRequired,
@@ -32,7 +32,7 @@ var Checkbox = React.createClass({
   }
 });
 
-var Number = React.createClass({
+const Number = React.createClass({
   propTypes() {
     return {
       name:     React.PropTypes.string.isRequired,
@@ -89,7 +89,7 @@ var Number = React.createClass({
   }
 });
 
-var Range = React.createClass({
+const Range = React.createClass({
   propTypes() {
     return {
       name:     React.PropTypes.string.isRequired,
@@ -146,8 +146,64 @@ var Range = React.createClass({
   }
 });
 
+const ScriptArea = React.createClass({
+  propTypes() {
+    return {
+      name:     React.PropTypes.string.isRequired,
+      label:    React.PropTypes.string,
+      value:    React.PropTypes.string.isRequired,
+      cols:     React.PropTypes.number,
+      rows:     React.PropTypes.number,
+      onChange: React.PropTypes.func.isRequired,
+    };
+  },
+
+  getInitialState() {
+    return {
+      tmpValue: this.props.value,
+    };
+  },
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      tmpValue: nextProps.value,
+    })
+  },
+
+  render() {
+    return (
+      <div className="effect__input-container">
+        <label className="effect__input-label">
+          <span className="effect__input-label__description">{this.props.label}</span>
+          <textarea className="effect__input-script-area"
+                    name={this.props.name}
+                    value={this.state.tmpValue}
+                    cols={this.props.cols}
+                    rows={this.props.rows}
+                    onBlur={this._onBlur}
+                    onChange={this._onChange} />
+        </label>
+      </div>
+    );
+  },
+
+  _onBlur(e) {
+    this.setState({
+      tmpValue: e.target.value,
+    });
+    this.props.onChange(e.target.value);
+  },
+
+  _onChange(e) {
+    this.setState({
+      tmpValue: e.target.value,
+    });
+  },
+});
+
 export default {
   Checkbox: Checkbox,
   Number: Number,
   Range: Range,
+  ScriptArea: ScriptArea,
 }

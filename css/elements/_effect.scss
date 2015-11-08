@@ -13,7 +13,7 @@
     border-bottom: 1px solid;
   }
 
-  input {
+  input, textarea {
     background: $color-effect-input-bg;
   }
 }
@@ -36,5 +36,11 @@
   input {
     margin-left: 50%;
     width: 50%;
+  }
+
+  .effect__input-script-area {
+    width: 100%;
+    font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
+    font-size: 12px;
   }
 }

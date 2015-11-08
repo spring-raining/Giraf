@@ -8,6 +8,7 @@ import {Footage}                      from "src/stores/model/footage";
 import _Selectable                    from "src/stores/model/_selectable";
 import _Renderable                    from "src/stores/model/_renderable";
 import ModelBase                      from "src/stores/model/modelBase";
+import {Script}                       from "src/stores/model/script";
 import {classWithTraits, hasTrait}    from "src/utils/traitUtils";
 
 
@@ -29,8 +30,9 @@ class Layer extends Base {
    * @param {Transform} transform
    * @param {int} start
    * @param {int} end
+   * @param {string} scriptString
    */
-  constructor(id, name, parentCompId, entity, transform, start, end) {
+  constructor(id, name, parentCompId, entity, transform, start, end, scriptString = "") {
     super();
     this._id = id;
     this._name = name;
@@ -45,6 +47,7 @@ class Layer extends Base {
     this._solo = false;
     this._repeatBefore = false;
     this._repeatAfter = false;
+    this._script = new Script(scriptString);
   }
 
   get id() {
@@ -135,6 +138,14 @@ class Layer extends Base {
     super.assign("_repeatAfter", repeatAfter);
   }
 
+  get scriptString() {
+    return this._script.scriptString;
+  }
+
+  set scriptString(script) {
+    this._script.scriptString = script;
+  }
+
   getLayerKind() {
     if ((this.entity instanceof Footage && this.entity.isAnimatable())
     ||  this.entity instanceof Composition) {
@@ -170,10 +181,21 @@ class Layer extends Base {
         let r = this.entityEnd - this.entityStart;
         let f = (frame + (r - (this.entityStart % r))) % r;
         this.entity.render(f).then(
-          (result) => {
-            resolve(result);
+          (canvas) => {
+            const context = canvas.getContext("2d");
+            const srcImageData = context.getImageData(0, 0,
+                                                      this.entity.width,
+                                                      this.entity.height);
+            this._script.runAsync(srcImageData).then(
+              (dstImageData) => {
+                context.putImageData(dstImageData, 0, 0);
+                resolve(canvas);
+              },
+              (error) => { throw error; }
+            );
           },
-          (error) => { throw error });
+          (error)  => { throw error }
+        );
       } catch (e) {
         reject(e);
       }

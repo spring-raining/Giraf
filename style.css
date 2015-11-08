@@ -625,7 +625,7 @@ nav, .nav {
   .effect legend {
     width: 100%;
     border-bottom: 1px solid; }
-  .effect input {
+  .effect input, .effect textarea {
     background: #636360; }
 
 .effect__header {
@@ -640,6 +640,10 @@ nav, .nav {
   .effect__input-container input {
     margin-left: 50%;
     width: 50%; }
+  .effect__input-container .effect__input-script-area {
+    width: 100%;
+    font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
+    font-size: 12px; }
 
 /*
  *  Lists of z-index order.

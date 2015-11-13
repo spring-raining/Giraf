@@ -68,7 +68,7 @@ export default (objectURL) => {
     const gceCallback = (gce) => {
       frameInfo = {
         disposalMethod: gce.disposalMethod,
-        transparencyIndex: gce.transparencyGiven ? tce.transparencyIndex : null,
+        transparencyIndex: gce.transparencyGiven ? gce.transparencyIndex : null,
         delayTime: gce.delayTime,
       };
     };

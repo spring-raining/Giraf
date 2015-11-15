@@ -1,6 +1,7 @@
 "use strict";
 
 import React                      from "react";
+import ReactDOM                   from "react-dom";
 import KeyMirror                  from "keyMirror";
 import _Array                     from "lodash/array";
 import _Utility                   from "lodash/utility";
@@ -111,11 +112,11 @@ var LayerTimetable = React.createClass({
   },
 
   getCellWidth() {
-    return this.getDOMNode().clientWidth / this.props.composition.frame
+    return ReactDOM.findDOMNode(this).clientWidth / this.props.composition.frame
   },
 
   getPositionInfo(e) {
-    let DOMNode   = this.getDOMNode();
+    let DOMNode   = ReactDOM.findDOMNode(this);
     let bcr       = DOMNode.getBoundingClientRect();
     let maxWidth  = DOMNode.clientWidth;
     let maxHeight = DOMNode.clientHeight;

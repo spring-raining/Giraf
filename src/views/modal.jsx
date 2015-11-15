@@ -16,8 +16,7 @@ const Modal = React.createClass({
 
   componentDidMount() {
     // reveal
-    this.refs.modalWall.getDOMNode()
-      .classList.remove("hidden");
+    this.refs.modalWall.classList.remove("hidden");
   },
 
   render() {

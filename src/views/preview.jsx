@@ -91,6 +91,7 @@ var Preview = React.createClass({
         previewContainer =
           <div className="preview__container preview__footage-container">
             <video controls src={selectingItem.objectURL}
+                   onPause={this._onPause}
                    ref="video" />
           </div>;
       }
@@ -105,6 +106,10 @@ var Preview = React.createClass({
       {previewContainer}
     </section>;
   },
+
+  _onPause(e) {
+    console.log(e);
+  }
 });
 
 export default Preview;

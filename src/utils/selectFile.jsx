@@ -1,6 +1,7 @@
 "use strict";
 
 import React from "react";
+import ReactDOM from "react-dom";
 
 export default {
   run: (callback) => {
@@ -28,6 +29,6 @@ export default {
       dom.id = containerId;
       document.body.appendChild(dom);
     }
-    React.render(<DummyInput />, dom);
+    ReactDOM.render(<DummyInput />, dom);
   }
 }

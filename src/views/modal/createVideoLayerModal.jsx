@@ -4,7 +4,7 @@ import React                                    from "react";
 
 import Actions                                  from "src/actions/actions";
 import {Composition}                            from "src/stores/model/composition";
-import {Footage}                                from "src/stores/model/footage";
+import {Footage, FootageKinds}                  from "src/stores/model/footage";
 import {Layer}                                  from "src/stores/model/layer";
 import {Point}                                  from "src/stores/model/point";
 import {Transform}                              from "src/stores/model/transform";
@@ -20,6 +20,18 @@ const CreateVideoLayerModal = React.createClass({
       parentComp:      React.PropTypes.instanceOf(Composition),
       onCancelClicked: React.PropTypes.func,
       onCreateClicked: React.PropTypes.func,
+    };
+  },
+
+  getInitialState() {
+    return {
+      playerPlaying: false,
+      playerTime: 0,
+      currentTime: 0,
+      beginTime: null,
+      endTime: null,
+      videoFPS: 12,
+      videoFrames: 0,
     };
   },
 
@@ -51,11 +63,23 @@ const CreateVideoLayerModal = React.createClass({
              footer={ <ModalButtonSet content={buttonContent} /> }>
         <div className="create-video-layer-modal">
           <div className="create-video-layer-modal__player">
-            <Player item={this.props.targetFootage} />
+            <Player item={this.props.targetFootage}
+                    playing={this.state.playerPlaying}
+                    time={this.state.playerTime}
+                    onPlay={this._onPlayerPlay}
+                    onPause={this._onPlayerPause}
+                    onSeeked={this._onPlayerSeeked}
+                    onTimeUpdate={this._onPlayerTimeUpdate} />
           </div>
           <div className="create-video-layer-modal__controller">
             <button onClick={this._onBeginButtonClicked}>
               ここを始点にする
+            </button>
+            <button onClick={this._onPrevFrameButtonClicked}>
+              前のフレーム
+            </button>
+            <button onClick={this._onNextFrameButtonClicked}>
+              次のフレーム
             </button>
             <button onClick={this._onEndButtonClicked}>
               ここを終点にする
@@ -63,11 +87,17 @@ const CreateVideoLayerModal = React.createClass({
           </div>
           <div className="create-video-layer-modal__info">
             <div className="create-video-layer-modal__info__left">
-              <canvas className="create-video-layer-modal__info__begin-canvas" />
+              <canvas className="create-video-layer-modal__info__begin-canvas"
+                      width={this.props.targetFootage.width + "px"}
+                      height={this.props.targetFootage.height + "px"}
+                      ref="beginCanvas"/>
             </div>
             <div className="create-video-layer-modal__info__center"></div>
             <div className="create-video-layer-modal__info__right">
-              <canvas className="create-video-layer-modal__info__end-canvas" />
+              <canvas className="create-video-layer-modal__info__end-canvas"
+                      width={this.props.targetFootage.width + "px"}
+                      height={this.props.targetFootage.height + "px"}
+                      ref="endCanvas"/>
             </div>
           </div>
         </div>
@@ -75,12 +105,94 @@ const CreateVideoLayerModal = React.createClass({
     );
   },
 
+  _onPlayerPlay(time) {
+    this.setState({
+      playerPlaying: true,
+      currentTime: time,
+    });
+  },
+
+  _onPlayerPause(time) {
+    this.setState({
+      playerPlaying: false,
+      currentTime: time,
+    });
+  },
+
+  _onPlayerSeeked(time) {
+    this.setState({
+      currentTime: time,
+    });
+  },
+
+  _onPlayerTimeUpdate(time) {
+    this.setState({
+      currentTime: time,
+    });
+  },
+
+
   _onBeginButtonClicked() {
-    console.log("begin");
+    this.setState({
+      playerPlaying: false,
+      beginTime: this.state.currentTime,
+    });
+
+    this.props.targetFootage.render(this.state.currentTime).then(
+      (result) => {
+        const context = this.refs.beginCanvas.getContext("2d");
+        context.drawImage(result, 0, 0);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  },
+
+  _onPrevFrameButtonClicked() {
+    if (this.props.targetFootage.getFootageKind() === FootageKinds.VIDEO) {
+      this.setState({
+        playerPlaying: false,
+        playerTime: this.state.currentTime - (1 / this.state.videoFPS),
+      });
+    }
+    else if (this.props.targetFootage.type === "image/gif") {
+      this.setState({
+        playerPlaying: false,
+        playerTime: this.state.currentTime - 1,
+      });
+    }
+  },
+
+  _onNextFrameButtonClicked() {
+    if (this.props.targetFootage.getFootageKind() === FootageKinds.VIDEO) {
+      this.setState({
+        playerPlaying: false,
+        playerTime: this.state.currentTime + (1 / this.state.videoFPS),
+      });
+    }
+    else if (this.props.targetFootage.type === "image/gif") {
+      this.setState({
+        playerPlaying: false,
+        playerTime: this.state.currentTime + 1,
+      });
+    }
   },
 
   _onEndButtonClicked() {
-    console.log("end");
+    this.setState({
+      playerPlaying: false,
+      endTime: this.state.currentTime,
+    });
+    this.props.targetFootage.render(this.state.currentTime).then(
+      (result) => {
+        const context = this.refs.endCanvas.getContext("2d");
+        context.drawImage(result, 0, 0);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   },
 
   _genNewComposition() {

@@ -46,6 +46,7 @@ class Footage extends Base {
     this._width = width;
     this._height = height;
     this._status = StatusTypes.LOADING;
+    this._gifFrame = null;
     if (objectURL && width && height) {
       _loadContent(objectURL, type, width, height).then(
         (result) => {
@@ -119,6 +120,10 @@ class Footage extends Base {
     return this._status;
   }
 
+  get gifFrames() {
+    return this._gifFrames;
+  }
+
   update(obj = {}, fireAction = true) {
     super.update(obj);
 
@@ -185,14 +190,24 @@ class Footage extends Base {
         }
         else if (this.getFootageKind() === FootageKinds.VIDEO) {
           let video = document.createElement("video");
-          video.addEventListener("timeupdate", () => {
+          if (time === 0) {
+            // timeupdate will not fire
             video.addEventListener("canplay", () => {
               this.context.drawImage(video, 0, 0);
               resolve(this.canvas);
             });
-          });
-          video.src = this.objectURL;
-          video.currentTime = time;
+            video.src = this.objectURL;
+          }
+          else {
+            video.addEventListener("timeupdate", () => {
+              video.addEventListener("canplay", () => {
+                this.context.drawImage(video, 0, 0);
+                resolve(this.canvas);
+              });
+            });
+            video.src = this.objectURL;
+            video.currentTime = time;
+          }
         }
       } catch (e) {
         reject(e);
@@ -212,7 +227,7 @@ class Footage extends Base {
             // parse GIF frames
             readGIF(objectURL).then(
               (result) => {
-                this.gifFrames = result;
+                this._gifFrames = result;
                 resolve();
               },
               (error) => {

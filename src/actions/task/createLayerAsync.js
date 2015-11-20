@@ -20,22 +20,14 @@ export default ((parentComp, entity = null) =>
           React.createElement(CreateVideoLayerModal, {
             targetFootage: entity,
             parentComp: parentComp,
+            onCancelClicked: () => {
+              reject("Creating layer canceled.");
+            },
+            onCreateClicked: (e) => {
+              resolve(e);
+            },
           })
         );
-
-        /*resolve(new Layer(
-          GenUUID(),
-          entity.name,
-          parentComp.id,
-          entity,
-          new Transform(
-            new Point([0, 0]),
-            new Point([parentComp.width/2, parentComp.height/2]),
-            new Point([1, 1]),
-            0,
-            1),
-          0,
-          parentComp.frame));*/
       }
       else {
         resolve(new Layer(

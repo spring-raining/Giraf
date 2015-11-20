@@ -368,11 +368,23 @@ var LayerTimetable = React.createClass({
         Actions.clearFrameCache(this.props.composition, changedFrames);
       }
 
+      let sourceStart = layer.sourceStart;
+      let sourceEnd = layer.sourceEnd;
+      if (layer.entity && target === draggingTarget.ENTITY_START) {
+        sourceStart = layer.sourceEnd - (layer.sourceEnd - layer.sourceStart)
+                      * (layer.entityEnd - layerPos.entityStart) / (layer.entityEnd - layer.entityStart);
+      }
+      else if (layer.entity && target === draggingTarget.ENTITY_END) {
+        sourceEnd = layer.sourceStart + (layer.sourceEnd - layer.sourceStart)
+                    * (layerPos.entityEnd - layer.entityStart) / (layer.entityEnd - layer.entityStart);
+      }
       layer.update({
         layerStart:   layerPos.layerStart,
         layerEnd:     layerPos.layerEnd,
         entityStart:  layerPos.entityStart,
         entityEnd:    layerPos.entityEnd,
+        sourceStart:  sourceStart,
+        sourceEnd:    sourceEnd,
       }, false);
       Actions.updateLayer(layer, false);
       this.setState({

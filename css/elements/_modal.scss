@@ -23,6 +23,7 @@
   @include calculate-z-index(modal, body);
   @include display(flex);
   @include flex-direction(column);
+  @include font-smoothing();
   position: absolute;
   top: 20px;
   right: 20px;
@@ -83,6 +84,11 @@
   }
 }
 
+.modal__badge {
+  @include giraf-badge($color-modal-body, $color-modal-bg, 20px, 12px);
+  font-weight: 700;
+}
+
 .create-video-layer-modal {
   .create-video-layer-modal__player {
     height: $create-video-layer-modal-player-height;
@@ -112,10 +118,23 @@
       @include flex-basis(200px);
       position: relative;
 
+      ul {
+        list-style-type: none;
+      }
+
+      li {
+        margin-bottom: 12px;
+      }
+
+      span {
+        margin: 0 2px;
+      }
+
       &::before, &::after {
         content: ">";
         position: absolute;
         margin: 0 10px;
+        width: 10px;
         display: inline-block;
         line-height: $create-video-layer-modal-info-height;
       }
@@ -126,6 +145,24 @@
 
       &::after {
         right: 0;
+      }
+
+      .create-video-layer-modal__info__center__content {
+        position: absolute;
+        top: 20px;
+        bottom: 20px;
+        left: 30px;
+        right: 30px;
+      }
+
+      .create-video-layer-modal__info__center__dt {
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .create-video-layer-modal__info__center__dd {
+        font-size: 12px;
+        margin-left: 1em;
       }
     }
 

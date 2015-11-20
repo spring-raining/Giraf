@@ -86,6 +86,10 @@ class Composition extends Base {
     super.assign("_layers", layers);
   }
 
+  getLength() {
+    return this.frame;
+  }
+
   update(obj = {}, fireAction = true) {
     super.update(obj);
     if (obj.width > 0 && obj.height > 0) {

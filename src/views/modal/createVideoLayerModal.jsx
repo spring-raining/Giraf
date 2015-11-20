@@ -1,6 +1,7 @@
 "use strict";
 
 import React                                    from "react";
+import _Utility                                 from "lodash/utility";
 
 import Actions                                  from "src/actions/actions";
 import {Composition}                            from "src/stores/model/composition";
@@ -8,10 +9,14 @@ import {Footage, FootageKinds}                  from "src/stores/model/footage";
 import {Layer}                                  from "src/stores/model/layer";
 import {Point}                                  from "src/stores/model/point";
 import {Transform}                              from "src/stores/model/transform";
+import {Select}                                 from "src/views/forms";
 import {Modal, ModalButtonSet}                  from "src/views/modal";
 import Player                                   from "src/views/preview/player";
 import genUUID                                  from "src/utils/genUUID";
 
+
+const VIDEO_FPS_OPTIONS = [1, 2, 3, 4, 6, 8, 12, 15, 24, 30];
+const DEFAULT_VIDEO_FPS = 12;
 
 const CreateVideoLayerModal = React.createClass({
   propTypes() {
@@ -30,8 +35,7 @@ const CreateVideoLayerModal = React.createClass({
       currentTime: 0,
       beginTime: null,
       endTime: null,
-      videoFPS: 12,
-      videoFrames: 0,
+      videoFPS: DEFAULT_VIDEO_FPS,
     };
   },
 
@@ -50,13 +54,77 @@ const CreateVideoLayerModal = React.createClass({
       }, {
         text: "決定",
         onClick: () => {
-          Actions.updateModal(null);
-          if (this.props.onCreateClicked) {
-            this.props.onCreateClicked(this._getNewLayer());
+          const newLayer = this._getNewLayer();
+          if (newLayer) {
+            Actions.updateModal(null);
+            if (this.props.onCreateClicked) {
+              this.props.onCreateClicked(newLayer);
+            }
           }
         },
       },
     ];
+
+    const infoContent = (() => {
+      const reverse = (this.state.beginTime === null
+                       || this.state.endTime === null
+                       || this.state.beginTime <= this.state.endTime)
+        ? null
+        : <div className="create-video-layer-modal__info__center__dd">
+            reverse
+          </div>;
+
+      if (this.props.targetFootage.getFootageKind() === FootageKinds.VIDEO) {
+        return (
+          <ul>
+            <li>
+              <label>
+                <div className="create-video-layer-modal__info__center__dt">
+                  フレームレート
+                </div>
+                <div className="create-video-layer-modal__info__center__dd">
+                  <Select name="videoFPS"
+                          value={this.state.videoFPS}
+                          options={VIDEO_FPS_OPTIONS}
+                          onChange={this._onVideoFPSChanged} />
+                  <span>fps</span>
+                </div>
+              </label>
+            </li>
+            <li>
+              <div className="create-video-layer-modal__info__center__dt">
+                フレーム数
+              </div>
+              <div className="create-video-layer-modal__info__center__dd">
+                <span className="modal__badge">
+                  {this._getFrameNumber()}
+                </span>
+                <span>frames</span>
+              </div>
+              {reverse}
+            </li>
+          </ul>
+        );
+      }
+      else if (this.props.targetFootage.type === "image/gif") {
+        return (
+          <ul>
+            <li>
+              <div className="create-video-layer-modal__info__center__dt">
+                フレーム数
+              </div>
+              <div className="create-video-layer-modal__info__center__dd">
+                <span className="modal__badge">
+                  {this._getFrameNumber()}
+                </span>
+                <span>frames</span>
+              </div>
+              {reverse}
+            </li>
+          </ul>
+        );
+      }
+    })();
 
     return (
       <Modal title={title}
@@ -92,7 +160,11 @@ const CreateVideoLayerModal = React.createClass({
                       height={this.props.targetFootage.height + "px"}
                       ref="beginCanvas"/>
             </div>
-            <div className="create-video-layer-modal__info__center"></div>
+            <div className="create-video-layer-modal__info__center">
+              <div className="create-video-layer-modal__info__center__content">
+                {infoContent}
+              </div>
+            </div>
             <div className="create-video-layer-modal__info__right">
               <canvas className="create-video-layer-modal__info__end-canvas"
                       width={this.props.targetFootage.width + "px"}
@@ -195,6 +267,12 @@ const CreateVideoLayerModal = React.createClass({
     );
   },
 
+  _onVideoFPSChanged(value) {
+    this.setState({
+      videoFPS: value,
+    });
+  },
+
   _genNewComposition() {
     const newComp = new Composition(
       genUUID(),
@@ -208,9 +286,23 @@ const CreateVideoLayerModal = React.createClass({
   },
 
   _getNewLayer() {
+    if (this.state.beginTime === null || this.state.endTime === null) {
+      return null;
+    }
+
     const composition = (this.props.parentComp instanceof Composition)?
       this.props.parentComp : this._genNewComposition();
     const footage = this.props.targetFootage;
+
+    const frame = this._getFrameNumber();
+    const beginTime = this.state.beginTime;
+    let endTime = this.state.endTime;
+    if (footage.getFootageKind() === FootageKinds.VIDEO) {
+      endTime += 1 / this.state.videoFPS;
+    }
+    else if (footage.type === "image/gif") {
+      endTime += 1;
+    }
 
     return new Layer(
       genUUID(),
@@ -224,7 +316,24 @@ const CreateVideoLayerModal = React.createClass({
         0,
         1),
       0,
-      parentComp.frame);
+      frame,
+      beginTime,
+      endTime);
+  },
+
+  _getFrameNumber() {
+    if (this.state.beginTime === null || this.state.endTime === null) {
+      return 0;
+    }
+
+    const a = Math.min(this.state.beginTime, this.state.endTime);
+    const b = Math.max(this.state.beginTime, this.state.endTime);
+    if (this.props.targetFootage.getFootageKind() === FootageKinds.VIDEO) {
+      return Math.floor((b - a) * this.state.videoFPS) + 1;
+    }
+    else if (this.props.targetFootage.type === "image/gif") {
+      return b - a + 1;
+    }
   },
 });
 

@@ -87,6 +87,12 @@ $timeline-layer-handle-width:       20px;
 $timeline-layer-header-font-size:   12px;
 $timeline-layer-header-button-size: 18px;
 
+$modal-title-height:                60px;
+$modal-footer-height:               60px;
+
+$create-video-layer-modal-player-height:  300px;
+$create-video-layer-modal-info-height:    150px;
+
 // abstract mixins
 
 @mixin giraf-normal-body($background-color) {

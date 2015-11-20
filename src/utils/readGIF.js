@@ -95,7 +95,7 @@ export default (objectURL) => {
       context.putImageData(imageData, img.leftPos, img.topPos);
       frames.push({
         imageData: context.getImageData(0, 0, header.width, header.height),
-        delayTime: delayTime,
+        delayTime: delayTime * 10, // (1 delayTime = 10 msec)
       });
       frameInfo = null;
     };

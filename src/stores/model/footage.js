@@ -46,6 +46,8 @@ class Footage extends Base {
     this._width = width;
     this._height = height;
     this._status = StatusTypes.LOADING;
+    this._gifFrames = null;
+    this._videoDuration = null;
     if (objectURL && width && height) {
       _loadContent(objectURL, type, width, height).then(
         (result) => {
@@ -119,6 +121,14 @@ class Footage extends Base {
     return this._status;
   }
 
+  get gifFrames() {
+    return this._gifFrames;
+  }
+
+  get videoDuration() {
+    return this._videoDuration;
+  }
+
   update(obj = {}, fireAction = true) {
     super.update(obj);
 
@@ -155,6 +165,18 @@ class Footage extends Base {
     else                                        return FootageKinds.UNKNOWN;
   }
 
+  getLength() {
+    if (this.getFootageKind() === FootageKinds.VIDEO) {
+      return this.videoDuration;
+    }
+    else if (this.type === "image/gif") {
+      return this.gifFrames.length;
+    }
+    else {
+      return 0;
+    }
+  }
+
   isAnimatable() {
     return this.getFootageKind() === FootageKinds.VIDEO
         || this.type === "image/gif";
@@ -167,11 +189,14 @@ class Footage extends Base {
           throw Error("Canvas not created.");
         }
 
+        const time_ = Math.max(0, Math.min(this.getLength(), time));
+
         this.context.clearRect(0, 0, this.width, this.height);
         if (this.getFootageKind() === FootageKinds.IMAGE) {
           if (this.type === "image/gif") {
-            let frame = Math.max(0, Math.min(this.gifFrames.length, time));
-            this.context.putImageData(this.gifFrames[frame].imageData, 0 , 0);
+            this.context.putImageData(
+              this.gifFrames[Math.round(time_)].imageData,
+              0, 0);
             resolve(this.canvas);
           }
           else {
@@ -185,14 +210,24 @@ class Footage extends Base {
         }
         else if (this.getFootageKind() === FootageKinds.VIDEO) {
           let video = document.createElement("video");
-          video.addEventListener("timeupdate", () => {
+          if (time_ === 0) {
+            // timeupdate will not fire
             video.addEventListener("canplay", () => {
               this.context.drawImage(video, 0, 0);
               resolve(this.canvas);
             });
-          });
-          video.src = this.objectURL;
-          video.currentTime = time;
+            video.src = this.objectURL;
+          }
+          else {
+            video.addEventListener("timeupdate", () => {
+              video.addEventListener("canplay", () => {
+                this.context.drawImage(video, 0, 0);
+                resolve(this.canvas);
+              });
+            });
+            video.src = this.objectURL;
+            video.currentTime = time_;
+          }
         }
       } catch (e) {
         reject(e);
@@ -208,11 +243,19 @@ class Footage extends Base {
 
       this._prepareCanvas(width, height).then(
         (result) => {
-          if (type === "image/gif") {
+          if (type.indexOf("video/") === 0) {
+            const video = document.createElement("video");
+            video.addEventListener("durationchange", () => {
+              this._videoDuration = video.duration;
+              resolve();
+            });
+            video.src = objectURL;
+          }
+          else if (type === "image/gif") {
             // parse GIF frames
             readGIF(objectURL).then(
               (result) => {
-                this.gifFrames = result;
+                this._gifFrames = result;
                 resolve();
               },
               (error) => {

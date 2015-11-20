@@ -12,7 +12,7 @@ var Preview = React.createClass({
 
     if (this.refs.compositionContainer
     &&  !(selectingItem instanceof Composition)) {
-      this._flushDOM(this.refs.compositionContainer.getDOMNode());
+      this._flushDOM(this.refs.compositionContainer);
     }
   },
 
@@ -30,7 +30,7 @@ var Preview = React.createClass({
       // play video
       if (selectingItem instanceof Footage
       &&  selectingItem.getFootageKind() === FootageKinds.VIDEO) {
-        let dom = this.refs.video.getDOMNode();
+        let dom = this.refs.video;
         if (store.get("isPlaying")) {
           dom.play();
         }
@@ -47,7 +47,7 @@ var Preview = React.createClass({
     if (!this.refs.compositionContainer) {
       return;
     }
-    let dom = this.refs.compositionContainer.getDOMNode();
+    let dom = this.refs.compositionContainer;
 
     let frameCache = store.get("frameCache")
                           .getFrameCache(composition, store.get("currentFrame"));
@@ -91,6 +91,7 @@ var Preview = React.createClass({
         previewContainer =
           <div className="preview__container preview__footage-container">
             <video controls src={selectingItem.objectURL}
+                   onPause={this._onPause}
                    ref="video" />
           </div>;
       }
@@ -105,6 +106,10 @@ var Preview = React.createClass({
       {previewContainer}
     </section>;
   },
+
+  _onPause(e) {
+    console.log(e);
+  }
 });
 
 export default Preview;

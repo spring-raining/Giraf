@@ -38,9 +38,9 @@ var Timeline = React.createClass({
 
   componentDidUpdate(prevProps, prevState) {
     var _;
-    this.timetableDOM = (_ = this.refs.timetable)? _.getDOMNode() : null;
-    this.headerDOM    = (_ = this.refs.header)? _.getDOMNode() : null;
-    this.leftDOM      = (_ = this.refs.left)? _.getDOMNode() : null;
+    this.timetableDOM = (_ = this.refs.timetable)? _ : null;
+    this.headerDOM    = (_ = this.refs.header)? _ : null;
+    this.leftDOM      = (_ = this.refs.left)? _ : null;
 
     let comp = this.props.store.get("editingComposition");
     let currentFrame = this.props.store.get("currentFrame");

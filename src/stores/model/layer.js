@@ -30,9 +30,18 @@ class Layer extends Base {
    * @param {Transform} transform
    * @param {int} start
    * @param {int} end
-   * @param {string} scriptString
+   * @param {number} sourceStart
+   * @param {number} sourceEnd
    */
-  constructor(id, name, parentCompId, entity, transform, start, end, scriptString = "") {
+  constructor(id,
+              name,
+              parentCompId,
+              entity,
+              transform,
+              start,
+              end,
+              sourceStart = null,
+              sourceEnd = null) {
     super();
     this._id = id;
     this._name = name;
@@ -47,7 +56,9 @@ class Layer extends Base {
     this._solo = false;
     this._repeatBefore = false;
     this._repeatAfter = false;
-    this._script = new Script(scriptString);
+    this._script = new Script("");
+    this._sourceStart = sourceStart;
+    this._sourceEnd = sourceEnd;
   }
 
   get id() {
@@ -146,6 +157,22 @@ class Layer extends Base {
     this._script.scriptString = script;
   }
 
+  get sourceStart() {
+    return this._sourceStart;
+  }
+
+  set sourceStart(sourceStart) {
+    super.assign("_sourceStart", sourceStart);
+  }
+
+  get sourceEnd() {
+    return this._sourceEnd;
+  }
+
+  set sourceEnd(sourceEnd) {
+    super.assign("_sourceEnd", sourceEnd);
+  }
+
   getLayerKind() {
     if ((this.entity instanceof Footage && this.entity.isAnimatable())
     ||  this.entity instanceof Composition) {
@@ -178,9 +205,10 @@ class Layer extends Base {
           resolve(null);
         }
 
-        let r = this.entityEnd - this.entityStart;
-        let f = (frame + (r - (this.entityStart % r))) % r;
-        this.entity.render(f).then(
+        const entityLength = this.entityEnd - this.entityStart;
+        const f = (frame + (entityLength - (this.entityStart % entityLength))) % entityLength;
+        const sourceFrame = this.sourceStart + (f / entityLength) * (this.sourceEnd - this.sourceStart);
+        this.entity.render(sourceFrame).then(
           (canvas) => {
             const context = canvas.getContext("2d");
             const srcImageData = context.getImageData(0, 0,

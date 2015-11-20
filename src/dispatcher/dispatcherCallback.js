@@ -185,6 +185,11 @@ function dispatcherCallback(action) {
     });
     Store.emitChange();
   }
+
+  else if (action.actionType === ActionConst.RENDER_GIF) {
+    // TODO
+    window.open(action.image);
+  }
 }
 
 export default dispatcherCallback;

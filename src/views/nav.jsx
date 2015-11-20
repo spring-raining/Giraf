@@ -4,6 +4,7 @@ import React                  from "react";
 
 import Actions                from "src/actions/actions";
 import Menu                   from "src/views/menu";
+import Store                  from "src/stores/store";
 import genUUID                from "src/utils/genUUID";
 
 
@@ -24,6 +25,12 @@ var Nav = React.createClass({
           onClick: () => {
             Actions.updateExpandingMenuId(null);
             Actions.createComposition();
+          }
+        }, {
+          name: "GIFを作成",
+          onClick: () => {
+            Actions.updateExpandingMenuId(null);
+            Actions.renderGIF(Store.get("editingComposition"));
           }
         }, {
           name: "bbbbb",

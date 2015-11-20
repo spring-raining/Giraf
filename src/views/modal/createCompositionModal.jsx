@@ -22,6 +22,7 @@ const CreateCompositionModal = React.createClass({
     const buttonContent = [
       {
         text: "キャンセル",
+        className: "sub",
         onClick: () => {
           Actions.updateModal(null);
           if (this.props.onCancelClicked) {

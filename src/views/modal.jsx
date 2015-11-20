@@ -69,11 +69,15 @@ const ModalButtonSet = React.createClass({
   },
 
   render() {
-    const buttons = this.props.content.map((e, i) =>
-      <button key={i} onClick={e.onClick}>
-        {e.text}
-      </button>
-    );
+    const buttons = this.props.content.map((e, i) => {
+      const className = `flat ${(e.className)? e.className : ""}`;
+      return(
+        <button className={className} key={i}
+                onClick={e.onClick}>
+          {e.text}
+        </button>
+      );
+    });
 
     return (
       <div className="modal-button-set">

@@ -66,11 +66,51 @@ a {
 }
 
 button {
-  @include giraf-button();
+  @include giraf-button($color-link);
 }
 
-button.button-default {
+button.safe {
+  @include giraf-button($color-safe);
+}
 
+button.warn,
+button.warning {
+  @include giraf-button($color-warn);
+}
+
+button.danger {
+  @include giraf-button($color-danger)
+}
+
+button.flat {
+  @include giraf-flat-button($color-link-body);
+}
+
+button.flat.sub {
+  @include giraf-flat-button($color-black-sub);
+}
+
+button.flat.safe {
+  @include giraf-flat-button($color-safe-body);
+}
+
+button.flat.warn,
+button.flat.warning {
+  @include giraf-flat-button($color-warn-body);
+
+  &:hover {
+    background-color: $color-warn;
+    color: $color-black;
+  }
+}
+
+button.flat.danger {
+  @include giraf-flat-button($color-danger-body);
+
+  &:hover {
+    background-color: $color-danger;
+    color: $color-white;
+  }
 }
 
 .hidden {

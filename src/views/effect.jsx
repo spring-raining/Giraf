@@ -2,8 +2,7 @@
 
 import React                              from "react";
 
-import {Checkbox, Number, Range, ScriptArea}
-                                          from "src/views/effect/modules";
+import {Number, Checkbox, ScriptArea}     from "src/views/forms";
 
 
 var Effect = React.createClass({
@@ -25,57 +24,68 @@ var Effect = React.createClass({
 
           <fieldset>
             <legend>アンカーポイント</legend>
-            <Number name="anchor-point-x" label="X"
-                    value={layer.transform.anchorPoint.x}
-                    onChange={this._onAnchorPointXChanged} />
-            <Number name="anchor-point-y" label="Y"
-                    value={layer.transform.anchorPoint.y}
-                    onChange={this._onAnchorPointYChanged} />
+            <label>
+              <span>X</span>
+              <Number value={layer.transform.anchorPoint.x}
+                      onChange={this._onAnchorPointXChanged} />
+            </label>
+            <label>
+              <span>Y</span>
+              <Number value={layer.transform.anchorPoint.y}
+                      onChange={this._onAnchorPointYChanged} />
+            </label>
           </fieldset>
           <fieldset>
             <legend>位置</legend>
-            <Number name="position-x" label="X"
-                    value={layer.transform.position.x}
-                    onChange={this._onPositionXChanged} />
-            <Number name="position-y" label="Y"
-                    value={layer.transform.position.y}
-                    onChange={this._onPositionYChanged} />
+            <label>
+              <span>X</span>
+              <Number value={layer.transform.position.x}
+                      onChange={this._onPositionXChanged} />
+            </label>
+            <label>
+              <span>Y</span>
+              <Number value={layer.transform.position.y}
+                      onChange={this._onPositionYChanged} />
+            </label>
           </fieldset>
           <fieldset>
             <legend>大きさ</legend>
-            <Number name="scale-x" label="X"
-                    value={layer.transform.scale.x}
-                    step="0.01"
-                    onChange={this._onScaleXChanged} />
-            <Number name="scale-y" label="Y"
-                    value={layer.transform.scale.y}
-                    step="0.01"
-                    onChange={this._onScaleYChanged} />
-            <Checkbox name="scale-is-fixing-aspect" label="縦横比を固定"
-                      value={this.state.isFixingAspect}
-                      onChange={this._onScaleIsFixingAspectChanged} />
+            <label>
+              <span>X</span>
+              <Number value={layer.transform.scale.x}
+                      step="0.01"
+                      onChange={this._onScaleXChanged} />
+            </label>
+            <label>
+              <span>Y</span>
+              <Number value={layer.transform.scale.y}
+                      step="0.01"
+                      onChange={this._onScaleYChanged} />
+            </label>
+            <label>
+              <span>縦横比を固定</span>
+              <Checkbox value={this.state.isFixingAspect}
+                        onChange={this._onScaleIsFixingAspectChanged} />
+            </label>
           </fieldset>
           <fieldset>
             <legend>回転</legend>
-            <Range name="rotation"
-                   value={layer.transform.rotation}
-                   min="0"
-                   max="360"
-                   onChange={this._onRotationChanged} />
+            <Number value={layer.transform.rotation}
+                    min="0"
+                    max="360"
+                    onChange={this._onRotationChanged} />
           </fieldset>
           <fieldset>
             <legend>透明度</legend>
-            <Range name="opacity"
-                   value={layer.transform.opacity}
-                   min="0"
-                   max="1"
-                   step="0.01"
-                   onChange={this._onOpacityChanged} />
+            <Number value={layer.transform.opacity}
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    onChange={this._onOpacityChanged} />
           </fieldset>
           <fieldset>
             <legend>効果</legend>
-            <ScriptArea name="script"
-                        value={layer.scriptString}
+            <ScriptArea value={layer.scriptString}
                         rows="10"
                         onChange={this._onScriptChanged} />
           </fieldset>

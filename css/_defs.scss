@@ -16,15 +16,18 @@ $color-danger-body:                 darken($color-danger, 5%);
 
 $color-a:                           $color-giraf;
 $color-button-flat-hover-bg:        rgba(0, 0, 0, .06);
+$color-form-focus-border:           $color-link;
+$color-form-unfocus-border:         $color-black-sub;
 $color-nav-bg:                      $color-black;
 $color-nav-body:                    rgb(163, 163, 163);
 $color-nav-active-body:             $color-white;
 $color-split-bg:                    $color-black;
 $color-preview-body:                $color-white;
 $color-preview-bg:                  rgb(38, 38, 37);
-$color-effect-body:                 $color-white;
-$color-effect-bg:                   rgb(73, 73, 71);
-$color-effect-input-bg:             lighten($color-effect-bg, 10%);
+$color-effect-body:                 $color-white-sub;
+$color-effect-bg:                   rgb(38, 38, 37);
+$color-effect-fieldset-bg:          lighten($color-effect-bg, 7%);
+$color-effect-input-bg:             lighten($color-effect-bg, 15%);
 $color-dropdown-bg:                 $color-preview-bg;
 $color-dropdown-body:               $color-white;
 $color-dropdown-select-bg:          rgb(181, 171, 131);
@@ -37,7 +40,7 @@ $color-timeline-header-bg:          rgba(0, 0, 0, 0.7);
 $color-timeline-layer-entity-bg:    #A26D6D;
 $color-timeline-edited-layer-entity-bg: lighten($color-timeline-layer-entity-bg, 10%);
 $color-timeline-layer-layer-bg:     rgba(224, 194, 194, 0.5);
-$color-timeline-layer-header-body:              rgb(201, 201, 201);
+$color-timeline-layer-header-body:              $color-white-sub;
 $color-timeline-layer-header-button-body:       rgb(121, 121, 121);
 $color-timeline-layer-header-button-bg:         linear-gradient(0deg,rgba(0,0,0,0), rgba(230,230,230,.1));
 $color-timeline-layer-header-button-border:     rgb(94, 94, 94);
@@ -73,6 +76,8 @@ $z-order: (
                                     timetable-entity-handle timetable-layer-handle,
         base:                       base,
 );
+
+$form-number-height:                20px;
 
 $nav-height:                        42px;
 $nav-li-padding:                    0 20px;

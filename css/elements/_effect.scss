@@ -1,20 +1,46 @@
 @import "../defs";
 
 .effect {
+  @include font-smoothing();
   color: $color-effect-body;
   background-color: $color-effect-bg;
 
   fieldset {
-    padding: 5px;
+    @include giraf-card();
+    background: $color-effect-fieldset-bg;
+    padding: 2px 6px;
   }
 
-  legend {
+  .effect__legend {
     width: 100%;
-    border-bottom: 1px solid;
+    height: 36px;
+    line-height: 36px;
+    font-size: 16px;
+    margin-bottom: 8px;
   }
 
-  input, textarea {
+  input.form-native,
+  textarea.form-native,
+  select.form-native {
     background: $color-effect-input-bg;
+
+    &:focus {
+      border-color: $color-giraf;
+    }
+  }
+
+  .form-number {
+    .form-number__unfocus__value,
+    .form-number__prefix,
+    .form-number__suffix {
+      color: $color-giraf;
+    }
+
+    .form-number__focus {
+      .form-native-number {
+        max-width: 60px;
+      }
+    }
   }
 }
 
@@ -22,25 +48,21 @@
   padding: 15px 5px;
 }
 
-.effect__input-container {
-  margin-bottom: 5px;
+.effect__input {
+  @include display(flex);
+  margin-bottom: 8px;
+  font-size: 12px;
 
-  .effect__input-label {
-    position: relative;
+  .effect__input__left {
+    @include flex-basis(150px);
   }
 
-  .effect__input-label__description {
-    position: absolute;
-  }
+  .effect__input__right {
+    @include display(flex);
+    @include flex-grow(1);
 
-  input {
-    margin-left: 50%;
-    width: 50%;
-  }
-
-  .effect__input-script-area {
-    width: 100%;
-    font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
-    font-size: 12px;
+    & > * {
+      @include flex-grow(1);
+    }
   }
 }

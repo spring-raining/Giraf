@@ -20,74 +20,87 @@ var Effect = React.createClass({
     if (comp && layer) {
       return (
         <section className="effect panel">
-          <h4 className="effect__header">{layer.name}</h4>
 
           <fieldset>
-            <legend>アンカーポイント</legend>
-            <label>
-              <span>X</span>
-              <Number value={layer.transform.anchorPoint.x}
-                      onChange={this._onAnchorPointXChanged} />
-            </label>
-            <label>
-              <span>Y</span>
-              <Number value={layer.transform.anchorPoint.y}
-                      onChange={this._onAnchorPointYChanged} />
-            </label>
+            <div className="effect__legend">{layer.name}</div>
           </fieldset>
+
           <fieldset>
-            <legend>位置</legend>
-            <label>
-              <span>X</span>
-              <Number value={layer.transform.position.x}
-                      onChange={this._onPositionXChanged} />
-            </label>
-            <label>
-              <span>Y</span>
-              <Number value={layer.transform.position.y}
-                      onChange={this._onPositionYChanged} />
-            </label>
-          </fieldset>
-          <fieldset>
-            <legend>大きさ</legend>
-            <label>
-              <span>X</span>
-              <Number value={layer.transform.scale.x}
-                      step="0.01"
-                      onChange={this._onScaleXChanged} />
-            </label>
-            <label>
-              <span>Y</span>
-              <Number value={layer.transform.scale.y}
-                      step="0.01"
-                      onChange={this._onScaleYChanged} />
-            </label>
-            <label>
-              <span>縦横比を固定</span>
-              <Checkbox value={this.state.isFixingAspect}
-                        onChange={this._onScaleIsFixingAspectChanged} />
-            </label>
-          </fieldset>
-          <fieldset>
-            <legend>回転</legend>
-            <Number value={layer.transform.rotation}
-                    min="0"
-                    max="360"
-                    onChange={this._onRotationChanged} />
-          </fieldset>
-          <fieldset>
-            <legend>透明度</legend>
-            <Number value={layer.transform.opacity}
-                    min="0"
-                    max="1"
-                    step="0.01"
-                    onChange={this._onOpacityChanged} />
-          </fieldset>
-          <fieldset>
-            <legend>効果</legend>
-            <ScriptArea value={layer.scriptString}
-                        rows="10"
-                        onChange={this._onScriptChanged} />
+            <div className="effect__legend">トランスフォーム</div>
+            <div className="effect__input">
+              <div className="effect__input__left">
+                アンカーポイント
+              </div>
+              <div className="effect__input__right">
+                <Number value={layer.transform.anchorPoint.x}
+                        prefixString="X "
+                        onChange={this._onAnchorPointXChanged} />
+                <Number value={layer.transform.anchorPoint.y}
+                        prefixString="Y "
+                        onChange={this._onAnchorPointYChanged} />
+              </div>
+            </div>
+
+            <div className="effect__input">
+              <div className="effect__input__left">位置</div>
+
+              <div className="effect__input__right">
+                <Number value={layer.transform.position.x}
+                        prefixString="X "
+                        onChange={this._onPositionXChanged} />
+                <Number value={layer.transform.position.y}
+                        prefixString="Y "
+                        onChange={this._onPositionYChanged} />
+              </div>
+            </div>
+            <div className="effect__input">
+              <div className="effect__input__left">大きさ</div>
+              <div className="effect__input__right">
+                <Number value={layer.transform.scale.x}
+                        step={0.01}
+                        prefixString="X "
+                        onChange={this._onScaleXChanged} />
+                <Number value={layer.transform.scale.y}
+                        step={0.01}
+                        prefixString="Y "
+                        onChange={this._onScaleYChanged} />
+              </div>
+            </div>
+            <div className="effect__input">
+              <div className="effect__input__left">縦横比を固定</div>
+              <div className="effect__input__right">
+                <Checkbox value={this.state.isFixingAspect}
+                          onChange={this._onScaleIsFixingAspectChanged} />
+              </div>
+            </div>
+            <div className="effect__input">
+              <div className="effect__input__left">回転</div>
+              <div className="effect__input__right">
+                <Number value={layer.transform.rotation}
+                        min={0}
+                        max={360}
+                        suffixString="°"
+                        onChange={this._onRotationChanged} />
+              </div>
+            </div>
+            <div className="effect__input">
+              <div className="effect__input__left">透明度</div>
+              <div className="effect__input__right">
+                <Number value={layer.transform.opacity}
+                        min={0}
+                        max={1}
+                        step={0.01}
+                        onChange={this._onOpacityChanged} />
+              </div>
+            </div>
+            <div className="effect__input">
+              <div className="effect__input__left">効果</div>
+              <div className="effect__input__right">
+                <ScriptArea value={layer.scriptString}
+                            rows={10}
+                            onChange={this._onScriptChanged} />
+              </div>
+            </div>
           </fieldset>
         </section>
       );

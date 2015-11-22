@@ -84,7 +84,7 @@
   height: 100%;
 }
 
-.timeline__time-controller__cells-container, {
+.timeline__time-controller__cells-container {
   height: 100%;
   @include display(flex);
   @include flex-wrap(nowrap);

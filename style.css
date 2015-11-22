@@ -692,6 +692,58 @@ button.flat.danger {
  *  Lists of z-index order.
  *  A later tag will make upper than an early tag.
  */
+.form {
+  display: inline-block; }
+
+.form-native {
+  width: 100%; }
+
+.form-native-number,
+.form-native-select,
+.form-native-textarea {
+  -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  background: none;
+  border: 1px solid #9a9a9a;
+  border-radius: 2px;
+  padding: 0.2em 0.4em; }
+  .form-native-number:focus,
+  .form-native-select:focus,
+  .form-native-textarea:focus {
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    border-color: #4a73f0; }
+
+.form-number {
+  position: relative;
+  height: 20px; }
+  .form-number .form-number__focus,
+  .form-number .form-number__unfocus {
+    position: absolute;
+    width: 100%; }
+  .form-number .form-number__focus {
+    top: -4px; }
+  .form-number .form-number__unfocus {
+    line-height: 20px;
+    cursor: col-resize; }
+    .form-number .form-number__unfocus .form-number__unfocus__value {
+      color: #4a73f0;
+      text-decoration: underline; }
+  .form-number .form-number__prefix,
+  .form-number .form-number__suffix {
+    color: #4a73f0;
+    margin: 0 2px; }
+
+.form-script-area {
+  font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
+  width: 100%; }
+  .form-script-area .form-native-textarea {
+    width: 100%; }
+
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
 nav, .nav {
   width: 100%;
   height: 42px;
@@ -817,32 +869,75 @@ nav, .nav {
  *  A later tag will make upper than an early tag.
  */
 .effect {
-  color: #ebebeb;
-  background-color: #494947; }
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #cfcfcf;
+  background-color: #262625; }
   .effect fieldset {
-    padding: 5px; }
-  .effect legend {
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    display: block;
+    border: 0;
+    border-radius: 2px;
+    margin: 4px;
+    padding: 4px;
+    background: #383837;
+    padding: 2px 6px; }
+  .effect .effect__legend {
     width: 100%;
-    border-bottom: 1px solid; }
-  .effect input, .effect textarea {
-    background: #636360; }
+    height: 36px;
+    line-height: 36px;
+    font-size: 16px;
+    margin-bottom: 8px; }
+  .effect input.form-native,
+  .effect textarea.form-native,
+  .effect select.form-native {
+    background: #4d4d4b; }
+    .effect input.form-native:focus,
+    .effect textarea.form-native:focus,
+    .effect select.form-native:focus {
+      border-color: #e2c710; }
+  .effect .form-number .form-number__unfocus__value,
+  .effect .form-number .form-number__prefix,
+  .effect .form-number .form-number__suffix {
+    color: #e2c710; }
+  .effect .form-number .form-number__focus .form-native-number {
+    max-width: 60px; }
 
 .effect__header {
   padding: 15px 5px; }
 
-.effect__input-container {
-  margin-bottom: 5px; }
-  .effect__input-container .effect__input-label {
-    position: relative; }
-  .effect__input-container .effect__input-label__description {
-    position: absolute; }
-  .effect__input-container input {
-    margin-left: 50%;
-    width: 50%; }
-  .effect__input-container .effect__input-script-area {
-    width: 100%;
-    font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
-    font-size: 12px; }
+.effect__input {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 12px; }
+  .effect__input .effect__input__left {
+    -webkit-flex-basis: 150px;
+    -moz-flex-basis: 150px;
+    flex-basis: 150px;
+    -ms-flex-preferred-size: 150px; }
+  .effect__input .effect__input__right {
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-grow: 1;
+    -moz-flex-grow: 1;
+    flex-grow: 1;
+    -ms-flex-positive: 1; }
+    .effect__input .effect__input__right > * {
+      -webkit-flex-grow: 1;
+      -moz-flex-grow: 1;
+      flex-grow: 1;
+      -ms-flex-positive: 1; }
 
 /*
  *  Lists of z-index order.
@@ -909,7 +1004,7 @@ nav, .nav {
   height: 40px;
   overflow: hidden;
   background-color: #33322f;
-  color: #c9c9c9;
+  color: #cfcfcf;
   font-size: 12px; }
   .timeline__summary .timeline__summary__name {
     width: 100%;
@@ -934,7 +1029,7 @@ nav, .nav {
     padding: 0;
     padding-top: 1px;
     color: #33322f;
-    background-color: #c9c9c9;
+    background-color: #cfcfcf;
     border-radius: 50%;
     text-align: center;
     font-weight: 700; }
@@ -1056,7 +1151,7 @@ nav, .nav {
     margin: 0;
     padding: 3px 8px;
     font-size: 12px;
-    color: #c9c9c9;
+    color: #cfcfcf;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     width: 100%;

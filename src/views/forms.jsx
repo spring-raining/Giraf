@@ -1,12 +1,15 @@
 "use strict";
 
-import React from "react";
+import React                      from "react";
+import Decimal                    from "decimal.js";
+
+import genDummyImg                from "src/utils/genDummyImg";
 
 
 const NativeCheckbox = React.createClass({
   propType() {
     return {
-      value:    React.PropTypes.bool.isRequired,
+      value: React.PropTypes.bool.isRequired,
     };
   },
 
@@ -14,7 +17,7 @@ const NativeCheckbox = React.createClass({
     return (
       <input {...this.props}
              type="checkbox"
-             className="form-native-checkbox"
+             className="form-native form-native-checkbox"
              checked={this.props.value} />
     );
   },
@@ -31,7 +34,7 @@ const NativeNumber = React.createClass({
     return (
       <input {...this.props}
              type="number"
-             className="form-native-number" />
+             className="form-native form-native-number" />
     );
   },
 });
@@ -39,14 +42,14 @@ const NativeNumber = React.createClass({
 const NativeSelect = React.createClass({
   propTypes() {
     return {
-      value:        React.PropTypes.any.isRequired,
+      value: React.PropTypes.any.isRequired,
     };
   },
 
   render() {
     return (
       <select {...this.props}
-              className="form-native-select">
+              className="form-native form-native-select">
         {this.props.children}
       </select>
     );
@@ -63,7 +66,7 @@ const NativeOption = React.createClass({
   render() {
     return (
       <option {...this.props}
-              className="form-native-option">
+              className="form-native form-native-option">
         {this.props.children}
       </option>
     );
@@ -73,7 +76,7 @@ const NativeOption = React.createClass({
 const NativeRange = React.createClass({
   propTypes() {
     return {
-      value:    React.PropTypes.number.isRequired,
+      value: React.PropTypes.number.isRequired,
     };
   },
 
@@ -81,7 +84,22 @@ const NativeRange = React.createClass({
     return (
       <input {...this.props}
               type="range"
-              className="effect-native-range" />
+              className="form-native form-native-range" />
+    );
+  },
+});
+
+const NativeTextarea = React.createClass({
+  propTypes() {
+    return {
+      value: React.PropTypes.string.isRequired,
+    };
+  },
+
+  render() {
+    return (
+      <textarea {...this.props}
+                className="form-native form-native-textarea" />
     );
   },
 });
@@ -97,7 +115,7 @@ const Checkbox = React.createClass({
 
   render() {
     return (
-      <div className="form-checkbox">
+      <div className="form form-checkbox">
         <NativeCheckbox value={this.props.value}
                         name={this.props.name}
                         onChange={this._onChange} />
@@ -130,39 +148,52 @@ const Number = React.createClass({
     return {
       tmpValue: this.props.value,
       isEditing: false,
+      draggingClientX: null,
     };
   },
 
   render() {
+    const prefix = <span className="form-number__prefix">
+                     {this.props.prefixString}
+                   </span>;
+
+    const suffix = <span className="form-number__suffix">
+                     {this.props.suffixString}
+                   </span>;
+
+    const unfocusValue = (this.state.draggingClientX !== null)
+      ? this.state.tmpValue
+      : this.props.value;
+
     const input = (this.state.isEditing)
       ? <div className="form-number__focus">
-          <NativeNumber value={this.state.tmpValue}
-                        name={this.props.name}
-                        min={this.props.min}
-                        max={this.props.max}
-                        step={this.props.step}
-                        autoFocus={true}
-                        onChange={this._onChange}
-                        onBlur={this._onBlur} />
+          {prefix}
+            <NativeNumber value={this.state.tmpValue}
+                          name={this.props.name}
+                          min={this.props.min}
+                          max={this.props.max}
+                          step={this.props.step}
+                          autoFocus={true}
+                          onChange={this._onChange}
+                          onBlur={this._onBlur} />
+          {suffix}
         </div>
       : <div className="form-number__unfocus"
-              onClick={this._onUnfocusBoxClicked}>
-          {this.props.value}
+             draggable="true"
+             onDragStart={this._onDragStart}
+             onDrag={this._onDrag}
+             onDragEnd={this._onDragEnd}
+             onClick={this._onUnfocusBoxClicked}>
+          {prefix}
+          <span className="form-number__unfocus__value">
+            {unfocusValue}
+          </span>
+          {suffix}
         </div>;
 
-    const prefix = (this.props.prefixString)
-      ? <span className="form-number__prefix">{this.props.prefixString}</span>
-      : null;
-
-    const suffix = (this.props.suffixString)
-      ? <span className="form-number__suffix">{this.props.suffixString}</span>
-      : null;
-
     return (
-      <div className="form-number">
-        {prefix}
+      <div className="form form-number">
         {input}
-        {suffix}
       </div>
     );
   },
@@ -197,6 +228,52 @@ const Number = React.createClass({
       isEditing: true,
     });
   },
+
+  _onDragStart(e) {
+    e.stopPropagation();
+    e.dataTransfer.setDragImage(genDummyImg(), 0, 0);
+    this.setState({
+      draggingClientX: e.clientX,
+    });
+  },
+
+  _onDrag(e) {
+    e.stopPropagation();
+    // HACK: It sometimes fire event e.clientX is zero when mouse up.
+    if (e.clientX === 0) {
+      return;
+    }
+
+    const unit = 2;
+    const diff = Math.floor(Math.abs(e.clientX - this.state.draggingClientX) / unit)
+                 * ((e.clientX > this.state.draggingClientX)? 1 : -1);
+    const step = (this.props.step)? this.props.step : 1;
+
+    let result = new Decimal(diff).times(step)
+                                  .plus(this.state.tmpValue)
+                                  .toNumber();
+    if (typeof(this.props.min) === "number") {
+      result = Math.max(result, this.props.min);
+    }
+    if (typeof(this.props.max) === "number") {
+      result = Math.min(result, this.props.max);
+    }
+
+    this.setState({
+      tmpValue: result,
+      draggingClientX: this.state.draggingClientX + diff * unit,
+    });
+  },
+
+  _onDragEnd(e) {
+    e.stopPropagation();
+    this.setState({
+      draggingClientX: null,
+    });
+    if (this.props.onChange && this.props.value !== this.state.tmpValue) {
+      this.props.onChange(this.state.tmpValue);
+    }
+  },
 });
 
 const Select = React.createClass({
@@ -221,7 +298,7 @@ const Select = React.createClass({
     });
 
     return (
-      <div className="form-select">
+      <div className="form form-select">
         <NativeSelect value={this.props.value}
                       name={this.props.name}
                       onChange={this._onChange}>
@@ -263,13 +340,14 @@ const ScriptArea = React.createClass({
 
   render() {
     return (
-      <textarea className="form-script-area"
-                name={this.props.name}
-                value={this.state.tmpValue}
-                cols={this.props.cols}
-                rows={this.props.rows}
-                onBlur={this._onBlur}
-                onChange={this._onChange} />
+      <div className="form form-script-area">
+        <NativeTextarea value={this.state.tmpValue}
+                        name={this.props.name}
+                        cols={this.props.cols}
+                        rows={this.props.rows}
+                        onBlur={this._onBlur}
+                        onChange={this._onChange} />
+      </div>
     );
   },
 
@@ -295,6 +373,7 @@ export default {
   NativeSelect: NativeSelect,
   NativeOption: NativeOption,
   NativeRange: NativeRange,
+  NativeTextarea: NativeTextarea,
   Checkbox: Checkbox,
   Number: Number,
   Select: Select,

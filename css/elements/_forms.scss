@@ -1,0 +1,65 @@
+@import "../defs";
+
+.form {
+  display: inline-block;
+}
+
+.form-native {
+  width: 100%;
+}
+
+.form-native-number,
+.form-native-select,
+.form-native-textarea {
+  @include giraf-anime();
+
+  background: none;
+  border: 1px solid $color-form-unfocus-border;
+  border-radius: 2px;
+  padding: 0.2em 0.4em;
+
+  &:focus {
+    @include giraf-shadow(1);
+    border-color: $color-form-focus-border;
+  }
+}
+
+.form-number {
+  position: relative;
+  height: $form-number-height;
+
+  .form-number__focus,
+  .form-number__unfocus {
+    position: absolute;
+    width: 100%;
+  }
+
+  .form-number__focus {
+    top: -4px;
+  }
+
+  .form-number__unfocus {
+    line-height: $form-number-height;
+    cursor: col-resize;
+
+    .form-number__unfocus__value {
+      color: $color-form-focus-border;
+      text-decoration: underline;
+    }
+  }
+
+  .form-number__prefix,
+  .form-number__suffix {
+    color: $color-form-focus-border;
+    margin: 0 2px;
+  }
+}
+
+.form-script-area {
+  font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
+  width: 100%;
+
+  .form-native-textarea {
+    width: 100%;
+  }
+}

@@ -62,6 +62,7 @@ const ModalButtonSet = React.createClass({
         React.PropTypes.shape({
           text: React.PropTypes.string.isRequired,
           onClick: React.PropTypes.func.isRequired,
+          className: React.PropTypes.string,
         })
       ).isRequired,
     }

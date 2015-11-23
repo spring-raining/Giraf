@@ -6,6 +6,7 @@ import Dispatcher                     from "src/dispatcher/dispatcher";
 import ActionConst                    from "src/actions/const";
 import createCompositionAsync         from "src/actions/task/createCompositionAsync";
 import createLayerAsync               from "src/actions/task/createLayerAsync";
+import renderGIFAsync                 from "src/actions/task/renderGIFAsync";
 import GenUUID                        from "src/utils/genUUID";
 import SelectFile                     from "src/utils/selectFile";
 import {hasTrait}                     from "src/utils/traitUtils";
@@ -308,18 +309,18 @@ export default {
     if (!(composition instanceof Composition)) {
       return;
     }
-    exportGIF(composition).then(
+    renderGIFAsync(composition).then(
       (result) => {
-        Dispatcher.dispatch({
-          actionType: ActionConst.RENDER_GIF,
-          image: result.image,
-        });
+        //Dispatcher.dispatch({
+        //  actionType: ActionConst.RENDER_GIF,
+        //  image: result.image,
+        //});
       },
       (error) => {
-        console.error(error.errorMsg);
+        console.error(error);
         console.warn("Failed to render GIF.\ncomposition : " + composition.name);
       }
-    )
+    );
   },
 
   _createCanvasWithRenderedFrame(composition, frame) {

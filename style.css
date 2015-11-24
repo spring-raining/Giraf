@@ -1661,3 +1661,50 @@ nav, .nav {
     left: 0; }
   .create-video-layer-modal .create-video-layer-modal__info .create-video-layer-modal__info__end-canvas {
     right: 0; }
+
+.render-gif-modal .form-number {
+  width: 200px; }
+  .render-gif-modal .form-number .form-number__focus .form-native-number {
+    max-width: 80px; }
+
+.render-gif-modal .render-gif-modal__preview {
+  position: relative;
+  min-height: 200px; }
+  .render-gif-modal .render-gif-modal__preview .render-gif-modal__preview__canvas-container {
+    margin: 0 auto; }
+    .render-gif-modal .render-gif-modal__preview .render-gif-modal__preview__canvas-container > canvas {
+      width: 100%;
+      height: 100%;
+      background-color: #000000; }
+  .render-gif-modal .render-gif-modal__preview .render-gif-modal__preview__frame {
+    -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    cursor: default;
+    color: rgba(128, 128, 128, 0.6);
+    font-size: 50px;
+    font-weight: 700; }
+    .render-gif-modal .render-gif-modal__preview .render-gif-modal__preview__frame:hover {
+      opacity: 0; }
+
+.render-gif-modal .render-gif-modal__input {
+  margin: 16px 0;
+  width: 100%;
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex; }
+  .render-gif-modal .render-gif-modal__input .render-gif-modal__input__left {
+    width: 50%;
+    text-align: right; }
+  .render-gif-modal .render-gif-modal__input .render-gif-modal__input__right {
+    width: 50%;
+    margin-left: 10px; }

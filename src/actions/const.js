@@ -23,5 +23,4 @@ export default keyMirror({
   REDO: null,
   UPDATE_EXPANDING_MENU_ID: null,
   UPDATE_MODAL: null,
-  RENDER_GIF: null,
 });

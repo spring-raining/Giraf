@@ -108,7 +108,17 @@ function renderFrameAutomatically(composition,
   );
 }
 
+function renderGIFAsync(composition,
+                        gifFPS,
+                        gifSize,
+                        gifStart,
+                        gifEnd,
+                        progressCallback) {
+
+}
+
 export default {
   renderFrameAsync: renderFrameAsync,
   renderFrameAutomatically: renderFrameAutomatically,
+  renderGIFAsync: renderGIFAsync,
 };

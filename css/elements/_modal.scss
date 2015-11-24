@@ -180,3 +180,63 @@
     }
   }
 }
+
+.render-gif-modal {
+  .form-number {
+    width: 200px;
+
+    .form-number__focus {
+      .form-native-number {
+        max-width: 80px;
+      }
+    }
+  }
+
+  .render-gif-modal__preview {
+    position: relative;
+    min-height: 200px;
+
+    .render-gif-modal__preview__canvas-container {
+      margin: 0 auto;
+
+      & > canvas {
+        width: 100%;
+        height: 100%;
+        background-color: #000000;
+      }
+    }
+
+    .render-gif-modal__preview__frame {
+      @include giraf-anime();
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      cursor: default;
+      color: rgba(128, 128, 128, .6);
+      font-size: 50px;
+      font-weight: 700;
+
+      &:hover {
+        opacity: 0;
+      }
+    }
+  }
+
+  .render-gif-modal__input {
+    margin: 16px 0;
+    width: 100%;
+    @include display(flex);
+
+    .render-gif-modal__input__left {
+      width: 50%;
+      text-align: right;
+    }
+
+    .render-gif-modal__input__right {
+      width: 50%;
+      margin-left: 10px;
+    }
+  }
+}

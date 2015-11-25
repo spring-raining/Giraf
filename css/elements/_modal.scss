@@ -195,6 +195,7 @@
   .render-gif-modal__preview {
     position: relative;
     min-height: 200px;
+    margin-top: 20px;
 
     .render-gif-modal__preview__canvas-container {
       margin: 0 auto;
@@ -207,7 +208,7 @@
     }
 
     .render-gif-modal__preview__frame {
-      @include giraf-anime();
+      @include giraf-anime(opacity);
       position: absolute;
       top: 0;
       width: 100%;
@@ -221,6 +222,34 @@
       &:hover {
         opacity: 0;
       }
+    }
+
+    .render-gif-modal__preview__gif-container {
+      text-align: center;
+      width: 100%;
+      margin: 0 auto;
+
+      & > img {
+        @include giraf-shadow(3);
+        @include reveal(render-gif-modal-preview-gif, 0.4s) {
+          0% {
+            opacity: 0;
+            @include transform(scale(1.2));
+          }
+
+          100% {
+            opacity: 1;
+            @include transform(scale(1));
+          }
+        }
+      }
+    }
+
+    .render-gif-modal__preview__gif-description {
+      text-align: center;
+      width: 100%;
+      color: $color-black-sub;
+      margin-top: 20px;
     }
   }
 
@@ -238,5 +267,14 @@
       width: 50%;
       margin-left: 10px;
     }
+  }
+}
+
+.render-gif-modal-footer-content {
+  position: relative;
+
+  .form-progress {
+    position: absolute;
+    top: -10px;
   }
 }

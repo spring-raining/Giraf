@@ -6,8 +6,10 @@ import keyMirror                                from "keymirror";
 import Actions                                  from "src/actions/actions";
 import {Composition}                            from "src/stores/model/composition";
 import {Modal, ModalButtonSet}                  from "src/views/modal";
-import {Number}                                 from "src/views/forms";
+import {Number, Progress}                       from "src/views/forms";
 import {renderFrameAsync}                       from "src/utils/renderUtils";
+import writeGIF                                 from "src/utils/writeGIF";
+import dataURLToBlob                            from "src/utils/dataURLToBlob";
 
 
 const MODAL_SCENE = keyMirror({
@@ -15,6 +17,26 @@ const MODAL_SCENE = keyMirror({
   RENDERING: null,
   RENDERED: null,
 });
+
+const createImgAsync = (blob) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const img = document.createElement("img");
+      img.onload = () => {
+        resolve(img);
+      };
+      img.src = blob;
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const formatByte = (byte) => {
+  return (byte >= 1000000) ? `${(byte / 1000000).toFixed(2)} MB`
+       : (byte >= 1000)    ? `${(byte / 1000).toFixed(2)} KB`
+       :                     `${byte} B`;
+};
 
 const RenderGIFModal = React.createClass({
 
@@ -39,6 +61,9 @@ const RenderGIFModal = React.createClass({
       previewFrame: 0,
       renderedCanvases: {},
       renderAborted: false,
+      progress: 0,
+      resultGIF: null,
+      resultGIFImg: null,
     };
   },
 
@@ -57,6 +82,7 @@ const RenderGIFModal = React.createClass({
             r[frame] = result;
             this.setState({
               renderedCanvases: Object.assign(this.state.renderedCanvases, r),
+              progress: (frame + 1) / composition.frame,
             });
             if (frame + 1 < composition.frame) {
               resolve(frame + 1);
@@ -121,19 +147,31 @@ const RenderGIFModal = React.createClass({
 
   componentDidUpdate() {
     const composition = this.props.composition;
-    // update preview DOM
-    const previewDOM = this.refs.previewCanvasContainer;
-    if (previewDOM) {
-      while (previewDOM.firstChild) {
-        previewDOM.removeChild(previewDOM.firstChild);
+    const flush = (dom) => {
+      while (dom.firstChild) {
+        dom.removeChild(dom.firstChild);
       }
+    };
+
+    // update preview DOM
+    const previewCanvasDOM = this.refs.previewCanvasContainer;
+    if (previewCanvasDOM) {
+      flush(previewCanvasDOM);
       const canvas = this.state.renderedCanvases[this.state.previewFrame];
       if (canvas) {
-        previewDOM.appendChild(canvas);
+        previewCanvasDOM.appendChild(canvas);
         const width = this.state.gifSize;
         const height = Math.round(composition.height * this.state.gifSize / composition.width);
-        previewDOM.style.width = `${width}px`;
-        previewDOM.style.height = `${height}px`;
+        previewCanvasDOM.style.width = `${width}px`;
+        previewCanvasDOM.style.height = `${height}px`;
+      }
+    }
+    const previewGIFDOM = this.refs.previewGIFContainer;
+    if (previewGIFDOM) {
+      if (!previewGIFDOM.firstChild
+      ||  previewGIFDOM.firstChild !== this.state.resultGIFImg) {
+        flush(previewGIFDOM);
+        previewGIFDOM.appendChild(this.state.resultGIFImg);
       }
     }
   },
@@ -146,9 +184,16 @@ const RenderGIFModal = React.createClass({
   render() {
     const title = "GIFを作成";
 
+    const footer = (
+      <div className="render-gif-modal-footer-content">
+        <Progress value={this.state.progress} max={1} />
+        <ModalButtonSet content={this._buttonContent()} />
+      </div>
+    );
+
     return (
       <Modal title={title}
-             footer={ <ModalButtonSet content={this._buttonContent()} /> }>
+             footer={footer}>
         {this._modalContent()}
       </Modal>
     )
@@ -207,78 +252,132 @@ const RenderGIFModal = React.createClass({
   },
 
   _modalContent() {
+    const previewGIF = (this.state.modalScene === MODAL_SCENE.RENDERED)
+      ? <div className="render-gif-modal__preview">
+          <div className="render-gif-modal__preview__gif-container"
+               ref="previewGIFContainer">
+          </div>
+          <div className="render-gif-modal__preview__gif-description">
+            Rendering Finished : {formatByte(this.state.resultGIF.size)}
+          </div>
+        </div>
+      : <div className="render-gif-modal__preview">
+          <div className="render-gif-modal__preview__gif-container">
+          </div>
+          <div className="render-gif-modal__preview__gif-description">
+            Rendering Now...
+          </div>
+        </div>;
+
     switch (this.state.modalScene) {
+
       case (MODAL_SCENE.SETTING):
-        return <div className="render-gif-modal setting">
-          <div className="render-gif-modal__preview">
-            <div className="render-gif-modal__preview__canvas-container"
-                 ref="previewCanvasContainer">
+        return (
+          <div className="render-gif-modal">
+            <div className="render-gif-modal__preview">
+              <div className="render-gif-modal__preview__canvas-container"
+                   ref="previewCanvasContainer">
+              </div>
+              <div className="render-gif-modal__preview__frame">
+                {this.state.previewFrame + 1}
+              </div>
             </div>
-            <div className="render-gif-modal__preview__frame">
-              {this.state.previewFrame + 1}
+            <div className="render-gif-modal__settings">
+              <div className="render-gif-modal__input">
+                <div className="render-gif-modal__input__left">
+                  GIFの開始フレーム
+                </div>
+                <div className="render-gif-modal__input__right">
+                  <Number value={this.state.gifStart + 1}
+                          min={1}
+                          max={this.state.gifEnd}
+                          step={1}
+                          onChange={this._onGIFStartChanged} />
+                </div>
+              </div>
+              <div className="render-gif-modal__input">
+                <div className="render-gif-modal__input__left">
+                  GIFの終了フレーム
+                </div>
+                <div className="render-gif-modal__input__right">
+                  <Number value={this.state.gifEnd}
+                          min={this.state.gifStart + 1}
+                          max={this.props.composition.frame}
+                          step={1}
+                          onChange={this._onGIFEndChanged} />
+                </div>
+              </div>
+              <div className="render-gif-modal__input">
+                <div className="render-gif-modal__input__left">
+                  GIFのフレームレート
+                </div>
+                <div className="render-gif-modal__input__right">
+                  <Number value={this.state.gifFPS}
+                          min={1}
+                          max={30}
+                          step={1}
+                          suffixString="fps"
+                          onChange={this._onGIFFPSChanged} />
+                </div>
+              </div>
+              <div className="render-gif-modal__input">
+                <div className="render-gif-modal__input__left">
+                  GIFの大きさ
+                </div>
+                <div className="render-gif-modal__input__right">
+                  <Number value={this.state.gifSize}
+                          min={10}
+                          max={1000}
+                          step={1}
+                          suffixString="px"
+                          onChange={this._onGIFSizeChanged} />
+                </div>
+              </div>
             </div>
           </div>
-          <div className="render-gif-modal__settings">
-            <div className="render-gif-modal__input">
-              <div className="render-gif-modal__input__left">
-                GIFの開始フレーム
-              </div>
-              <div className="render-gif-modal__input__right">
-                <Number value={this.state.gifStart + 1}
-                        min={1}
-                        max={this.state.gifEnd}
-                        step={1}
-                        onChange={this._onGIFStartChanged} />
-              </div>
-            </div>
-            <div className="render-gif-modal__input">
-              <div className="render-gif-modal__input__left">
-                GIFの終了フレーム
-              </div>
-              <div className="render-gif-modal__input__right">
-                <Number value={this.state.gifEnd}
-                        min={this.state.gifStart + 1}
-                        max={this.props.composition.frame}
-                        step={1}
-                        onChange={this._onGIFEndChanged} />
-              </div>
-            </div>
-            <div className="render-gif-modal__input">
-              <div className="render-gif-modal__input__left">
-                GIFのフレームレート
-              </div>
-              <div className="render-gif-modal__input__right">
-                <Number value={this.state.gifFPS}
-                        min={1}
-                        max={30}
-                        step={1}
-                        suffixString="fps"
-                        onChange={this._onGIFFPSChanged} />
-              </div>
-            </div>
-            <div className="render-gif-modal__input">
-              <div className="render-gif-modal__input__left">
-                GIFの大きさ
-              </div>
-              <div className="render-gif-modal__input__right">
-                <Number value={this.state.gifSize}
-                        min={10}
-                        max={1000}
-                        step={1}
-                        suffixString="px"
-                        onChange={this._onGIFSizeChanged} />
-              </div>
-            </div>
-          </div>
-        </div>;
+        );
+
       case (MODAL_SCENE.RENDERING):
-        return <div className="render-gif-modal rendering">
-
-        </div>;
       case (MODAL_SCENE.RENDERED):
-        return <div className="render-gif-modal rendered">
-
-        </div>;
+        return (
+          <div className="render-gif-modal">
+            {previewGIF}
+            <div className="render-gif-modal__settings">
+              <div className="render-gif-modal__input">
+                <div className="render-gif-modal__input__left">
+                  GIFの開始フレーム
+                </div>
+                <div className="render-gif-modal__input__right">
+                  {this.state.gifStart + 1}
+                </div>
+              </div>
+              <div className="render-gif-modal__input">
+                <div className="render-gif-modal__input__left">
+                  GIFの終了フレーム
+                </div>
+                <div className="render-gif-modal__input__right">
+                  {this.state.gifEnd}
+                </div>
+              </div>
+              <div className="render-gif-modal__input">
+                <div className="render-gif-modal__input__left">
+                  GIFのフレームレート
+                </div>
+                <div className="render-gif-modal__input__right">
+                  {this.state.gifFPS} fps
+                </div>
+              </div>
+              <div className="render-gif-modal__input">
+                <div className="render-gif-modal__input__left">
+                  GIFの大きさ
+                </div>
+                <div className="render-gif-modal__input__right">
+                  {this.state.gifSize} px
+                </div>
+              </div>
+            </div>
+          </div>
+        );
     }
   },
 
@@ -290,7 +389,60 @@ const RenderGIFModal = React.createClass({
   },
 
   _onCreateClicked() {
-    // TODO: use exportGIF
+    if (!this._canCreateGIF()) {
+      return;
+    }
+    this.setState({
+      modalScene: MODAL_SCENE.RENDERING,
+      progress: 0,
+    });
+
+    let canvases = [];
+    for (let i = this.state.gifStart; i < this.state.gifEnd; i++) {
+      canvases.push(this.state.renderedCanvases[i]);
+    }
+
+    const width = this.state.gifSize;
+    const height = Math.round(this.props.composition.height
+                              * this.state.gifSize
+                              / this.props.composition.width);
+    const interval = 1 / this.state.gifFPS;
+
+    writeGIF(canvases, width, height, interval, {
+      progressCallback: (captureProgress) => {
+        this.setState({
+          progress: captureProgress,
+        });
+      },
+    }).then(
+      (result) => {
+        console.log(result);
+        this.setState({
+          resultGIF: dataURLToBlob(result.image),
+        });
+        return createImgAsync(result.image);
+      },
+      (error) => {
+        console.error(error);
+        console.warn("Failed to write GIF.");
+        this.setState({
+          modalScene: MODAL_SCENE.SETTING,
+        });
+      }
+    ).then(
+      (result) => {
+        this.setState({
+          modalScene: MODAL_SCENE.RENDERED,
+          resultGIFImg: result,
+        });
+      },
+      (error) => {
+        console.error(error);
+        this.setState({
+          modalScene: MODAL_SCENE.SETTING,
+        });
+      }
+    );
   },
 
   _onDoneClicked() {
@@ -301,40 +453,49 @@ const RenderGIFModal = React.createClass({
   },
 
   _onReRenderClicked() {
-
+    this.setState({
+      modalScene: MODAL_SCENE.SETTING,
+      resultGIF: null,
+      resultGIFImg: null,
+    });
   },
 
   _onGIFStartChanged(value) {
-    this.setState({
-      gifStart: value - 1,
-    });
+    if (this.state.modalScene === MODAL_SCENE.SETTING) {
+      this.setState({
+        gifStart: value - 1,
+      });
+    }
   },
 
   _onGIFEndChanged(value) {
-    this.setState({
-      gifEnd: value,
-    });
+    if (this.state.modalScene === MODAL_SCENE.SETTING) {
+      this.setState({
+        gifEnd: value,
+      });
+    }
   },
 
   _onGIFFPSChanged(value) {
-    this.setState({
-      gifFPS: value,
-    })
+    if (this.state.modalScene === MODAL_SCENE.SETTING) {
+      this.setState({
+        gifFPS: value,
+      });
+    }
   },
 
   _onGIFSizeChanged(value) {
-    this.setState({
-      gifSize: value,
-    });
+    if (this.state.modalScene === MODAL_SCENE.SETTING) {
+      this.setState({
+        gifSize: value,
+      });
+    }
   },
 
   _canCreateGIF() {
-    const renderFinishedFrameLength =
-      Object.keys(this.state.renderedCanvases)
-            .filter((e) => (e >= this.state.gifStart && e < this.state.gifEnd))
-            .length;
-    return (this.state.gifEnd - this.state.gifStart) === renderFinishedFrameLength;
-  }
+    return this.props.composition.frame
+           === Object.keys(this.state.renderedCanvases).length;
+  },
 });
 
 export default RenderGIFModal;

@@ -458,9 +458,9 @@ a {
     text-decoration: underline; }
 
 button {
-  -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26);
   color: #ebebeb;
   background-color: #4a73f0;
@@ -474,15 +474,15 @@ button {
     box-shadow: 0 17px 50px 0 rgba(0, 0, 0, 0.19), 0 12px 15px 0 rgba(0, 0, 0, 0.24);
     background-color: #6285f2; }
   button:hover:active {
-    -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 0 0 0 transparent; }
 
 button.safe {
-  -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26);
   color: #ebebeb;
   background-color: #54bd54;
@@ -496,16 +496,16 @@ button.safe {
     box-shadow: 0 17px 50px 0 rgba(0, 0, 0, 0.19), 0 12px 15px 0 rgba(0, 0, 0, 0.24);
     background-color: #66c466; }
   button.safe:hover:active {
-    -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 0 0 0 transparent; }
 
 button.warn,
 button.warning {
-  -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26);
   color: #222222;
   background-color: #e2c710;
@@ -521,15 +521,15 @@ button.warning {
     background-color: #efd41d; }
   button.warn:hover:active,
   button.warning:hover:active {
-    -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 0 0 0 transparent; }
 
 button.danger {
-  -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26);
   color: #ebebeb;
   background-color: #ff3333;
@@ -543,15 +543,15 @@ button.danger {
     box-shadow: 0 17px 50px 0 rgba(0, 0, 0, 0.19), 0 12px 15px 0 rgba(0, 0, 0, 0.24);
     background-color: #ff4d4d; }
   button.danger:hover:active {
-    -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 0 0 0 transparent; }
 
 button.flat {
-  -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 0 0 transparent;
   background-color: transparent;
   color: #4a73f0;
@@ -566,15 +566,15 @@ button.flat {
     background-color: rgba(0, 0, 0, 0.06);
     color: #1244db; }
   button.flat:hover:active {
-    -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16) inset, 0 2px 5px 0 rgba(0, 0, 0, 0.26) inset; }
 
 button.flat.sub {
-  -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 0 0 transparent;
   background-color: transparent;
   color: #9a9a9a;
@@ -589,15 +589,15 @@ button.flat.sub {
     background-color: rgba(0, 0, 0, 0.06);
     color: #747474; }
   button.flat.sub:hover:active {
-    -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16) inset, 0 2px 5px 0 rgba(0, 0, 0, 0.26) inset; }
 
 button.flat.safe {
-  -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 0 0 transparent;
   background-color: transparent;
   color: #54bd54;
@@ -612,16 +612,16 @@ button.flat.safe {
     background-color: rgba(0, 0, 0, 0.06);
     color: #378e37; }
   button.flat.safe:hover:active {
-    -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16) inset, 0 2px 5px 0 rgba(0, 0, 0, 0.26) inset; }
 
 button.flat.warn,
 button.flat.warning {
-  -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 0 0 transparent;
   background-color: transparent;
   color: #c1aa0e;
@@ -638,9 +638,9 @@ button.flat.warning {
     color: #796b09; }
   button.flat.warn:hover:active,
   button.flat.warning:hover:active {
-    -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16) inset, 0 2px 5px 0 rgba(0, 0, 0, 0.26) inset; }
   button.flat.warn:hover,
   button.flat.warning:hover {
@@ -648,9 +648,9 @@ button.flat.warning {
     color: #222222; }
 
 button.flat.danger {
-  -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 0 0 transparent;
   background-color: transparent;
   color: #ff1a1a;
@@ -665,9 +665,9 @@ button.flat.danger {
     background-color: rgba(0, 0, 0, 0.06);
     color: #cc0000; }
   button.flat.danger:hover:active {
-    -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16) inset, 0 2px 5px 0 rgba(0, 0, 0, 0.26) inset; }
   button.flat.danger:hover {
     background-color: #ff3333;
@@ -701,9 +701,9 @@ button.flat.danger {
 .form-native-number,
 .form-native-select,
 .form-native-textarea {
-  -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   background: none;
   border: 1px solid #9a9a9a;
   border-radius: 2px;
@@ -750,9 +750,9 @@ button.flat.danger {
     height: 3px;
     background-color: rgba(255, 255, 255, 0.5); }
     .form-progress .form-progress__bar .form-progress__value {
-      -webkit-transition: width, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
-      -moz-transition: width, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
-      transition: width, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
+      -webkit-transition: width 0.2s ease-out, opacity 0s;
+      -moz-transition: width 0.2s ease-out, opacity 0s;
+      transition: width 0.2s ease-out, opacity 0s;
       position: relative;
       height: 100%;
       background-color: #4a73f0; }
@@ -784,9 +784,9 @@ nav, .nav {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     display: block;
     float: left;
@@ -1288,9 +1288,9 @@ nav, .nav {
 .menu {
   position: fixed;
   z-index: 4001;
-  -webkit-transition: all, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
-  -moz-transition: all, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
-  transition: all, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  -moz-transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-animation: menu-reveal-start 0.001s linear, menu-reveal-fade-in 0.1s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
   -moz-animation: menu-reveal-start 0.001s linear, menu-reveal-fade-in 0.1s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
   animation: menu-reveal-start 0.001s linear, menu-reveal-fade-in 0.1s cubic-bezier(0.4, 0, 0.2, 1) 0.001s; }
@@ -1693,7 +1693,8 @@ nav, .nav {
 
 .render-gif-modal .render-gif-modal__preview {
   position: relative;
-  min-height: 200px; }
+  min-height: 200px;
+  margin-top: 20px; }
   .render-gif-modal .render-gif-modal__preview .render-gif-modal__preview__canvas-container {
     margin: 0 auto; }
     .render-gif-modal .render-gif-modal__preview .render-gif-modal__preview__canvas-container > canvas {
@@ -1701,9 +1702,9 @@ nav, .nav {
       height: 100%;
       background-color: #000000; }
   .render-gif-modal .render-gif-modal__preview .render-gif-modal__preview__frame {
-    -webkit-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    -moz-transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
-    transition: all, 0.2s, cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -moz-transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: absolute;
     top: 0;
     width: 100%;
@@ -1715,6 +1716,76 @@ nav, .nav {
     font-weight: 700; }
     .render-gif-modal .render-gif-modal__preview .render-gif-modal__preview__frame:hover {
       opacity: 0; }
+  .render-gif-modal .render-gif-modal__preview .render-gif-modal__preview__gif-container {
+    text-align: center;
+    width: 100%;
+    margin: 0 auto; }
+    .render-gif-modal .render-gif-modal__preview .render-gif-modal__preview__gif-container > img {
+      box-shadow: 0 17px 50px 0 rgba(0, 0, 0, 0.19), 0 12px 15px 0 rgba(0, 0, 0, 0.24);
+      -webkit-animation: render-gif-modal-preview-gif-reveal-start 0.001s linear, render-gif-modal-preview-gif-reveal-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
+      -moz-animation: render-gif-modal-preview-gif-reveal-start 0.001s linear, render-gif-modal-preview-gif-reveal-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.001s;
+      animation: render-gif-modal-preview-gif-reveal-start 0.001s linear, render-gif-modal-preview-gif-reveal-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.001s; }
+
+@-webkit-keyframes render-gif-modal-preview-gif-reveal-start {
+  0% {
+    display: none;
+    opacity: 0; }
+  100% {
+    display: block;
+    opacity: 0; } }
+
+@-moz-keyframes render-gif-modal-preview-gif-reveal-start {
+  0% {
+    display: none;
+    opacity: 0; }
+  100% {
+    display: block;
+    opacity: 0; } }
+
+@keyframes render-gif-modal-preview-gif-reveal-start {
+  0% {
+    display: none;
+    opacity: 0; }
+  100% {
+    display: block;
+    opacity: 0; } }
+
+@-webkit-keyframes render-gif-modal-preview-gif-reveal-fade-in {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale(1.2); }
+  100% {
+    opacity: 1;
+    -webkit-transform: scale(1); } }
+
+@-moz-keyframes render-gif-modal-preview-gif-reveal-fade-in {
+  0% {
+    opacity: 0;
+    -moz-transform: scale(1.2); }
+  100% {
+    opacity: 1;
+    -moz-transform: scale(1); } }
+
+@keyframes render-gif-modal-preview-gif-reveal-fade-in {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale(1.2);
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    -o-transform: scale(1.2);
+    transform: scale(1.2); }
+  100% {
+    opacity: 1;
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -ms-transform: scale(1);
+    -o-transform: scale(1);
+    transform: scale(1); } }
+  .render-gif-modal .render-gif-modal__preview .render-gif-modal__preview__gif-description {
+    text-align: center;
+    width: 100%;
+    color: #9a9a9a;
+    margin-top: 20px; }
 
 .render-gif-modal .render-gif-modal__input {
   margin: 16px 0;
@@ -1732,3 +1803,9 @@ nav, .nav {
   .render-gif-modal .render-gif-modal__input .render-gif-modal__input__right {
     width: 50%;
     margin-left: 10px; }
+
+.render-gif-modal-footer-content {
+  position: relative; }
+  .render-gif-modal-footer-content .form-progress {
+    position: absolute;
+    top: -10px; }

@@ -112,7 +112,7 @@ $create-video-layer-modal-info-height:    150px;
 }
 
 @mixin giraf-anime($property: all, $duration: 0.2s) {
-  @include transition($property, $duration, cubic-bezier(0.4, 0, 0.2, 1));
+  @include transition($property $duration cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 @mixin giraf-shadow($height: 1) {

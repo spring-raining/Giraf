@@ -12,7 +12,6 @@ import SelectFile                     from "src/utils/selectFile";
 import {hasTrait}                     from "src/utils/traitUtils";
 import {renderFrameAsync, renderFrameAutomatically as autoRender}
                                       from "src/utils/renderUtils";
-import exportGIF                      from "src/utils/exportGIF";
 import Store                          from "src/stores/store";
 import _Selectable                    from "src/stores/model/_selectable";
 import {Composition}                  from "src/stores/model/composition";
@@ -310,12 +309,7 @@ export default {
       return;
     }
     renderGIFAsync(composition).then(
-      (result) => {
-        //Dispatcher.dispatch({
-        //  actionType: ActionConst.RENDER_GIF,
-        //  image: result.image,
-        //});
-      },
+      (result) => {},
       (error) => {
         console.error(error);
         console.warn("Failed to render GIF.\ncomposition : " + composition.name);

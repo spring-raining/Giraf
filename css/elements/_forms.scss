@@ -76,7 +76,7 @@
     background-color: $color-form-progress-bg;
 
     .form-progress__value {
-      @include giraf-anime(width, 0.1s);
+      @include transition(width 0.2s ease-out, opacity 0s);
       position: relative;
       height: 100%;
       background-color: $color-form-progress-value-bg;

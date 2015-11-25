@@ -287,12 +287,13 @@ const Progress = React.createClass({
   render() {
     const max = (this.props.max)? this.props.max : 1.0;
     const width = Math.min(100, Math.max(0, this.props.value / max * 100));
+    const opacity = (width === 0)? 0 : 1;
 
     return (
-      <div className="form form-progress">
+      <div className="form form-progress pointer-disabled">
         <div className="form-progress__bar">
           <div className="form-progress__value"
-               style={{width: `${width}%`}}>
+               style={{width: `${width}%`, opacity: opacity}}>
           </div>
         </div>
       </div>

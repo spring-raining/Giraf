@@ -276,6 +276,30 @@ const Number = React.createClass({
   },
 });
 
+const Progress = React.createClass({
+  propTypes() {
+    return {
+      value:  React.PropTyeps.number.isRequired,
+      max:    React.PropTypes.number,
+    };
+  },
+
+  render() {
+    const max = (this.props.max)? this.props.max : 1.0;
+    const width = Math.min(100, Math.max(0, this.props.value / max * 100));
+
+    return (
+      <div className="form form-progress">
+        <div className="form-progress__bar">
+          <div className="form-progress__value"
+               style={{width: `${width}%`}}>
+          </div>
+        </div>
+      </div>
+    );
+  },
+});
+
 const Select = React.createClass({
   propTypes() {
     return {
@@ -376,6 +400,7 @@ export default {
   NativeTextarea: NativeTextarea,
   Checkbox: Checkbox,
   Number: Number,
+  Progress: Progress,
   Select: Select,
   ScriptArea: ScriptArea,
 }

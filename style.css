@@ -740,6 +740,30 @@ button.flat.danger {
   .form-script-area .form-native-textarea {
     width: 100%; }
 
+.form-progress {
+  width: 100%;
+  padding: 10px 10px 10px 0;
+  margin: 0 0 0 10px;
+  overflow: hidden; }
+  .form-progress .form-progress__bar {
+    width: 100%;
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.5); }
+    .form-progress .form-progress__bar .form-progress__value {
+      -webkit-transition: width, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
+      -moz-transition: width, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
+      transition: width, 0.1s, cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      height: 100%;
+      background-color: #4a73f0; }
+      .form-progress .form-progress__bar .form-progress__value:after {
+        content: "";
+        position: absolute;
+        right: 0;
+        width: 5px;
+        height: 100%;
+        box-shadow: 0 0 10px #4a73f0, -10px 0 10px rgba(74, 115, 240, 0.7), -20px 0 10px rgba(74, 115, 240, 0.4); }
+
 /*
  *  Lists of z-index order.
  *  A later tag will make upper than an early tag.

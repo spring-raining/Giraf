@@ -63,3 +63,34 @@
     width: 100%;
   }
 }
+
+.form-progress {
+  width: 100%;
+  padding: 10px 10px 10px 0;
+  margin: 0 0 0 10px;
+  overflow: hidden;
+
+  .form-progress__bar {
+    width: 100%;
+    height: $form-progress-height;
+    background-color: $color-form-progress-bg;
+
+    .form-progress__value {
+      @include giraf-anime(width, 0.1s);
+      position: relative;
+      height: 100%;
+      background-color: $color-form-progress-value-bg;
+
+      &:after {
+        content: "";
+        position: absolute;
+        right: 0;
+        width: 5px;
+        height: 100%;
+        box-shadow:     0 0 10px $color-form-progress-value-bg,
+                    -10px 0 10px transparentize($color-form-progress-value-bg, 0.3),
+                    -20px 0 10px transparentize($color-form-progress-value-bg, 0.6);
+      }
+    }
+  }
+}

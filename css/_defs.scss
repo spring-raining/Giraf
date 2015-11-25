@@ -18,6 +18,8 @@ $color-a:                           $color-giraf;
 $color-button-flat-hover-bg:        rgba(0, 0, 0, .06);
 $color-form-focus-border:           $color-link;
 $color-form-unfocus-border:         $color-black-sub;
+$color-form-progress-bg:            rgba(255, 255, 255, .5);
+$color-form-progress-value-bg:      $color-link;
 $color-nav-bg:                      $color-black;
 $color-nav-body:                    rgb(163, 163, 163);
 $color-nav-active-body:             $color-white;
@@ -78,6 +80,7 @@ $z-order: (
 );
 
 $form-number-height:                20px;
+$form-progress-height:              3px;
 
 $nav-height:                        42px;
 $nav-li-padding:                    0 20px;

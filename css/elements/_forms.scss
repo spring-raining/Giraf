@@ -10,6 +10,7 @@
 
 .form-native-number,
 .form-native-select,
+.form-native-text,
 .form-native-textarea {
   @include giraf-anime();
 
@@ -24,9 +25,39 @@
   }
 }
 
+.form-text {
+  position: relative;
+  height: $form-text-height;
+
+  .form-text__focus,
+  .form-text__unfocus {
+    position: absolute;
+    width: 100%;
+  }
+
+  .form-text__focus {
+    top: -4px;
+  }
+
+  .form-text__unfocus {
+    line-height: $form-text-height;
+
+    .form-text__unfocus__value {
+      color: $color-form-focus-border;
+      text-decoration: underline;
+    }
+  }
+
+  .form-text__prefix,
+  .form-text__suffix {
+    color: $color-form-focus-border;
+    margin: 0 2px;
+  }
+}
+
 .form-number {
   position: relative;
-  height: $form-number-height;
+  height: $form-text-height;
 
   .form-number__focus,
   .form-number__unfocus {
@@ -39,7 +70,7 @@
   }
 
   .form-number__unfocus {
-    line-height: $form-number-height;
+    line-height: $form-text-height;
     cursor: col-resize;
 
     .form-number__unfocus__value {
@@ -76,7 +107,7 @@
     background-color: $color-form-progress-bg;
 
     .form-progress__value {
-      @include transition(width 0.2s ease-out, opacity 0s);
+      @include transition(width, 0.2s ease-out, opacity 0s);
       position: relative;
       height: 100%;
       background-color: $color-form-progress-value-bg;

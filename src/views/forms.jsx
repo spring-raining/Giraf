@@ -89,6 +89,22 @@ const NativeRange = React.createClass({
   },
 });
 
+const NativeText = React.createClass({
+  propTypes() {
+    return {
+      value: React.PropTypes.string.isRequired,
+    };
+  },
+
+  render() {
+    return (
+      <input {...this.props}
+             type="text"
+             className="form-native form-native-text" />
+    );
+  }
+});
+
 const NativeTextarea = React.createClass({
   propTypes() {
     return {
@@ -392,16 +408,95 @@ const ScriptArea = React.createClass({
   },
 });
 
+const Text = React.createClass({
+  propTypes() {
+    return {
+      value:        React.PropTypes.number.isRequired,
+      name:         React.PropTypes.string,
+      onChange:     React.PropTypes.func,
+      prefixString: React.PropTypes.string,
+      suffixString: React.PropTypes.string,
+    };
+  },
+
+  getInitialState() {
+    return {
+      tmpValue: this.props.value,
+      isEditing: false,
+    };
+  },
+
+  render() {
+    const prefix = <span className="form-text__prefix">
+                     {this.props.prefixString}
+                   </span>;
+
+    const suffix = <span className="form-text__suffix">
+                     {this.props.suffixString}
+                   </span>;
+
+    const input = (this.state.isEditing)
+      ? <div className="form-text__focus">
+          {prefix}
+          <NativeText value={this.state.tmpValue}
+                      name={this.props.name}
+                      autoFocus={true}
+                      onChange={this._onChange}
+                      onBlur={this._onBlur} />
+          {suffix}
+        </div>
+      : <div className="form-text__unfocus"
+             onClick={this._onUnfocusBoxClicked}>
+          {prefix}
+          <span className="form-text__unfocus__value">
+            {this.props.value}
+          </span>
+          {suffix}
+        </div>;
+
+    return (
+      <div className="form form-text">
+        {input}
+      </div>
+    );
+  },
+
+  _onChange(e) {
+    this.setState({
+      tmpValue: e.target.value,
+    });
+  },
+
+  _onBlur(e) {
+    this.setState({
+      tmpValue: this.props.value,
+      isEditing: false,
+    });
+    if (this.props.onChange) {
+      this.props.onChange(e.target.value);
+    }
+  },
+
+  _onUnfocusBoxClicked() {
+    this.setState({
+      tmpValue: this.props.value,
+      isEditing: true,
+    });
+  },
+});
+
 export default {
   NativeCheckbox: NativeCheckbox,
   NativeNumber: NativeNumber,
   NativeSelect: NativeSelect,
   NativeOption: NativeOption,
   NativeRange: NativeRange,
+  NativeText: NativeText,
   NativeTextarea: NativeTextarea,
   Checkbox: Checkbox,
   Number: Number,
   Progress: Progress,
   Select: Select,
   ScriptArea: ScriptArea,
+  Text: Text,
 }

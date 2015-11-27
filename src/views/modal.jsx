@@ -11,6 +11,7 @@ const Modal = React.createClass({
     return {
       title: React.PropTypes.string,
       footer: React.PropTypes.node,
+      className: React.PropTypes.string,
     };
   },
 
@@ -34,7 +35,7 @@ const Modal = React.createClass({
       <div className="modal__wall hidden"
            ref="modalWall"
            onClick={this._onWallClick}>
-        <div className="modal"
+        <div className={`modal ${this.props.className}`}
              onClick={this._onBodyClick}>
           {title}
           <div className="modal__content">

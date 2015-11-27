@@ -36,6 +36,16 @@
   color: $color-modal-body;
   background-color: $color-modal-bg;
 
+  &.large {
+    max-width: 1200px;
+    max-height: 1000px;
+  }
+
+  &.small {
+    max-width: 600px;
+    max-height: 500px;
+  }
+
   @include reveal(modal) {
     0% {
       opacity: 0;
@@ -80,6 +90,40 @@
 .modal__badge {
   @include giraf-badge($color-modal-body, $color-modal-bg, 20px, 12px);
   font-weight: 700;
+}
+
+.create-composition-modal {
+  .form-text {
+    width: 250px;
+
+    .form-text__focus .form-native-text {
+      max-width: 230px;
+    }
+  }
+
+  .form-number {
+    width: 200px;
+
+    .form-number__focus .form-native-number {
+      max-width: 80px;
+    }
+  }
+
+  .create-composition-modal__input {
+    width: 100%;
+    margin: 16px 0;
+    @include display(flex);
+
+    .create-composition-modal__input__left {
+      width: 50%;
+      text-align: right;
+    }
+
+    .create-composition-modal__input__right {
+      width: 50%;
+      margin-left: 10px;
+    }
+  }
 }
 
 .create-video-layer-modal {

@@ -416,7 +416,6 @@ const RenderGIFModal = React.createClass({
       },
     }).then(
       (result) => {
-        console.log(result);
         this.setState({
           resultGIF: dataURLToBlob(result.image),
         });

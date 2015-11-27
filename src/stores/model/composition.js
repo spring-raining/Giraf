@@ -1,9 +1,13 @@
 "use strict";
 
+import _Object              from "lodash/object";
+import _Utility             from "lodash/utility";
+
 import Actions              from "src/actions/actions";
 import _Selectable          from "src/stores/model/_selectable";
 import _Renderable          from "src/stores/model/_renderable";
 import ModelBase            from "src/stores/model/modelBase";
+import Store                from "src/stores/store";
 import {classWithTraits}    from "src/utils/traitUtils";
 
 
@@ -67,6 +71,11 @@ class Composition extends Base {
   }
 
   set frame(frame) {
+    if (frame < this._frame) {
+      Actions.clearFrameCache(this, _Utility.range(frame, this._frame));
+    }
+    Actions.updateCurrentFrame(
+      Math.min(frame - 1, Store.get("currentFrame")));
     super.assign("_frame", frame);
   }
 
@@ -91,12 +100,16 @@ class Composition extends Base {
   }
 
   update(obj = {}, fireAction = true) {
-    super.update(obj);
-    if (obj.width > 0 && obj.height > 0) {
-      this._prepareCanvas(obj.width, obj.height);
+    const obj_ = _Object.omit(obj, "width", "height");
+    super.update(obj_);
+
+    if (obj.width >= 1 || obj.height >= 1) {
+      this.updateSize(
+        (obj.width  >= 1)? obj.width  : this.width,
+        (obj.height >= 1)? obj.height : this.height);
     }
     if (fireAction) {
-      Actions.updateComposition(this);
+      Actions.updateComposition(this, false);
     }
   }
 
@@ -104,6 +117,7 @@ class Composition extends Base {
     if (width !== this._width || height !== this._height) {
       super.assign("_width", width);
       super.assign("_height", height);
+      Actions.clearFrameCache(this);
       this._prepareCanvas(width, height);
     }
   }

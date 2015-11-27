@@ -60,7 +60,7 @@ export default React.createClass({
   },
 
   _onClick(e) {
-    this.props.onClick(this.props.layer);
+    this.props.onClick(this.props.layer)(e);
   },
 
   _onDragStart(e) {

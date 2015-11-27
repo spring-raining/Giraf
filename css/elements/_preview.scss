@@ -18,6 +18,10 @@
       left: 0;
       right: 0;
     }
+
+    canvas {
+      background-color: #000;
+    }
   }
 
   .preview__footage-container {
@@ -43,6 +47,10 @@
       bottom: 0;
       left: 0;
       right: 0;
+    }
+
+    canvas {
+      background-color: black;
     }
   }
 }

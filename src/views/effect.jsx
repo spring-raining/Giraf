@@ -109,7 +109,58 @@ var Effect = React.createClass({
     else if (comp && !layer) {
       return (
         <section className="effect panel">
-          <h4>{comp.name}</h4>
+          <fieldset>
+            <div className="effect__legend">{comp.name}</div>
+
+            <div className="effect__input">
+              <div className="effect__input__left">幅</div>
+              <div className="effect__input__right">
+                <Number value={comp.width}
+                        min={1}
+                        step={1}
+                        suffixString="px"
+                        onChange={this._onCompWidthChanged} />
+              </div>
+            </div>
+            <div className="effect__input">
+              <div className="effect__input__left">高さ</div>
+              <div className="effect__input__right">
+                <Number value={comp.height}
+                        min={1}
+                        step={1}
+                        suffixString="px"
+                        onChange={this._onCompHeightChanged} />
+              </div>
+            </div>
+            <div className="effect__input">
+              <div className="effect__input__left">縦横比を固定</div>
+              <div className="effect__input__right">
+                <Checkbox value={this.state.isFixingAspect}
+                          onChange={this._onScaleIsFixingAspectChanged} />
+              </div>
+            </div>
+            <div className="effect__input">
+              <div className="effect__input__left">フレーム数</div>
+              <div className="effect__input__right">
+                <Number value={comp.frame}
+                        min={1}
+                        step={1}
+                        suffixString="frame"
+                        onChange={this._onCompFrameChanged} />
+              </div>
+            </div>
+            <div className="effect__input">
+              <div className="effect__input__left">フレームレート</div>
+              <div className="effect__input__right">
+                <Number value={comp.fps}
+                        min={1}
+                        max={30}
+                        step={1}
+                        suffixString="fps"
+                        onChange={this._onCompFPSChanged} />
+              </div>
+            </div>
+          </fieldset>
         </section>
       );
     }
@@ -191,6 +242,42 @@ var Effect = React.createClass({
     let layer = this.props.store.get("editingLayer");
     layer.scriptString = value;
     layer.update();
+  },
+
+  _onCompWidthChanged(value) {
+    const comp = this.props.store.get("editingComposition");
+    const h = (this.state.isFixingAspect)
+      ? Math.round(comp.height * value / comp.width)
+      : comp.height;
+    comp.update({
+      width: value,
+      height: h,
+    });
+  },
+
+  _onCompHeightChanged(value) {
+    const comp = this.props.store.get("editingComposition");
+    const w = (this.state.isFixingAspect)
+      ? Math.round(comp.width * value / comp.height)
+      : comp.width;
+    comp.update({
+      width: w,
+      height: value,
+    });
+  },
+
+  _onCompFrameChanged(value) {
+    this.props.store.get("editingComposition")
+      .update({
+        frame: value,
+      });
+  },
+
+  _onCompFPSChanged(value) {
+    this.props.store.get("editingComposition")
+      .update({
+        fps: value,
+      });
   },
 });
 

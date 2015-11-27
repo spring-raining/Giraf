@@ -82,6 +82,7 @@ const CreateCompositionModal = React.createClass({
                 <Number value={this.state.compWidth}
                         min={1}
                         step={1}
+                        suffixString="px"
                         onChange={this._onCompWidthChanged} />
               </div>
             </div>
@@ -93,6 +94,7 @@ const CreateCompositionModal = React.createClass({
                 <Number value={this.state.compHeight}
                         min={1}
                         step={1}
+                        suffixString="px"
                         onChange={this._onCompHeightChanged} />
               </div>
             </div>
@@ -104,6 +106,7 @@ const CreateCompositionModal = React.createClass({
                 <Number value={this.state.compFrame}
                         min={1}
                         step={1}
+                        suffixString="frame"
                         onChange={this._onCompFrameChanged} />
               </div>
             </div>
@@ -116,6 +119,7 @@ const CreateCompositionModal = React.createClass({
                         min={1}
                         max={30}
                         step={1}
+                        suffixString="fps"
                         onChange={this._onCompFPSChanged} />
               </div>
             </div>

@@ -82,12 +82,15 @@ export default {
     }
   },
 
-  updateComposition(composition) {
+  updateComposition(composition, refreshFrameCache = true) {
     if (composition instanceof Composition) {
       Dispatcher.dispatch({
         actionType: ActionConst.UPDATE_COMPOSITION,
         composition: composition
       });
+    }
+    if (refreshFrameCache) {
+      this.clearFrameCache(composition);
     }
   },
 
@@ -239,7 +242,7 @@ export default {
     let _frames = frames;
     if (frames === null) {
       _frames = [];
-      for (let i=0; i < compostion.frame; i++) {
+      for (let i=0; i < composition.frame; i++) {
         _frames.push(i);
       }
     }
@@ -250,7 +253,7 @@ export default {
       Dispatcher.dispatch({
         actionType: ActionConst.CLEAR_FRAME_CACHE,
         composition: composition,
-        frames: frames.filter((e) => e >= 0 && e < composition.frame),
+        frames: _frames.filter((e) => e >= 0 && e < composition.frame),
       })
     }
   },

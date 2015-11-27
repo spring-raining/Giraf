@@ -438,7 +438,7 @@ export default React.createClass({
     );
   },
 
-  _onClick() {
-    this.props.onClick(this.props.layer);
+  _onClick(e) {
+    this.props.onClick(this.props.layer)(e);
   },
 });

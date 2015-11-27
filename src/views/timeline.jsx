@@ -85,7 +85,8 @@ var Timeline = React.createClass({
     if (comp) {
       let cachedFrames = store.get("frameCache").getAllFrameCache(comp);
 
-      let summary = <Summary composition={comp} />;
+      let summary = <Summary composition={comp}
+                             onClick={this._onBlankAreaClick}/>;
       let layers = this.state.layers.map((e) =>
         <Layer composition={comp} layer={e} key={e.id}
                isEdited={e.id === store.get("editingLayer", "id")}
@@ -129,6 +130,7 @@ var Timeline = React.createClass({
               <div className="scroll"
                    style={{overflowX: "hidden", overflowY: "scroll"}}
                    ref="left"
+                   onClick={this._onBlankAreaClick}
                    onWheel={this._onWheel("left")}>
                 <div className="timeline__left">
                   {layerHeaders}
@@ -142,6 +144,7 @@ var Timeline = React.createClass({
               <div className="scroll"
                    style={{overflowX: "scroll", overflowY: "scroll"}}
                    ref="timetable"
+                   onClick={this._onBlankAreaClick}
                    onWheel={this._onWheel("timetable")}>
                 <div className="timeline__timetable"
                      style={{width: this.state.timetableWidth + "px"}}>
@@ -300,8 +303,15 @@ var Timeline = React.createClass({
   },
 
   _onLayerClick(layer) {
-    Actions.changeEditingLayer(layer);
+    return (e) => {
+      e.stopPropagation();
+      Actions.changeEditingLayer(layer);
+    }
   },
+
+  _onBlankAreaClick() {
+    Actions.changeEditingLayer(null);
+  }
 });
 
 export default Timeline;

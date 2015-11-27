@@ -1003,6 +1003,8 @@ nav, .nav {
       bottom: 0;
       left: 0;
       right: 0; }
+    .preview .preview__container canvas {
+      background-color: #000; }
   .preview .preview__footage-container {
     background-color: #000; }
 
@@ -1022,6 +1024,8 @@ nav, .nav {
       bottom: 0;
       left: 0;
       right: 0; }
+    .preview__player .preview__player__container canvas {
+      background-color: black; }
 
 /*
  *  Lists of z-index order.

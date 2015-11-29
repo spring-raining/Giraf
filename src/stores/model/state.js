@@ -18,7 +18,7 @@ class State extends ModelBase {
     this._editingComposition = null;
     this._editingLayer = null;
     this._dragging = null;
-    this._currentFrame = null;
+    this._currentFrame = 0;
     this._frameCache = new FrameCacheHolder();
     this._isPlaying = false;
     this._expandingMenuId = null;

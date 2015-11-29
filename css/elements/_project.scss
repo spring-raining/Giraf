@@ -7,19 +7,38 @@
   .project__item {
     @include transition(all 0.2s cubic-bezier(0.4, 0, 0.2, 1));
     @include giraf-card(1);
-    background-color: $color-project-card-bg;
-    height: $project-file-height;
-    margin: 6px;
+    @include font-smoothing();
+    height: $project-item-height;
+    margin: 8px;
     padding: 0;
     position: relative;
+    overflow: hidden;
+
+    > * {
+      float: left;
+    }
+
+    &.footage {
+      background-color: $color-project-card-footage-bg;
+      &.selected {
+        background-color: lighten($color-project-card-footage-bg, 10%);
+      }
+    }
+
+    &.composition {
+      background-color: $color-project-card-composition-bg;
+      &.selected {
+        background-color: lighten($color-project-card-composition-bg, 10%);
+      }
+    }
 
     &.selected {
       @include giraf-card(2);
+      margin: 4px;
       padding: 0;
-      background-color: lighten($color-project-card-bg, 10%);
 
       .project-piece-thumbnail-container {
-        height: $project-file-height + 20px;
+        height: $project-item-height + 20px;
       }
     }
 
@@ -44,8 +63,40 @@
       color: $color-project-dying-body;
     }
 
-    > * {
-      float: left;
+    .project__item__thumbnail-container {
+      position: absolute;
+      top: 0;
+      right: 0;
+      opacity: 0.5;
+
+      & > img,canvas {
+        height: $project-item-height;
+        @include reveal(project-item-canvas, 0.2s) {
+          0% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+      }
+    }
+
+    .project__item__text {
+      position: absolute;
+      width: 100%;
+      padding: 9px 6px;
+    }
+
+    .project__item__title {
+      @include single-line();
+      font-size: 14px;
+    }
+
+    .project__item__description {
+      @include display(flex);
+      width: 100%;
+      font-size: 12px;
     }
   }
 }

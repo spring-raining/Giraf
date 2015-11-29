@@ -7,20 +7,35 @@ import {Composition}                  from "src/stores/model/composition";
 function _createRenderedCanvasAsync(composition, frame) {
   return new Promise((resolve,reject) => {
     try {
-      let canvas = document.createElement("canvas");
-      canvas.width = composition.width;
-      canvas.height = composition.height;
-      let ctx = canvas.getContext("2d");
-
       composition.render(frame).then(
+        cloneCanvas,
+        (error) => {
+          throw error;
+        }
+      ).then(
         (result) => {
-          ctx.drawImage(result, 0, 0);
-          resolve(canvas);
+          resolve(result);
         },
         (error) => {
           throw error;
         }
       );
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+function cloneCanvas(src) {
+  return new Promise((resolve,reject) => {
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = src.width;
+      canvas.height = src.height;
+      const ctx = canvas.getContext("2d");
+
+      ctx.drawImage(src, 0, 0);
+      resolve(canvas);
     } catch (e) {
       reject(e);
     }
@@ -114,10 +129,11 @@ function renderGIFAsync(composition,
                         gifStart,
                         gifEnd,
                         progressCallback) {
-
+  // TODO
 }
 
 export default {
+  cloneCanvas: cloneCanvas,
   renderFrameAsync: renderFrameAsync,
   renderFrameAutomatically: renderFrameAutomatically,
   renderGIFAsync: renderGIFAsync,

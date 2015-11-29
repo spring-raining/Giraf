@@ -46,8 +46,9 @@ class Footage extends Base {
     this._width = width;
     this._height = height;
     this._status = StatusTypes.LOADING;
-    this._gifFrames = null;
+    this._gifFrames = [];
     this._videoDuration = null;
+    this._thumbnail = null;
     if (objectURL && width && height) {
       _loadContent(objectURL, type, width, height).then(
         (result) => {
@@ -55,7 +56,8 @@ class Footage extends Base {
           Actions.updateFootage(this);
         },
         (error) => {
-          console.log(error);
+          console.error(error);
+          console.warn("Failed to load file : " + this.name);
           super.assign("_status", StatusTypes.DYING);
           Actions.updateFootage(this);
         }
@@ -129,18 +131,33 @@ class Footage extends Base {
     return this._videoDuration;
   }
 
+  get thumbnail() {
+    return this._thumbnail;
+  }
+
   update(obj = {}, fireAction = true) {
     super.update(obj);
 
     if (obj.objectURL) {
       super.assign("_status", StatusTypes.LOADING);
       this._loadContent(obj.objectURL, this.type, this.width, this.height).then(
-        (result) => {
+        () => {
           super.assign("_status", StatusTypes.NORMAL);
           Actions.updateFootage(this);
+          this._prepareThumbnail().then(
+            (result) => {
+              super.assign("_thumbnail", result);
+              Actions.updateFootage(this);
+            },
+            (error) => {
+              console.error(error);
+              console.warn("Failed to create thumbnail : " + this.name);
+            }
+          );
         },
         (error) => {
-          console.log(error);
+          console.error(error);
+          console.warn("Failed to load file : " + this.name);
           super.assign("_status", StatusTypes.DYING);
           Actions.updateFootage(this);
         }
@@ -174,6 +191,30 @@ class Footage extends Base {
     }
     else {
       return 0;
+    }
+  }
+
+  getThumbnail() {
+    return this.thumbnail;
+  }
+
+  getFormattedLength() {
+    if (this.getFootageKind() === FootageKinds.VIDEO
+    &&  this.videoDuration > 0) {
+      const d = this.videoDuration;
+      return ((d >= 3600)? Math.floor(d / 3600) + ":" : "")
+           + (Math.floor(d % 3600 / 60 + 100) + "").slice(1, 3)
+           + ":"
+           + (Math.floor(d % 60 + 100) + "").slice(1, 3)
+           + "."
+           + (Math.round(d * 100 % 100 + 100) + "").slice(1, 3)
+    }
+    else if (this.type === "image/gif"
+         &&  this.gifFrames.length > 0) {
+      return this.gifFrames.length + "f";
+    }
+    else {
+      return "";
     }
   }
 
@@ -282,6 +323,29 @@ class Footage extends Base {
         this.canvas.height = height;
         this.context = this.canvas.getContext("2d");
         resolve(this.canvas);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  _prepareThumbnail() {
+    return new Promise((resolve, reject) => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = this.width;
+        canvas.height = this.height;
+        const ctx = canvas.getContext("2d");
+
+        this.render(0).then(
+          (result) => {
+            ctx.drawImage(result, 0, 0);
+            resolve(canvas);
+          },
+          (error) => {
+            throw error;
+          }
+        );
       } catch (e) {
         reject(e);
       }

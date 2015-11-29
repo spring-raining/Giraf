@@ -56,8 +56,9 @@ $color-timeline-cell-cached:        #4BDC4B;
 $color-timeline-overlay-ctrl-border:  #FF53B2;
 $color-timeline-overlay-ctrl-bg:    transparentize($color-timeline-overlay-ctrl-border, 0.9);
 $color-project-body:                $color-white;
-$color-project-bg:                  rgb(102, 100, 85);
-$color-project-card-bg:             rgb(122, 120, 109);
+$color-project-bg:                  rgb(109, 90, 68);
+$color-project-card-footage-bg:     rgb(89, 100, 101);
+$color-project-card-composition-bg: rgb(89, 96, 76);
 $color-project-loading-body:        transparentize($color-project-body, 0.7);
 $color-project-dying-body:          #F78585;
 $color-menu-bg:                     $color-nav-bg;
@@ -88,7 +89,7 @@ $nav-li-padding:                    0 20px;
 
 $menu-li-padding:                   6px 20px;
 
-$project-file-height:               58px;
+$project-item-height:               58px;
 $timeline-summary-width:            180px;
 $timeline-summary-height:           40px;
 $timeline-layer-height:             48px;

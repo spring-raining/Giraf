@@ -8,6 +8,7 @@ import {Composition}                            from "src/stores/model/compositi
 import {Modal, ModalButtonSet}                  from "src/views/modal";
 import {Number, Progress}                       from "src/views/forms";
 import {renderFrameAsync}                       from "src/utils/renderUtils";
+import formatByte                               from "src/utils/formatByte";
 import writeGIF                                 from "src/utils/writeGIF";
 import dataURLToBlob                            from "src/utils/dataURLToBlob";
 
@@ -30,12 +31,6 @@ const createImgAsync = (blob) => {
       reject(e);
     }
   });
-};
-
-const formatByte = (byte) => {
-  return (byte >= 1000000) ? `${(byte / 1000000).toFixed(2)} MB`
-       : (byte >= 1000)    ? `${(byte / 1000).toFixed(2)} KB`
-       :                     `${byte} B`;
 };
 
 const RenderGIFModal = React.createClass({

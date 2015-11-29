@@ -1,6 +1,7 @@
 "use strict";
 
 import _Array               from "lodash/array";
+import _Math                from "lodash/math";
 import _Object              from "lodash/object";
 import _Utility             from "lodash/utility";
 
@@ -105,6 +106,17 @@ class Composition extends Base {
 
   getLength() {
     return this.frame;
+  }
+
+  getThumbnail() {
+    const caches = Store.get("frameCache")
+                       .getAllFrameCache(this);
+    if (caches && Object.keys(caches).length > 0) {
+      return caches[_Math.min(Object.keys(caches))];
+    }
+    else {
+      return null;
+    }
   }
 
   update(obj = {}, fireAction = true) {

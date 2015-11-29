@@ -26,29 +26,6 @@ function url2Binary(objectURL) {
   });
 }
 
-const parseGIFCallbacks = {
-  hdr: (hdr) => {
-    console.log(hdr)
-  },
-  app: {
-    NETSCAPE: (app) => {
-      console.log(app);
-    }
-  },
-  gce: (gce) => {
-    console.log(gce)
-  },
-  com: (com) => {
-    console.log(com)
-  },
-  img: (img) => {
-    console.log(img)
-  },
-  eof: (eof) => {
-    console.log(eof)
-  },
-};
-
 export default (objectURL) => {
   return new Promise((resolve, reject) => {
 

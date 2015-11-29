@@ -160,7 +160,11 @@ var Timeline = React.createClass({
     }
     else {
       return (
-        <section className="timeline panel">
+        <section className="timeline panel"
+                 onDragEnter={this._onDragEnter}
+                 onDragOver={this._onDragOver}
+                 onDragLeave={this._onDragLeave}
+                 onDrop={this._onDrop}>
         </section>
       );
     }
@@ -220,19 +224,27 @@ var Timeline = React.createClass({
 
   _onDrop(e) {
     e.preventDefault();
-    let nowComp = this.props.store.get("editingComposition");
-    if (!nowComp) {
-      return;
-    }
     let dropped = this.props.store.get("dragging");
     if (!dropped) {
       return;
     }
-    if (dropped.type === DragActionType.FOOTAGE) {
-      Actions.createLayer(nowComp, 0, dropped.object);
+    let nowComp = this.props.store.get("editingComposition");
+    if (nowComp) {
+      if (dropped.type === DragActionType.FOOTAGE) {
+        Actions.createLayer(nowComp, 0, dropped.object);
+      }
+      else if (dropped.type === DragActionType.COMPOSITION) {
+        Actions.createLayer(nowComp, 0, dropped.object);
+      }
     }
-    else if (dropped.type === DragActionType.COMPOSITION) {
-      Actions.createLayer(nowComp, 0, dropped.object);
+    else {
+      if (dropped.type === DragActionType.FOOTAGE) {
+        Actions.createCompositionWithFootage(dropped.object);
+      }
+      else if (dropped.type === DragActionType.COMPOSITION) {
+        Actions.changeSelectingItem(dropped.object);
+        Actions.changeEditingComposition(dropped.object);
+      }
     }
   },
 

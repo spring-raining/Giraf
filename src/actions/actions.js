@@ -7,7 +7,7 @@ import ActionConst                    from "src/actions/const";
 import createCompositionAsync         from "src/actions/task/createCompositionAsync";
 import createLayerAsync               from "src/actions/task/createLayerAsync";
 import renderGIFAsync                 from "src/actions/task/renderGIFAsync";
-import GenUUID                        from "src/utils/genUUID";
+import genUUID                        from "src/utils/genUUID";
 import SelectFile                     from "src/utils/selectFile";
 import {hasTrait}                     from "src/utils/traitUtils";
 import {renderFrameAsync, renderFrameAutomatically as autoRender}
@@ -16,8 +16,7 @@ import Store                          from "src/stores/store";
 import _Selectable                    from "src/stores/model/_selectable";
 import {Composition}                  from "src/stores/model/composition";
 import {Layer}                        from "src/stores/model/layer";
-//import {Footage}                      from "src/stores/model/footage";
-import F                              from "src/stores/model/footage";
+import {Footage}                      from "src/stores/model/footage";
 import {DragAction, DragActionType}   from "src/stores/model/dragAction";
 import {Point}                        from "src/stores/model/point";
 import {Transform}                    from "src/stores/model/transform"
@@ -80,6 +79,40 @@ export default {
         }
       )
     }
+  },
+
+  createCompositionWithFootage(footage) {
+    if (!(footage instanceof Footage)) {
+      return;
+    }
+    const comp = new Composition(
+      genUUID(),
+      footage.name,
+      footage.width,
+      footage.height,
+      48,
+      12
+    );
+    createLayerAsync(comp, footage).then(
+      (result) => {
+        comp.update({
+          frame: result.layerEnd,
+        });
+        Dispatcher.dispatch({
+          actionType: ActionConst.CREATE_COMPOSITION,
+          composition: comp,
+        });
+        Dispatcher.dispatch({
+          actionType: ActionConst.CREATE_LAYER,
+          layer: result,
+          index: 0,
+        });
+      },
+      (error) => {
+        console.error(error);
+        console.warn("Failed to create layer");
+      }
+    );
   },
 
   updateComposition(composition, refreshFrameCache = true) {
@@ -156,7 +189,7 @@ export default {
   startDrag(dragObj) {
     let dragAction = (dragObj instanceof DragAction)? dragObj : null;
     if (!dragAction) {
-      let type = (dragObj instanceof F.Footage) ? DragActionType.FOOTAGE
+      let type = (dragObj instanceof Footage) ? DragActionType.FOOTAGE
         : (dragObj instanceof Composition) ? DragActionType.COMPOSITION
         : (dragObj instanceof Layer) ?       DragActionType.LAYER
         : null;

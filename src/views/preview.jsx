@@ -108,8 +108,8 @@ var Preview = React.createClass({
   },
 
   _onPause(e) {
-    console.log(e);
-  }
+
+  },
 });
 
 export default Preview;

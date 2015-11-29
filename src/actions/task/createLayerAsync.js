@@ -10,7 +10,7 @@ import {Layer}                        from "src/stores/model/layer";
 import {Point}                        from "src/stores/model/point";
 import {Transform}                    from "src/stores/model/transform"
 import _Renderable                    from "src/stores/model/_renderable";
-import GenUUID                        from "src/utils/genUUID";
+import genUUID                        from "src/utils/genUUID";
 import {hasTrait}                     from "src/utils/traitUtils";
 import CreateVideoLayerModal          from "src/views/modal/createVideoLayerModal";
 
@@ -19,18 +19,38 @@ export default ((parentComp, entity = null) =>
   new Promise((resolve, reject) => {
     try {
       if (entity && (entity instanceof Footage)) {
-        Actions.updateModal(
-          React.createElement(CreateVideoLayerModal, {
-            targetFootage: entity,
-            parentComp: parentComp,
-            onCancelClicked: () => {
-              reject("Creating layer canceled.");
-            },
-            onCreateClicked: (e) => {
-              resolve(e);
-            },
-          })
-        );
+        if (entity.isAnimatable()) {
+          Actions.updateModal(
+            React.createElement(CreateVideoLayerModal, {
+              targetFootage: entity,
+              parentComp: parentComp,
+              onCancelClicked: () => {
+                reject("Creating layer canceled.");
+              },
+              onCreateClicked: (e) => {
+                resolve(e);
+              },
+            })
+          );
+        }
+        else {
+          resolve(new Layer(
+            genUUID(),
+            entity.name,
+            parentComp.id,
+            entity,
+            new Transform(
+              new Point([entity.width / 2, entity.height / 2]),
+              new Point([parentComp.width / 2, parentComp.height / 2]),
+              new Point([1, 1]),
+              0,
+              1),
+            0,
+            composition.frame,
+            0,
+            composition.frame
+          ));
+        }
       }
       else if (entity && (entity instanceof Composition)) {
         if (!parentComp.checkCircularReference(entity)) {
@@ -38,7 +58,7 @@ export default ((parentComp, entity = null) =>
         }
         else {
           resolve(new Layer(
-            GenUUID(),
+            genUUID(),
             entity.name,
             parentComp.id,
             entity,
@@ -57,7 +77,7 @@ export default ((parentComp, entity = null) =>
       }
       else {
         resolve(new Layer(
-          GenUUID(),
+          genUUID(),
           "new layer",
           parentComp.id,
           null,

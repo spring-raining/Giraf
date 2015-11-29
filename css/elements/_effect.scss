@@ -4,6 +4,7 @@
   @include font-smoothing();
   color: $color-effect-body;
   background-color: $color-effect-bg;
+  border-right: 2px solid $color-effect-split;
 
   fieldset {
     @include giraf-card();

@@ -232,10 +232,6 @@ var Timeline = React.createClass({
       Actions.createLayer(nowComp, 0, dropped.object);
     }
     else if (dropped.type === DragActionType.COMPOSITION) {
-      if (dropped.object.id === nowComp.id) {
-        console.warn("Cannot create a layer of same composition.")
-        return;
-      }
       Actions.createLayer(nowComp, 0, dropped.object);
     }
   },

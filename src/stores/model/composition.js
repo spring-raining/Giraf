@@ -1,5 +1,6 @@
 "use strict";
 
+import _Array               from "lodash/array";
 import _Object              from "lodash/object";
 import _Utility             from "lodash/utility";
 
@@ -92,6 +93,13 @@ class Composition extends Base {
   }
 
   set layers(layers) {
+    layers.forEach((l) => {
+      if (l.entity && (l.entity instanceof Composition)) {
+        if (!this.checkCircularReference(l.entity)) {
+          throw new Error("Cannot add a layer which causes circular reference.");
+        }
+      }
+    });
     super.assign("_layers", layers);
   }
 
@@ -168,6 +176,28 @@ class Composition extends Base {
         reject(e);
       }
     });
+  }
+
+  getChildrenCompId() {
+    return _Array.flatten(
+      this.layers.map((l) => {
+        if (l.entity && (l.entity instanceof Composition)) {
+          return l.entity
+            .getChildrenCompId()
+            .concat(l.entity.id);
+        }
+        else {
+          return [];
+        }
+      })
+    );
+  }
+
+  // If false, this composition cannot add the newComp as layer.
+  checkCircularReference(newComp) {
+    return newComp.getChildrenCompId()
+      .concat(newComp.id)
+      .indexOf(this.id) === -1;
   }
 
   _prepareCanvas(width, height) {

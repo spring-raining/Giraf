@@ -30,6 +30,7 @@ $color-effect-body:                 $color-white-sub;
 $color-effect-bg:                   rgb(38, 38, 37);
 $color-effect-fieldset-bg:          lighten($color-effect-bg, 7%);
 $color-effect-input-bg:             lighten($color-effect-bg, 15%);
+$color-effect-split:                lighten($color-effect-bg, 7%);
 $color-dropdown-bg:                 $color-preview-bg;
 $color-dropdown-body:               $color-white;
 $color-dropdown-select-bg:          rgb(181, 171, 131);

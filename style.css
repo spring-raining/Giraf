@@ -917,7 +917,8 @@ nav, .nav {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #cfcfcf;
-  background-color: #262625; }
+  background-color: #262625;
+  border-right: 2px solid #383837; }
   .effect fieldset {
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16), 0 2px 5px 0 rgba(0, 0, 0, 0.26);
     display: block;

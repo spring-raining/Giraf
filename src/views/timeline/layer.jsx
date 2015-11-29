@@ -41,6 +41,10 @@ var LayerTimetableArea = React.createClass({
   },
 
   render() {
+    if (this.props.flexGrow <= 0) {
+      return null;
+    }
+
     let className = "timeline__layer-timetable-area " + this.props.className;
     let isBodyDraggable = this.props.onBodyDragStart
                        || this.props.onBodyDrag
@@ -146,16 +150,22 @@ var LayerTimetable = React.createClass({
     let layerPos = this.state.layerPos;
 
     if (layer.getLayerKind() === LayerKinds.ANIMATED) {
+      const flex = [
+        Math.min(comp.frame, layerPos.layerStart),
+        Math.min(comp.frame, layerPos.entityStart) - Math.min(comp.frame, layerPos.layerStart),
+        Math.min(comp.frame, layerPos.entityEnd)   - Math.min(comp.frame, layerPos.entityStart),
+        Math.min(comp.frame, layerPos.layerEnd)    - Math.min(comp.frame, layerPos.entityEnd),
+        comp.frame - Math.min(comp.frame, layerPos.layerEnd),
+      ];
       return (
         <div className="timeline__layer-timetable timeline__layer-flex animated"
              data-giraf-dragging={this.state.dragging}>
           <LayerTimetableArea className="timeline__layer-timetable__before pointer-disable"
-                              flexGrow={layerPos.layerStart} />
-
+                              flexGrow={flex[0]} />
           <div className="timeline__layer-timetable__layer-container timeline__layer-flex"
-               style={{flexGrow: layerPos.layerEnd - layerPos.layerStart}}>
+               style={{flexGrow: flex[1] + flex[2] + flex[3]}}>
             <LayerTimetableArea className="timeline__layer-timetable__layer-before"
-                                flexGrow={layerPos.entityStart - layerPos.layerStart}
+                                flexGrow={flex[1]}
                                 onLeftDragStart={this._onDragStart(draggingTarget.LAYER_START)}
                                 onLeftDrag={this._onDrag(draggingTarget.LAYER_START)}
                                 onLeftDragEnd={this._onDragEnd(draggingTarget.LAYER_START)}
@@ -164,7 +174,7 @@ var LayerTimetable = React.createClass({
                                 onBodyDragEnd={this._onDragEnd(draggingTarget.LAYER)} />
 
             <LayerTimetableArea className="timeline__layer-timetable__entity"
-                                flexGrow={layerPos.entityEnd - layerPos.entityStart}
+                                flexGrow={flex[2]}
                                 onLeftDragStart={this._onDragStart(draggingTarget.ENTITY_START)}
                                 onLeftDrag={this._onDrag(draggingTarget.ENTITY_START)}
                                 onLeftDragEnd={this._onDragEnd(draggingTarget.ENTITY_START)}
@@ -177,7 +187,7 @@ var LayerTimetable = React.createClass({
             </LayerTimetableArea>
 
             <LayerTimetableArea className="timeline__layer-timetable__layer-after"
-                                flexGrow={layerPos.layerEnd - layerPos.entityEnd}
+                                flexGrow={flex[3]}
                                 onRightDragStart={this._onDragStart(draggingTarget.LAYER_END)}
                                 onRightDrag={this._onDrag(draggingTarget.LAYER_END)}
                                 onRightDragEnd={this._onDragEnd(draggingTarget.LAYER_END)}
@@ -187,19 +197,24 @@ var LayerTimetable = React.createClass({
           </div>
 
           <LayerTimetableArea className="timeline__layer-timetable__after pointer-disable"
-                              flexGrow={comp.frame - layerPos.layerEnd} />
+                              flexGrow={flex[4]} />
         </div>
       );
     }
     else if (layer.getLayerKind() === LayerKinds.STILL) {
+      const flex = [
+        Math.min(comp.frame, layerPos.layerStart),
+        Math.min(comp.frame, layerPos.layerEnd) - Math.min(comp.frame, layerPos.layerStart),
+        comp.frame - Math.min(comp.frame, layerPos.layerEnd),
+      ];
       return (
         <div className="timeline__layer-timetable timeline__layer-flex still"
              data-giraf-dragging={this.state.dragging}>
           <LayerTimetableArea className="timeline__layer-timetable__before pointer-disable"
-                              flexGrow={layerPos.layerStart} />
+                              flexGrow={flex[0]} />
 
           <LayerTimetableArea className="timeline__layer-timetable__entity"
-                              flexGrow={layerPos.layerEnd - layerPos.layerStart}
+                              flexGrow={flex[1]}
                               onLeftDragStart={this._onDragStart(draggingTarget.LAYER_START)}
                               onLeftDrag={this._onDrag(draggingTarget.LAYER_START)}
                               onLeftDragEnd={this._onDragEnd(draggingTarget.LAYER_START)}
@@ -212,7 +227,7 @@ var LayerTimetable = React.createClass({
           </LayerTimetableArea>
 
           <LayerTimetableArea className="timeline__layer-timetable__after pointer-disable"
-                              flexGrow={comp.frame - layerPos.layerEnd} />
+                              flexGrow={flex[2]} />
         </div>
       );
     }

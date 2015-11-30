@@ -89,6 +89,8 @@ $nav-li-padding:                    0 20px;
 
 $menu-li-padding:                   6px 20px;
 
+$project-brand-logo-width:          80px;
+$project-brand-logo-height:         50px;
 $project-item-height:               58px;
 $timeline-summary-width:            180px;
 $timeline-summary-height:           40px;
@@ -276,6 +278,12 @@ $create-video-layer-modal-info-height:    150px;
   }
 
   @include keyframes(#{$name}-reveal-fade-in) {
+    @content;
+  }
+}
+
+@mixin svg-fillable() {
+  path, polygon, rect, circle, ellipse {
     @content;
   }
 }

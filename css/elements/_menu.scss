@@ -41,6 +41,8 @@
 
     position: relative;
     padding: $menu-li-padding;
+    text-align: left;
+    white-space: nowrap;
   }
 
   .menu__expandable::after {

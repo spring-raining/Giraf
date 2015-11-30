@@ -4,6 +4,40 @@
   color: $color-project-body;
   background-color: $color-project-bg;
 
+  .project__brand {
+    position: relative;
+    margin: 8px 15px;
+
+    .project__brand__logo svg {
+      width: $project-brand-logo-width;
+      height: $project-brand-logo-height;
+      opacity: 0.8;
+      @include svg-fillable() {
+        fill: $color-white-sub;
+      }
+      float: left;
+    }
+
+    .project__brand__text {
+      @include font-smoothing();
+      @include display(flex);
+      @include flex-direction(column);
+      @include justify-content(center);
+      height: $project-brand-logo-height;
+      padding-left: 20px;
+      color: $color-white-sub;
+      font-size: 12px;
+    }
+
+    button.project__brand__menu {
+      @include giraf-flat-button($color-white);
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+    }
+  }
+
   .project__item {
     @include transition(all 0.2s cubic-bezier(0.4, 0, 0.2, 1));
     @include giraf-card(1);
@@ -91,12 +125,15 @@
     .project__item__title {
       @include single-line();
       font-size: 14px;
+      font-weight: 700;
+      color: $color-white;
     }
 
     .project__item__description {
       @include display(flex);
       width: 100%;
       font-size: 12px;
+      color: $color-white;
     }
   }
 }

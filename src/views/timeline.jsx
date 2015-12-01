@@ -86,6 +86,7 @@ var Timeline = React.createClass({
       let cachedFrames = store.get("frameCache").getAllFrameCache(comp);
 
       let summary = <Summary composition={comp}
+                             currentFrame={store.get("currentFrame")}
                              onClick={this._onBlankAreaClick}/>;
       let layers = this.state.layers.map((e) =>
         <Layer composition={comp} layer={e} key={e.id}
@@ -134,7 +135,6 @@ var Timeline = React.createClass({
                    onWheel={this._onWheel("left")}>
                 <div className="timeline__left">
                   {layerHeaders}
-                  <button onClick={this._onCreateLayerButtonClicked}>Create Layer</button>
                 </div>
               </div>
             </div>
@@ -198,14 +198,6 @@ var Timeline = React.createClass({
         }, 0);
       }
     }
-  },
-
-  _onCreateLayerButtonClicked() {
-    let comp = this.props.store.get("editingComposition");
-    if (!comp) {
-      return;
-    }
-    Actions.createLayer(comp);
   },
 
   _onDragEnter(e) {

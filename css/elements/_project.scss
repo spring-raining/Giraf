@@ -1,5 +1,13 @@
 @import "../defs";
 
+@mixin project-item-thumbnail-gradient($color) {
+  &::after {
+    @include position(absolute, 0 0 0 0);
+    content: "";
+    @include background-image(linear-gradient(90deg, $color, transparent));
+  }
+}
+
 .project {
   color: $color-project-body;
   background-color: $color-project-bg;
@@ -39,7 +47,7 @@
   }
 
   .project__item {
-    @include transition(all 0.2s cubic-bezier(0.4, 0, 0.2, 1));
+    @include giraf-anime(margin);
     @include giraf-card(1);
     @include font-smoothing();
     height: $project-item-height;
@@ -54,15 +62,29 @@
 
     &.footage {
       background-color: $color-project-card-footage-bg;
+      .project__item__thumbnail-container {
+        @include project-item-thumbnail-gradient($color-project-card-footage-bg);
+      }
+
       &.selected {
         background-color: lighten($color-project-card-footage-bg, 10%);
+        .project__item__thumbnail-container {
+          @include project-item-thumbnail-gradient(lighten($color-project-card-footage-bg, 10%));
+        }
       }
     }
 
     &.composition {
       background-color: $color-project-card-composition-bg;
+      .project__item__thumbnail-container {
+        @include project-item-thumbnail-gradient($color-project-card-composition-bg);
+      }
+
       &.selected {
         background-color: lighten($color-project-card-composition-bg, 10%);
+        .project__item__thumbnail-container {
+          @include project-item-thumbnail-gradient(lighten($color-project-card-composition-bg, 10%));
+        }
       }
     }
 

@@ -4,6 +4,7 @@
   position: fixed;
   @include calculate-z-index(menu, base);
   @include giraf-anime(all, 0.1s);
+  @include font-smoothing();
   @include reveal(menu, 0.1s) {
     0% {
       opacity: 0;

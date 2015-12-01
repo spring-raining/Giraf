@@ -16,37 +16,43 @@
 }
 
 .timeline__summary {
-  @include giraf-shadow(2);
+  @include giraf-shadow(1);
   @include calculate-z-index(timeline, summary);
   @include font-smoothing();
   position: absolute;
   width: $timeline-summary-width;
   height: $timeline-summary-height;
-  overflow: hidden;
   background-color: $color-timeline-bg;
   color: $color-timeline-layer-header-body;
   font-size: 12px;
 
-  .timeline__summary__name {
-    @include single-line();
-    position: absolute;
-    top: 0;
-    margin: 0 0 0 6px;
-    font-weight: 700;
-  }
-
   .timeline__summary__info {
     position: absolute;
+    height: $timeline-summary-badge-size;
+    top: 0;
     bottom: 0;
-    margin: 0 0 2px 6px;
+    left: 6px;
+    margin: auto;
 
     span {
-      margin: 0 6px 0 0;
+      margin: 0 4px 0 0;
     }
   }
 
+  button.timeline__summary__menu {
+    @include giraf-flat-button($color-white);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+  }
+
   .timeline__summary__badge {
-    @include giraf-badge($color-timeline-layer-header-body, $color-timeline-bg, 20px, 12px);
+    @include giraf-badge(
+                    $color-timeline-layer-header-body,
+                    $color-timeline-bg,
+                    $timeline-summary-badge-size,
+                    12px);
     font-weight: 700;
   }
 }
@@ -97,7 +103,7 @@
 .timeline__time-controller__handle {
   background-color: $color-timeline-handle;
   box-shadow: $color-timeline-handle-shadow 0 0 12px 0 inset;
-  border-radius: 2px 2px 30% 30% / 2px 2px 100% 100%;
+  border-radius: 2px 2px 5px 5px / 2px 2px 100% 100%;
 }
 
 .timeline__time-controller__cell {

@@ -189,14 +189,20 @@ $create-video-layer-modal-info-height:    150px;
   padding: 9px 18px;
   vertical-align: middle;
 
-  &:hover {
+  &:not(.disabled):hover {
     @include giraf-shadow(3);
     background-color: lighten($background-color, 5%);
   }
 
-  &:hover:active {
+  &:not(.disabled):hover:active {
     @include giraf-anime();
     @include giraf-shadow(0);
+  }
+
+  &.disabled {
+    @include giraf-shadow(0);
+    background-color: mix($background-color, $color-black-sub);
+    cursor: not-allowed;
   }
 }
 
@@ -213,15 +219,20 @@ $create-video-layer-modal-info-height:    150px;
   padding: 9px 18px;
   vertical-align: middle;
 
-  &:hover {
+  &:not(.disabled):hover {
     @include giraf-shadow(0);
     background-color: $color-button-flat-hover-bg;
     color: darken($color, 15%);
   }
 
-  &:hover:active {
+  &:not(.disabled):hover:active {
     @include giraf-anime();
     @include giraf-shadow(-1);
+  }
+
+  &.disabled {
+    color: mix($color, $color-black-sub);
+    cursor: not-allowed;
   }
 }
 

@@ -39,11 +39,18 @@
 
   .menu__li {
     @include user-select(none);
+    @include giraf-anime(all, 0.1s);
 
     position: relative;
     padding: $menu-li-padding;
     text-align: left;
     white-space: nowrap;
+    cursor: default;
+
+    &:not(.menu__disabled):hover {
+      background-color: lighten($color-menu-bg, 10%);
+      color: lighten($color-menu-body, 10%);
+    }
   }
 
   .menu__expandable::after {

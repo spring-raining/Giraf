@@ -172,7 +172,7 @@ button.flat.warn,
 button.flat.warning {
   @include giraf-flat-button($color-warn-body);
 
-  &:hover {
+  &:not(.disabled):hover {
     background-color: $color-warn;
     color: $color-black;
   }
@@ -181,7 +181,7 @@ button.flat.warning {
 button.flat.danger {
   @include giraf-flat-button($color-danger-body);
 
-  &:hover {
+  &:not(.disabled):hover {
     background-color: $color-danger;
     color: $color-white;
   }

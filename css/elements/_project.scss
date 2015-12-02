@@ -37,12 +37,15 @@
       font-size: 12px;
     }
 
-    button.project__brand__menu {
-      @include giraf-flat-button($color-white);
+    .project__brand__menu {
       position: absolute;
       top: 0;
       bottom: 0;
       right: 0;
+
+      button {
+        @include giraf-flat-button($color-white);
+      }
     }
   }
 

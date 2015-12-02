@@ -17,6 +17,8 @@ class History {
     this._changes = [];
     this._commitStack = [];
     this._revertStack = [];
+
+    this._isChanged = false;
   }
 
   getLastChange() {
@@ -100,6 +102,7 @@ class History {
     }
     this._changes = [];
     this._revertStack = [];
+    this._isChanged = true;
   }
 
   undo() {
@@ -125,9 +128,7 @@ class History {
   }
 
   isChanged() {
-    return (this._changes.length > 0
-         || this._commitStack.length > 0
-         || this._revertStack.length > 0);
+    return this._isChanged;
   }
 }
 

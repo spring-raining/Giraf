@@ -247,28 +247,10 @@ const RenderGIFModal = React.createClass({
   },
 
   _modalContent() {
-    const previewGIF = (this.state.modalScene === MODAL_SCENE.RENDERED)
-      ? <div className="render-gif-modal__preview">
-          <div className="render-gif-modal__preview__gif-container"
-               ref="previewGIFContainer">
-          </div>
-          <div className="render-gif-modal__preview__gif-description">
-            Rendering Finished : {formatByte(this.state.resultGIF.size)}
-          </div>
-        </div>
-      : <div className="render-gif-modal__preview">
-          <div className="render-gif-modal__preview__gif-container">
-          </div>
-          <div className="render-gif-modal__preview__gif-description">
-            Rendering Now...
-          </div>
-        </div>;
-
-    switch (this.state.modalScene) {
-
-      case (MODAL_SCENE.SETTING):
-        return (
-          <div className="render-gif-modal">
+    const previewGIF = (() => {
+      switch (this.state.modalScene) {
+        case (MODAL_SCENE.SETTING):
+          return (
             <div className="render-gif-modal__preview">
               <div className="render-gif-modal__preview__canvas-container"
                    ref="previewCanvasContainer">
@@ -277,6 +259,38 @@ const RenderGIFModal = React.createClass({
                 {this.state.previewFrame + 1}
               </div>
             </div>
+          );
+        case (MODAL_SCENE.RENDERING):
+          return (
+            <div className="render-gif-modal__preview">
+              <div className="render-gif-modal__preview__canvas-container"
+                   ref="previewCanvasContainer">
+              </div>
+              <div className="render-gif-modal__preview__gif-description">
+                Rendering Now...
+              </div>
+            </div>
+          );
+        case (MODAL_SCENE.RENDERED):
+          return (
+            <div className="render-gif-modal__preview">
+              <div className="render-gif-modal__preview__gif-container"
+                   ref="previewGIFContainer">
+              </div>
+              <div className="render-gif-modal__preview__gif-description">
+                Rendering Finished : {formatByte(this.state.resultGIF.size)}
+              </div>
+            </div>
+          );
+      }
+    })();
+
+    switch (this.state.modalScene) {
+
+      case (MODAL_SCENE.SETTING):
+        return (
+          <div className="render-gif-modal">
+            {previewGIF}
             <div className="render-gif-modal__settings">
               <div className="render-gif-modal__input">
                 <div className="render-gif-modal__input__left">

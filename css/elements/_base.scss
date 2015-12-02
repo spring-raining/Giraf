@@ -1,5 +1,36 @@
 @import "../defs";
 
+@font-face {
+  font-family: 'Junction';
+  src: rscUrl('junction/junction-light.eot');
+  src: rscUrl('junction/junction-light.eot?#iefix') format('embedded-opentype'),
+       rscUrl('junction/junction-light.woff') format('woff'),
+       rscUrl('junction/junction-light.ttf') format('truetype'),
+       rscUrl('junction/junction-light.svg#junctionlight') format('svg');
+  font-weight: 200;
+}
+
+@font-face {
+  font-family: 'Junction';
+  src: rscUrl('junction/junction-regular.eot');
+  src: rscUrl('junction/junction-regular.eot?#iefix') format('embedded-opentype'),
+       rscUrl('junction/junction-regular.woff') format('woff'),
+       rscUrl('junction/junction-regular.ttf') format('truetype'),
+       rscUrl('junction/junction-regular.svg#junctionregular') format('svg');
+  font-weight: 500;
+}
+
+
+@font-face {
+  font-family: 'Junction';
+  src: rscUrl('junction/junction-bold.eot');
+  src: rscUrl('junction/junction-bold.eot?#iefix') format('embedded-opentype'),
+       rscUrl('junction/junction-bold.woff') format('woff'),
+       rscUrl('junction/junction-bold.ttf') format('truetype'),
+       rscUrl('junction/junction-bold.svg#junctionbold') format('svg');
+  font-weight: 800;
+}
+
 html, body, div, span, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 abbr, address, cite, code,
@@ -25,6 +56,8 @@ html, body {
   min-width: 900px;
   max-width: none !important;
   font-size: 14px;
+  font-family: "Junction", $verdana;
+  line-height: 1.3em;
   height: 100%;
   overflow: hidden;
   color: $color-black;

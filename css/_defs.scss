@@ -81,6 +81,8 @@ $z-order: (
         base:                       base,
 );
 
+$rsc-dir:                           "rsc/";
+
 $form-text-height:                  20px;
 $form-progress-height:              3px;
 
@@ -107,6 +109,12 @@ $scroll-bar-width:                  15px;
 
 $create-video-layer-modal-player-height:  300px;
 $create-video-layer-modal-info-height:    150px;
+
+// functions
+
+@function rscUrl($path) {
+  @return url($rsc-dir + $path);
+}
 
 // abstract mixins
 

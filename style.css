@@ -403,6 +403,24 @@ th {
  *  Lists of z-index order.
  *  A later tag will make upper than an early tag.
  */
+@font-face {
+  font-family: 'Junction';
+  src: url("rsc/junction/junction-light.eot");
+  src: url("rsc/junction/junction-light.eot?#iefix") format("embedded-opentype"), url("rsc/junction/junction-light.woff") format("woff"), url("rsc/junction/junction-light.ttf") format("truetype"), url("rsc/junction/junction-light.svg#junctionlight") format("svg");
+  font-weight: 200; }
+
+@font-face {
+  font-family: 'Junction';
+  src: url("rsc/junction/junction-regular.eot");
+  src: url("rsc/junction/junction-regular.eot?#iefix") format("embedded-opentype"), url("rsc/junction/junction-regular.woff") format("woff"), url("rsc/junction/junction-regular.ttf") format("truetype"), url("rsc/junction/junction-regular.svg#junctionregular") format("svg");
+  font-weight: 500; }
+
+@font-face {
+  font-family: 'Junction';
+  src: url("rsc/junction/junction-bold.eot");
+  src: url("rsc/junction/junction-bold.eot?#iefix") format("embedded-opentype"), url("rsc/junction/junction-bold.woff") format("woff"), url("rsc/junction/junction-bold.ttf") format("truetype"), url("rsc/junction/junction-bold.svg#junctionbold") format("svg");
+  font-weight: 800; }
+
 html, body, div, span, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 abbr, address, cite, code,
@@ -427,6 +445,7 @@ html, body {
   min-width: 900px;
   max-width: none !important;
   font-size: 14px;
+  font-family: "Junction", "Verdana", "Geneva", sans-serif;
   height: 100%;
   overflow: hidden;
   color: #222222; }

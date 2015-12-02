@@ -39,9 +39,9 @@ const Modal = React.createClass({
 
   render() {
     const title = (!this.props.title)? null :
-      <h4 className="modal__title">
+      <h3 className="modal__title">
         {this.props.title}
-      </h4>;
+      </h3>;
 
     const footer = (!this.props.footer)? null :
       <div className="modal__footer">

@@ -21,6 +21,18 @@ class History {
     this._isChanged = false;
   }
 
+  get changes() {
+    return [].concat(this._changes);
+  }
+
+  get commitStack() {
+    return [].concat(this._commitStack);
+  }
+
+  get revertStack() {
+    return [].concat(this._revertStack);
+  }
+
   getLastChange() {
     return (this._commitStack.length === 0)? undefined
       : this._commitStack[this._commitStack.length - 1];

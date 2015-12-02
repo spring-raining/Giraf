@@ -4,58 +4,105 @@ import React                  from "react";
 
 import Actions                from "src/actions/actions";
 import Menu                   from "src/views/menu";
+import AboutGirafModal        from "src/views/modal/aboutGirafModal";
 import Store                  from "src/stores/store";
+import History                from "src/stores/history";
 import genUUID                from "src/utils/genUUID";
 
 
 var Nav = React.createClass({
-  getInitialState() {
-    return {
-      //expandingChild: null,
-    };
-  },
 
-  content: [
-    {
-      name: "あああ",
-      id: genUUID(),
-      child: [
-        {
-          name: "コンポジションを作成",
-          onClick: () => {
-            Actions.updateExpandingMenuId(null);
-            Actions.createComposition();
-          }
-        }, {
-          name: "GIFを作成",
-          onClick: () => {
-            Actions.updateExpandingMenuId(null);
-            Actions.renderGIF(Store.get("editingComposition"));
-          }
-        }, {
-          name: "bbbbb",
-          child: [
-            {name: "hogehoge"},
-            {name: "fugafuga"},
-          ]
-        },
-        {name: "cccccc", disabled: true},
-      ],
-    }, {
-      name: "いいい",
-      id: genUUID(),
-      child: [],
-    }, {
-      name: "ううう",
-      id: genUUID(),
-      child: [],
-    },
-  ],
+  menuId: genUUID(),
+
+  getNavContent() {
+    const editingComposition = Store.get("editingComposition");
+    const canUndo = History.commitStack.length > 0;
+    const canRedo = History.revertStack.length > 0;
+
+    return [
+      {
+        name: "Giraf",
+        id: this.menuId + "_1",
+        child: [
+          {
+            name: "Girafについて",
+            onClick: () => {
+              Actions.updateExpandingMenuId(null);
+              Actions.updateModal(<AboutGirafModal />);
+            },
+          }, {
+            name: "GitHub",
+            onClick: () => {
+              Actions.updateExpandingMenuId(null);
+              window.open("https://github.com/spring-raining/giraf");
+            },
+          }, {
+            name: "harusamex.com",
+            onClick: () => {
+              Actions.updateExpandingMenuId(null);
+              window.open("http://harusamex.com");
+            },
+          },
+        ],
+      }, {
+        name: "ファイル",
+        id: this.menuId + "_2",
+        child: [
+          {
+            name: "ファイルを読み込む",
+            onClick: () => {
+              Actions.updateExpandingMenuId(null);
+              Actions.importFile();
+            },
+          }, {
+            name: "コンポジションを作成",
+            onClick: () => {
+              Actions.updateExpandingMenuId(null);
+              Actions.createComposition();
+            },
+          }, {
+            name: "GIFを作成",
+            disabled: (editingComposition? false : true),
+            onClick: () => {
+              if (editingComposition) {
+                Actions.updateExpandingMenuId(null);
+                Actions.renderGIF(editingComposition);
+              }
+            },
+          },
+        ],
+      }, {
+        name: "編集",
+        id: this.menuId + "_3",
+        child: [
+          {
+            name: "元に戻す",
+            disabled: !canUndo,
+            onClick: () => {
+              if (canUndo) {
+                Actions.updateExpandingMenuId(null);
+                Actions.undo();
+              }
+            },
+          }, {
+            name: "やり直す",
+            disabled: !canRedo,
+            onClick: () => {
+              if (canRedo) {
+                Actions.updateExpandingMenuId(null);
+                Actions.redo();
+              }
+            },
+          },
+        ],
+      },
+    ];
+  },
 
   render() {
     const expandMenuId = this.props.store.get("expandingMenuId");
 
-    let list = this.content.map((e) => {
+    let list = this.getNavContent().map((e) => {
       const className = "nav__li"
                       + ((expandMenuId === e.id)? " active" : "");
       return (

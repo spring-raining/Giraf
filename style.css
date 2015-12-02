@@ -446,6 +446,7 @@ html, body {
   max-width: none !important;
   font-size: 14px;
   font-family: "Junction", "Verdana", "Geneva", sans-serif;
+  line-height: 1.3em;
   height: 100%;
   overflow: hidden;
   color: #222222; }

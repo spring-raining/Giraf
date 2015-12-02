@@ -39,6 +39,17 @@ const CreateVideoLayerModal = React.createClass({
     };
   },
 
+  getKeyEvents() {
+    return {
+      "space": () => {
+        this.setState({
+          playerPlaying: !this.state.playerPlaying,
+        });
+        return false;
+      },
+    };
+  },
+
   render() {
     const title = "範囲を選択";
 
@@ -128,7 +139,8 @@ const CreateVideoLayerModal = React.createClass({
 
     return (
       <Modal title={title}
-             footer={ <ModalButtonSet content={buttonContent} /> }>
+             footer={ <ModalButtonSet content={buttonContent} /> }
+             keyEvents={this.getKeyEvents()}>
         <div className="create-video-layer-modal">
           <div className="create-video-layer-modal__player">
             <Player item={this.props.targetFootage}

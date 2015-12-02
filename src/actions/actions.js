@@ -334,6 +334,9 @@ export default {
   },
 
   updateModal(modal) {
+    if (Store.get("modal") !== modal) {
+      this.play(false);
+    }
     Dispatcher.dispatch({
       actionType: ActionConst.UPDATE_MODAL,
       modal: modal,

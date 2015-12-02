@@ -2,8 +2,10 @@
 
 import React                                    from "react";
 import keyMirror                                from "keymirror";
+import _Lang                                    from "lodash/lang";
 
 import Actions                                  from "src/actions/actions";
+import setKeyEvnets                             from "src/utils/setKeyEvents";
 
 
 const Modal = React.createClass({
@@ -12,10 +14,25 @@ const Modal = React.createClass({
       title: React.PropTypes.string,
       footer: React.PropTypes.node,
       className: React.PropTypes.string,
+      keyEvents: React.PropTypes.object,
     };
   },
 
+  getModalKeyEvents() {
+    const keyEvents = (_Lang.isObject(this.props.keyEvents))
+      ? this.props.keyEvents
+      : {};
+    return Object.assign(keyEvents, {
+      "esc": () => {
+        Actions.updateModal(null);
+        return false;
+      },
+    });
+  },
+
   componentDidMount() {
+    setKeyEvnets(this.getModalKeyEvents());
+
     // reveal
     this.refs.modalWall.classList.remove("hidden");
   },

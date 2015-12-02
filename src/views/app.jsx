@@ -2,7 +2,6 @@
 
 import React                  from "react";
 import Split                  from "react-split-pane";
-import Mousetrap              from "mousetrap";
 
 import Actions                from "src/actions/actions";
 import Store                  from "src/stores/store";
@@ -11,40 +10,61 @@ import Project                from "src/views/project";
 import Effect                 from "src/views/effect";
 import Preview                from "src/views/preview";
 import Timeline               from "src/views/timeline";
+import setKeyEvents           from "src/utils/setKeyEvents";
 
 
 var App = React.createClass({
+
+  getGeneralKeyEvents() {
+    return {
+      // To prevent default browser behavior, return false.
+      "space": () => {
+        Actions.togglePlay();
+        return false;
+      },
+      "mod+z": () => {
+        Actions.undo();
+        return false;
+      },
+      "mod+shift+z": () => {
+        Actions.redo();
+        return false;
+      },
+    };
+  },
+
   getInitialState() {
     return {
-      store: Store
+      store: Store,
+      appearingModal: false,
     }
   },
 
   componentDidMount() {
     this.state.store.addChangeListener(this._onChange);
-    this.setKeyEvents();
+    setKeyEvents(this.getGeneralKeyEvents());
   },
 
   componentWillUnMount() {
     this.state.store.removeChangeListener(this._onChange);
   },
 
-  setKeyEvents() {
-    // To prevent default browser behavior, return false.
-    Mousetrap.bind("space", () => {
-      Actions.togglePlay();
-      return false;
-    });
+  componentDidUpdate(prevProps, prevState) {
+    const modal = this.state.store.get("modal");
+    // Appear modal
+    if (modal && !this.state.appearingModal) {
+      this.setState({
+        appearingModal: true,
+      });
+    }
 
-    Mousetrap.bind("mod+z", () => {
-      Actions.undo();
-      return false;
-    });
-
-    Mousetrap.bind("mod+shift+z", () => {
-      Actions.redo();
-      return false;
-    });
+    // Disappear modal
+    if (!modal && this.state.appearingModal) {
+      setKeyEvents(this.getGeneralKeyEvents());
+      this.setState({
+        appearingModal: false,
+      });
+    }
   },
 
   render() {

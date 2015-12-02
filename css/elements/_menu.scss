@@ -47,7 +47,8 @@
   }
 
   .menu__expandable::after {
-    content: "▸";
+    @extend .lsf;
+    content: "right";
     position: absolute;
     right: 0;
     margin: 0 6px;

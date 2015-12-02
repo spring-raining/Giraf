@@ -50,9 +50,9 @@ export default React.createClass({
         <span className="timeline__summary__badge">{comp.fps}</span>
         <span>fps</span>
       </div>
-      <button className="timeline__summary__menu"
+      <button className="timeline__summary__menu lsf-icon"
+              title="etc"
               onClick={this._onMenuButtonClick}>
-        ■
         <Menu content={this.menuContent(comp)}
               expand={expandingMenuId === this.menuId} />
       </button>

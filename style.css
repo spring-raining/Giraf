@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 /**
  * 1. Set default font family to sans-serif.
@@ -421,6 +420,13 @@ th {
   src: url("rsc/junction/junction-bold.eot?#iefix") format("embedded-opentype"), url("rsc/junction/junction-bold.woff") format("woff"), url("rsc/junction/junction-bold.ttf") format("truetype"), url("rsc/junction/junction-bold.svg#junctionbold") format("svg");
   font-weight: 800; }
 
+@font-face {
+  font-family: 'LigatureSymbols';
+  src: url("rsc/LigatureSymbols/LigatureSymbols-2.11.eot");
+  src: url("rsc/LigatureSymbols/LigatureSymbols-2.11.eot?#iefix") format("embedded-opentype"), url("rsc/LigatureSymbols/LigatureSymbols-2.11.woff") format("woff"), url("rsc/LigatureSymbols/LigatureSymbols-2.11.ttf") format("truetype"), url("rsc/LigatureSymbols/LigatureSymbols-2.11.svg#LigatureSymbols") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
 html, body, div, span, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 abbr, address, cite, code,
@@ -477,6 +483,29 @@ a {
     color: #837309;
     text-decoration: underline; }
 
+.lsf, .lsf-icon:before, .menu .menu__expandable::after {
+  font-family: 'LigatureSymbols';
+  -webkit-text-rendering: optimizeLegibility;
+  -moz-text-rendering: optimizeLegibility;
+  -ms-text-rendering: optimizeLegibility;
+  -o-text-rendering: optimizeLegibility;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  -ms-font-smoothing: antialiased;
+  -o-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  -webkit-font-feature-settings: "liga" 1, "dlig" 1;
+  -moz-font-feature-settings: "liga=1, dlig=1";
+  -ms-font-feature-settings: "liga" 1, "dlig" 1;
+  -o-font-feature-settings: "liga" 1, "dlig" 1;
+  font-feature-settings: "liga" 1, "dlig" 1; }
+
+.lsf-icon:before {
+  content: attr(title);
+  margin-right: 0.3em;
+  font-size: 150%; }
+
 button {
   -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -498,6 +527,8 @@ button {
     -moz-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 0 0 0 transparent; }
+  button.lsf-icon:before {
+    margin-right: 0; }
 
 button.safe {
   -webkit-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1452,9 +1483,9 @@ nav, .nav {
     .timeline__layer-header .timeline__layer-header__buttons button {
       margin: 0 8px 0 0;
       padding: 0;
-      height: 18px;
-      width: 18px;
-      font-size: 8px;
+      height: 22px;
+      width: 22px;
+      font-size: 16px;
       color: #797979;
       background: linear-gradient(0deg, transparent, rgba(230, 230, 230, 0.1));
       border: 1px solid #5e5e5e;
@@ -1644,7 +1675,7 @@ nav, .nav {
     text-align: left;
     white-space: nowrap; }
   .menu .menu__expandable::after {
-    content: "▸";
+    content: "right";
     position: absolute;
     right: 0;
     margin: 0 6px; }

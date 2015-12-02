@@ -26,22 +26,22 @@ export default React.createClass({
     let className = "timeline__layer-header"
                   + (this.props.isEdited? " edited" : "");
     let visibleButton = (layer.visible)
-      ? <button className="timeline__layer-header__visible-button on"
+      ? <button className="timeline__layer-header__visible-button lsf on"
                 onClick={this._onCheckboxButtonClick("visible")(true)}>
-        +
+          eye
         </button>
-      : <button className="timeline__layer-header__visible-button"
+      : <button className="timeline__layer-header__visible-button lsf"
                 onClick={this._onCheckboxButtonClick("visible")(false)}>
-        -
+          eye
         </button>;
     let soloButton = (layer.solo)
-      ? <button className="timeline__layer-header__solo-button on"
+      ? <button className="timeline__layer-header__solo-button lsf on"
                 onClick={this._onCheckboxButtonClick("solo")(true)}>
-        |
+          ●
         </button>
-      : <button className="timeline__layer-header__solo-button"
+      : <button className="timeline__layer-header__solo-button lsf"
                 onClick={this._onCheckboxButtonClick("solo")(false)}>
-        .
+          ●
         </button>;
 
     return (

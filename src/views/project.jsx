@@ -57,9 +57,9 @@ var Project = React.createClass({
             <span className="project__brand__version">{pkg.version}</span>
             <span className="project__brand__copyright">{pkg.copyright}</span>
           </div>
-          <button className="project__brand__menu flat"
+          <button className="project__brand__menu flat lsf-icon"
+                  title="etc"
                   onClick={this._onMenuButtonClick}>
-            ■
             <Menu content={this.menuContent}
                   expand={expandMenuId === this.menuId}/>
           </button>

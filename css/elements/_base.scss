@@ -31,6 +31,17 @@
   font-weight: 800;
 }
 
+@font-face {
+  font-family: 'LigatureSymbols';
+  src: rscUrl('LigatureSymbols/LigatureSymbols-2.11.eot');
+  src: rscUrl('LigatureSymbols/LigatureSymbols-2.11.eot?#iefix') format('embedded-opentype'),
+       rscUrl('LigatureSymbols/LigatureSymbols-2.11.woff') format('woff'),
+       rscUrl('LigatureSymbols/LigatureSymbols-2.11.ttf') format('truetype'),
+       rscUrl('LigatureSymbols/LigatureSymbols-2.11.svg#LigatureSymbols') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
 html, body, div, span, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 abbr, address, cite, code,
@@ -98,8 +109,38 @@ a {
   }
 }
 
+.lsf {
+  font-family: 'LigatureSymbols';
+  -webkit-text-rendering: optimizeLegibility;
+  -moz-text-rendering: optimizeLegibility;
+  -ms-text-rendering: optimizeLegibility;
+  -o-text-rendering: optimizeLegibility;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  -ms-font-smoothing: antialiased;
+  -o-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  -webkit-font-feature-settings: "liga" 1, "dlig" 1;
+  -moz-font-feature-settings: "liga=1, dlig=1";
+  -ms-font-feature-settings: "liga" 1, "dlig" 1;
+  -o-font-feature-settings: "liga" 1, "dlig" 1;
+  font-feature-settings: "liga" 1, "dlig" 1;
+}
+
+.lsf-icon:before {
+  @extend .lsf;
+  content: attr(title);
+  margin-right: 0.3em;
+  font-size: 150%;
+}
+
 button {
   @include giraf-button($color-link);
+
+  &.lsf-icon:before {
+    margin-right: 0;
+  }
 }
 
 button.safe {

@@ -1295,24 +1295,30 @@ nav, .nav {
 
 .timeline__header-container {
   z-index: 2004;
+  position: absolute;
   top: 0;
   left: 180px;
-  right: 0;
-  height: 40px; }
+  right: 15px;
+  height: 40px;
+  overflow: hidden; }
 
 .timeline__left-container {
   z-index: 2003;
+  position: absolute;
   top: 0;
-  bottom: 0;
+  bottom: 15px;
   left: 0;
-  width: 180px; }
+  width: 180px;
+  overflow: hidden; }
 
 .timeline__timetable-container {
   z-index: 2002;
+  position: absolute;
   top: 0;
   bottom: 0;
   left: 180px;
-  right: 0; }
+  right: 0;
+  overflow: hidden; }
 
 .timeline__header {
   background-color: rgba(0, 0, 0, 0.7);
@@ -1344,7 +1350,7 @@ nav, .nav {
 .timeline__time-controller__handle {
   background-color: #e2c710;
   box-shadow: rgba(90, 30, 18, 0.5) 0 0 12px 0 inset;
-  border-radius: 2px 2px 30% 30%/2px 2px 100% 100%; }
+  border-radius: 2px 2px 5px 5px/2px 2px 100% 100%; }
 
 .timeline__time-controller__cell.cached {
   border-top: 3px solid #4BDC4B; }
@@ -1384,7 +1390,8 @@ nav, .nav {
     width: 0; }
 
 .timeline__timetable-overlay__controller {
-  border: 1px solid #FF53B2;
+  border-left: 1px solid #FF53B2;
+  border-right: 1px solid #FF53B2;
   background-color: rgba(255, 83, 178, 0.1); }
 
 .timeline__layer,
@@ -1512,9 +1519,9 @@ nav, .nav {
     bottom: 0;
     width: 20px; }
   .timeline__layer-timetable-area .timeline__layer-timetable-area__left-handle {
-    left: -10px; }
+    left: 0; }
   .timeline__layer-timetable-area .timeline__layer-timetable-area__right-handle {
-    right: -10px; }
+    right: 0; }
 
 /*
  *  Lists of z-index order.
@@ -1637,6 +1644,37 @@ nav, .nav {
     height: 100%;
     box-sizing: content-box;
     padding: 0 30px 30px 0; }
+
+.scroll__box {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; }
+
+.scroll__content-area {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0; }
+  .scroll__content-area.scroll-x {
+    bottom: 15px; }
+  .scroll__content-area.scroll-y {
+    right: 15px; }
+
+.scroll__bar-x {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 15px;
+  pointer-events: none; }
+
+.scroll__bar-y {
+  position: absolute;
+  right: 0;
+  width: 15px;
+  height: 100%;
+  pointer-events: none; }
 
 /*
  *  Lists of z-index order.
@@ -1839,11 +1877,11 @@ nav, .nav {
 
 .modal__badge {
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
   font-size: 12px;
   padding: 0;
-  padding-top: 1px;
+  padding-top: 4px;
   color: #ebebeb;
   background-color: #222222;
   border-radius: 50%;

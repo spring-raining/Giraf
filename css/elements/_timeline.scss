@@ -59,25 +59,31 @@
 
 .timeline__header-container {
   @include calculate-z-index(timeline, header);
+  position: absolute;
   top: 0;
   left: $timeline-summary-width;
-  right: 0;
+  right: $scroll-bar-width;
   height: $timeline-summary-height;
+  overflow: hidden;
 }
 .timeline__left-container {
   @include calculate-z-index(timeline, left);
+  position: absolute;
   top: 0;
-  bottom: 0;
+  bottom: $scroll-bar-width;
   left: 0;
   width: $timeline-summary-width;
+  overflow: hidden;
 }
 
 .timeline__timetable-container {
   @include calculate-z-index(timeline, timetable);
+  position: absolute;
   top: 0;
   bottom: 0;
   left: $timeline-summary-width;
   right: 0;
+  overflow: hidden;
 }
 
 .timeline__header {
@@ -141,7 +147,8 @@
 }
 
 .timeline__timetable-overlay__controller {
-  border: 1px solid $color-timeline-overlay-ctrl-border;
+  border-left:  1px solid $color-timeline-overlay-ctrl-border;
+  border-right: 1px solid $color-timeline-overlay-ctrl-border;
   background-color: $color-timeline-overlay-ctrl-bg;
 }
 
@@ -287,10 +294,10 @@
   }
 
   .timeline__layer-timetable-area__left-handle {
-    left: - $timeline-layer-handle-width / 2;
+    left: 0;
   }
 
   .timeline__layer-timetable-area__right-handle {
-    right: - $timeline-layer-handle-width / 2;
+    right: 0;
   }
 }

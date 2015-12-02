@@ -88,7 +88,7 @@
 }
 
 .modal__badge {
-  @include giraf-badge($color-modal-body, $color-modal-bg, 20px, 12px);
+  @include giraf-badge($color-modal-body, $color-modal-bg, 26px, 12px);
   font-weight: 700;
 }
 

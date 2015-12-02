@@ -12,3 +12,44 @@
     padding: 0 30px 30px 0;
   }
 }
+
+.scroll__box {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.scroll__content-area {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  // TODO: hide default scroll bar and make custom scroll bar
+  //overflow: hidden;
+
+  &.scroll-x {
+    bottom: $scroll-bar-width;
+  }
+
+  &.scroll-y {
+    right: $scroll-bar-width;
+  }
+}
+
+.scroll__bar-x {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: $scroll-bar-width;
+  pointer-events: none;
+}
+
+.scroll__bar-y {
+  position: absolute;
+  right: 0;
+  width: $scroll-bar-width;
+  height: 100%;
+  pointer-events: none;
+}

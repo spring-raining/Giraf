@@ -12,6 +12,7 @@ import Layer                          from "src/views/timeline/layer";
 import LayerHeader                    from "src/views/timeline/layerHeader";
 import TimeController                 from "src/views/timeline/timeController";
 import TimetableOverlay               from "src/views/timeline/timetableOverlay"
+import Scroll                         from "src/views/scroll";
 import genDummyImg                    from "src/utils/genDummyImg";
 
 
@@ -38,9 +39,9 @@ var Timeline = React.createClass({
 
   componentDidUpdate(prevProps, prevState) {
     var _;
-    this.timetableDOM = (_ = this.refs.timetable)? _ : null;
-    this.headerDOM    = (_ = this.refs.header)? _ : null;
-    this.leftDOM      = (_ = this.refs.left)? _ : null;
+    this.timetableDOM = (_ = this.refs.timetable)? _.getContentDOM() : null;
+    this.headerDOM    = (_ = this.refs.header)? _.getContentDOM() : null;
+    this.leftDOM      = (_ = this.refs.left)? _.getContentDOM() : null;
 
     let comp = this.props.store.get("editingComposition");
     let currentFrame = this.props.store.get("currentFrame");
@@ -111,49 +112,45 @@ var Timeline = React.createClass({
           <div className="timeline__summary">
             {summary}
           </div>
-          <div className="timeline__header-container scroll-area">
-            <div className="scroll-box">
-              <div className="scroll"
-                   style={{overflowX: "scroll", overflowY: "hidden"}}
-                   ref="header"
-                   onWheel={this._onWheel("header")}>
-                <div className="timeline__header"
-                     style={{width:this.state.timetableWidth + "px"}}>
-                  <TimeController composition={comp}
-                                  cachedFrames={cachedFrames}
+          <div className="timeline__header-container">
+            <Scroll scrollX={true}
+                    scrollY={false}
+                    hideScrollBar={true}
+                    ref="header"
+                    onWheel={this._onWheel("header")}>
+              <div className="timeline__header"
+                   style={{width:this.state.timetableWidth + "px"}}>
+                <TimeController composition={comp}
+                                cachedFrames={cachedFrames}
+                                currentFrame={store.get("currentFrame")} />
+              </div>
+            </Scroll>
+          </div>
+          <div className="timeline__left-container">
+            <Scroll scrollX={false}
+                    scrollY={true}
+                    hideScrollBar={true}
+                    ref="left"
+                    onClick={this._onBlankAreaClick}
+                    onWheel={this._onWheel("left")}>
+              <div className="timeline__left">
+                {layerHeaders}
+              </div>
+            </Scroll>
+          </div>
+          <div className="timeline__timetable-container">
+            <Scroll scrollX={true}
+                    scrollY={true}
+                    ref="timetable"
+                    onClick={this._onBlankAreaClick}
+                    onWheel={this._onWheel("timetable")}>
+              <div className="timeline__timetable"
+                   style={{width: this.state.timetableWidth + "px"}}>
+                {layers}
+                <TimetableOverlay composition={comp}
                                   currentFrame={store.get("currentFrame")} />
-                </div>
               </div>
-            </div>
-          </div>
-          <div className="timeline__left-container scroll-area">
-            <div className="scroll-box">
-              <div className="scroll"
-                   style={{overflowX: "hidden", overflowY: "scroll"}}
-                   ref="left"
-                   onClick={this._onBlankAreaClick}
-                   onWheel={this._onWheel("left")}>
-                <div className="timeline__left">
-                  {layerHeaders}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="timeline__timetable-container scroll-area">
-            <div className="scroll-box">
-              <div className="scroll"
-                   style={{overflowX: "scroll", overflowY: "scroll"}}
-                   ref="timetable"
-                   onClick={this._onBlankAreaClick}
-                   onWheel={this._onWheel("timetable")}>
-                <div className="timeline__timetable"
-                     style={{width: this.state.timetableWidth + "px"}}>
-                  {layers}
-                  <TimetableOverlay composition={comp}
-                                    currentFrame={store.get("currentFrame")} />
-                </div>
-              </div>
-            </div>
+            </Scroll>
           </div>
         </section>
       );

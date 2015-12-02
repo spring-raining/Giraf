@@ -123,6 +123,12 @@ class History {
       this._commitStack.push(lastChange);
     }
   }
+
+  isChanged() {
+    return (this._changes.length > 0
+         || this._commitStack.length > 0
+         || this._revertStack.length > 0);
+  }
 }
 
 export default new History();

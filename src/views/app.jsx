@@ -5,6 +5,7 @@ import Split                  from "react-split-pane";
 
 import Actions                from "src/actions/actions";
 import Store                  from "src/stores/store";
+import History                from "src/stores/history";
 import Nav                    from "src/views/nav";
 import Project                from "src/views/project";
 import Effect                 from "src/views/effect";
@@ -43,6 +44,15 @@ var App = React.createClass({
   componentDidMount() {
     this.state.store.addChangeListener(this._onChange);
     setKeyEvents(this.getGeneralKeyEvents());
+
+    window.onbeforeunload = (e) => {
+      if (History.isChanged()) {
+        return "Girafは編集中です 変更は保存されません";
+      } else {
+        // Pass dialog
+        e = null;
+      }
+    };
   },
 
   componentWillUnMount() {

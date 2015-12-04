@@ -46,9 +46,9 @@ export default ((parentComp, entity = null) =>
               0,
               1),
             0,
-            composition.frame,
+            parentComp.frame,
             0,
-            composition.frame
+            parentComp.frame
           ));
         }
       }

@@ -58,7 +58,7 @@ gulp.task("css", function() {
 });
 
 gulp.task("html", function() {
-  return gulp.src(dir.html + "/index.html")
+  return gulp.src(dir.html + "/**/*")
     .pipe(gulp.dest(dir.dist));
 });
 

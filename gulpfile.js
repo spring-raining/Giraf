@@ -44,9 +44,9 @@ gulp.task("js", function() {
     entries: dir.src + "/giraf.jsx",
     extensions: [".jsx", ".js"],
     debug: true,
-    paths: ["./node_modules/", "./"]
-  }).transform(babelify)
-    .bundle()
+    paths: ["./node_modules/", "./"],
+    transform: ["babelify", "brfs"],
+  }).bundle()
     .pipe(source("bundle.js"))
     .pipe(gulp.dest(dir.dist));
 });

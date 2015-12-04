@@ -16,7 +16,7 @@
     "gif"
   ],
   "author": "spring-raining",
-  "copyright": "(c) spring_raining",
+  "copyright": "(c) spring-raining",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/spring-raining/giraf/issues"
@@ -41,7 +41,7 @@
     "react": "^0.14.3",
     "react-dom": "^0.14.3",
     "react-inlinesvg": "~0.4.2",
-    "react-split-pane": "0.1.11",
+    "react-split-pane": "0.1.15",
     "run-sequence": "^1.1.5",
     "vinyl-source-stream": "^1.1.0"
   }

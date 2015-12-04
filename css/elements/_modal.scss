@@ -1,0 +1,324 @@
+@import "../defs";
+
+.modal__wall {
+  @include calculate-z-index(modal, wall);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-color: $color-modal-wall-bg;
+
+  @include reveal(modal__wall) {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+}
+
+.modal {
+  @include giraf-card(3);
+  @include calculate-z-index(modal, body);
+  @include display(flex);
+  @include flex-direction(column);
+  @include font-smoothing();
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  left: 20px;
+  bottom: 20px;
+  margin: auto;
+  padding: 0;
+  max-width: 800px;
+  max-height: 800px;
+  color: $color-modal-body;
+  background-color: $color-modal-bg;
+
+  &.large {
+    max-width: 1200px;
+    max-height: 1000px;
+  }
+
+  &.small {
+    max-width: 600px;
+    max-height: 500px;
+  }
+
+  @include reveal(modal) {
+    0% {
+      opacity: 0;
+      @include transform(scale(0.9, 0.7));
+    }
+
+    100% {
+      opacity: 1;
+      @include transform(scale(1));
+    }
+  }
+}
+
+.modal__title {
+  @include flex-basis($modal-title-height);
+  @include flex-shrink(0);
+  line-height: $modal-title-height;
+  padding: 0 5%;
+  overflow: hidden;
+  font-size: 18px;
+}
+
+.modal__content {
+  @include flex-grow(1);
+  padding: 0 5%;
+  overflow: auto;
+}
+
+.modal__footer {
+  @include flex-basis($modal-footer-height);
+  @include flex-shrink(0);
+  padding: 0 5%;
+  overflow: hidden;
+}
+
+.modal-button-set {
+  height: 100%;
+  padding: 10px 0;
+  text-align: right;
+}
+
+.modal__badge {
+  @include giraf-badge($color-modal-body, $color-modal-bg, 26px, 12px);
+  font-weight: 700;
+}
+
+.create-composition-modal {
+  .form-text {
+    width: 250px;
+
+    .form-text__focus .form-native-text {
+      max-width: 230px;
+    }
+  }
+
+  .form-number {
+    width: 200px;
+
+    .form-number__focus .form-native-number {
+      max-width: 80px;
+    }
+  }
+
+  .create-composition-modal__input {
+    width: 100%;
+    margin: 16px 0;
+    @include display(flex);
+
+    .create-composition-modal__input__left {
+      width: 50%;
+      text-align: right;
+    }
+
+    .create-composition-modal__input__right {
+      width: 50%;
+      margin-left: 10px;
+    }
+  }
+}
+
+.create-video-layer-modal {
+  .create-video-layer-modal__player {
+    height: $create-video-layer-modal-player-height;
+  }
+
+  .create-video-layer-modal__controller {
+    text-align: center;
+    margin: 10px 0;
+
+    button {
+      margin: 0 6px;
+      box-shadow: none;
+    }
+  }
+
+  .create-video-layer-modal__info {
+    height: $create-video-layer-modal-info-height;
+    @include display(flex);
+
+    .create-video-layer-modal__info__left,
+    .create-video-layer-modal__info__right {
+      @include flex-grow(1);
+      position: relative;
+    }
+
+    .create-video-layer-modal__info__center {
+      @include flex-basis(200px);
+      position: relative;
+
+      ul {
+        list-style-type: none;
+      }
+
+      li {
+        margin-bottom: 12px;
+      }
+
+      span {
+        margin: 0 2px;
+      }
+
+      &::before, &::after {
+        content: ">";
+        position: absolute;
+        margin: 0 10px;
+        width: 10px;
+        display: inline-block;
+        line-height: $create-video-layer-modal-info-height;
+      }
+
+      &::before {
+        left: 0;
+      }
+
+      &::after {
+        right: 0;
+      }
+
+      .create-video-layer-modal__info__center__content {
+        position: absolute;
+        top: 20px;
+        bottom: 20px;
+        left: 30px;
+        right: 30px;
+      }
+
+      .create-video-layer-modal__info__center__dt {
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .create-video-layer-modal__info__center__dd {
+        font-size: 12px;
+        margin-left: 1em;
+      }
+    }
+
+    .create-video-layer-modal__info__begin-canvas,
+    .create-video-layer-modal__info__end-canvas {
+      @include giraf-card(1);
+      position: absolute;
+      max-width: 100%;
+      max-height: 100%;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      padding: 0;
+    }
+
+    .create-video-layer-modal__info__begin-canvas {
+      left: 0;
+    }
+
+    .create-video-layer-modal__info__end-canvas {
+      right: 0;
+    }
+  }
+}
+
+.render-gif-modal {
+  .form-number {
+    width: 200px;
+
+    .form-number__focus {
+      .form-native-number {
+        max-width: 80px;
+      }
+    }
+  }
+
+  .render-gif-modal__preview {
+    position: relative;
+    min-height: 200px;
+    margin-top: 20px;
+
+    .render-gif-modal__preview__canvas-container {
+      margin: 0 auto;
+
+      & > canvas {
+        width: 100%;
+        height: 100%;
+        background-color: #000000;
+      }
+    }
+
+    .render-gif-modal__preview__frame {
+      @include giraf-anime(opacity);
+      position: absolute;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      cursor: default;
+      color: rgba(128, 128, 128, .6);
+      font-size: 50px;
+      font-weight: 700;
+
+      &:hover {
+        opacity: 0;
+      }
+    }
+
+    .render-gif-modal__preview__gif-container {
+      text-align: center;
+      width: 100%;
+      margin: 0 auto;
+
+      & > img {
+        @include giraf-shadow(3);
+        @include reveal(render-gif-modal-preview-gif, 0.4s) {
+          0% {
+            opacity: 0;
+            @include transform(scale(1.2));
+          }
+
+          100% {
+            opacity: 1;
+            @include transform(scale(1));
+          }
+        }
+      }
+    }
+
+    .render-gif-modal__preview__gif-description {
+      text-align: center;
+      width: 100%;
+      color: $color-black-sub;
+      margin-top: 20px;
+    }
+  }
+
+  .render-gif-modal__input {
+    margin: 16px 0;
+    width: 100%;
+    @include display(flex);
+
+    .render-gif-modal__input__left {
+      width: 50%;
+      text-align: right;
+    }
+
+    .render-gif-modal__input__right {
+      width: 50%;
+      margin-left: 10px;
+    }
+  }
+}
+
+.render-gif-modal-footer-content {
+  position: relative;
+
+  .form-progress {
+    position: absolute;
+    top: -10px;
+  }
+}

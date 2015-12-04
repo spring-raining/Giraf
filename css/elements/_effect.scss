@@ -1,0 +1,69 @@
+@import "../defs";
+
+.effect {
+  @include font-smoothing();
+  color: $color-effect-body;
+  background-color: $color-effect-bg;
+  border-right: 2px solid $color-effect-split;
+
+  fieldset {
+    @include giraf-card();
+    background: $color-effect-fieldset-bg;
+    padding: 2px 6px;
+  }
+
+  .effect__legend {
+    width: 100%;
+    height: 36px;
+    line-height: 36px;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  input.form-native,
+  textarea.form-native,
+  select.form-native {
+    background: $color-effect-input-bg;
+
+    &:focus {
+      border-color: $color-giraf;
+    }
+  }
+
+  .form-number {
+    .form-number__unfocus__value,
+    .form-number__prefix,
+    .form-number__suffix {
+      color: $color-giraf;
+    }
+
+    .form-number__focus {
+      .form-native-number {
+        max-width: 60px;
+      }
+    }
+  }
+}
+
+.effect__header {
+  padding: 15px 5px;
+}
+
+.effect__input {
+  @include display(flex);
+  margin-bottom: 8px;
+  font-size: 12px;
+
+  .effect__input__left {
+    @include flex-basis(150px);
+  }
+
+  .effect__input__right {
+    @include display(flex);
+    @include flex-grow(1);
+
+    & > * {
+      @include flex-grow(1);
+    }
+  }
+}

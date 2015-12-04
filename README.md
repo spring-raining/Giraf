@@ -1,52 +1,30 @@
 # Giraf
-
 Make gif animations on the web. - http://giraf.harusamex.com
-
 
 ## Usage on local
 
-Clone Giraf and open `index.html`.
+1.  Install Node.js
 
-If a security error occurs while you make a gif animation,
-Please try running Giraf on a local server, such as
-```
-$ cd /path/to/Giraf/
-$ python -m SimpleHTTPServer 40000
-```
-and access `http://localhost:40000`.
+2.  Clone Giraf
 
+    ```sh
+    $ git clone https://github.com/spring-raining/Giraf
+    ```
 
-## Acknowledgement
+3.  Build & Run
 
-Giraf is realized by
-* [Bootstrap](http://getbootstrap.com/)
-* [gif.js](http://jnordberg.github.io/gif.js/)
-* [jQuery](http://jquery.com/)
-* [jQuery UI](http://jqueryui.com/)
-* [Jcrop](http://deepliquid.com/content/Jcrop.html)
-* [CodeMirror](http://codemirror.net/)
+    ```sh
+    $ cd Giraf
+    $ npm install
+    $ npm start
+    ```
 
+4.  Access `http://localohst:8080`
 
-## License
+## Licence
 
-The MIT License (MIT)
+[MIT](https://github.com/spring-raining/Giraf/blob/master/LICENCE)
 
-Copyright (c) 2014 spring_raining
+## Author
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+- [spring-raining](https://github.com/spring-raining)

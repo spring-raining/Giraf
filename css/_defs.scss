@@ -1,0 +1,311 @@
+@import "../node_modules/bourbon/app/assets/stylesheets/bourbon";
+
+$color-giraf:                       rgb(226, 199, 16);
+$color-white:                       rgb(235, 235, 235);
+$color-white-sub:                   rgb(207, 207, 207);
+$color-black:                       rgb(34, 34, 34);
+$color-black-sub:                   rgb(154, 154, 154);
+$color-link:                        rgb(74, 115, 240);
+$color-link-body:                   $color-link;
+$color-safe:                        rgb(84, 189, 84);
+$color-safe-body:                   $color-safe;
+$color-warn:                        $color-giraf; //rgb(226, 199, 16);
+$color-warn-body:                   darken($color-warn, 7%);
+$color-danger:                      rgb(255, 51, 51);
+$color-danger-body:                 darken($color-danger, 5%);
+
+$color-a:                           $color-link;
+$color-button-flat-hover-bg:        rgba(0, 0, 0, .06);
+$color-form-focus-border:           $color-link;
+$color-form-unfocus-border:         $color-black-sub;
+$color-form-progress-bg:            rgba(255, 255, 255, .5);
+$color-form-progress-value-bg:      $color-link;
+$color-nav-bg:                      $color-black;
+$color-nav-body:                    rgb(163, 163, 163);
+$color-nav-active-body:             $color-white;
+$color-split-bg:                    $color-black;
+$color-preview-body:                $color-white;
+$color-preview-bg:                  rgb(38, 38, 37);
+$color-effect-body:                 $color-white-sub;
+$color-effect-bg:                   rgb(38, 38, 37);
+$color-effect-fieldset-bg:          lighten($color-effect-bg, 7%);
+$color-effect-input-bg:             lighten($color-effect-bg, 15%);
+$color-effect-split:                lighten($color-effect-bg, 7%);
+$color-dropdown-bg:                 $color-preview-bg;
+$color-dropdown-body:               $color-white;
+$color-dropdown-select-bg:          rgb(181, 171, 131);
+$color-dropdown-select-body:        $color-nav-bg;
+$color-timeline-bg:                 rgb(51, 50, 47);
+$color-timeline-body:               $color-white;
+$color-timeline-edited-bg:          lighten($color-timeline-bg, 12%);
+$color-timeline-grid:               lighten($color-timeline-bg, 7%);
+$color-timeline-header-bg:          rgba(0, 0, 0, 0.7);
+$color-timeline-layer-entity-bg:    #A26D6D;
+$color-timeline-edited-layer-entity-bg: lighten($color-timeline-layer-entity-bg, 10%);
+$color-timeline-layer-layer-bg:     rgba(224, 194, 194, 0.5);
+$color-timeline-layer-header-body:              $color-white-sub;
+$color-timeline-layer-header-button-body:       rgb(121, 121, 121);
+$color-timeline-layer-header-button-bg:         linear-gradient(0deg,rgba(0,0,0,0), rgba(230,230,230,.1));
+$color-timeline-layer-header-button-border:     rgb(94, 94, 94);
+$color-timeline-layer-header-button-on-body:    rgb(255, 51, 51);
+$color-timeline-layer-header-button-on-bg:      linear-gradient(0deg,rgba(0,0,0,.2), rgba(0,0,0,.6));
+$color-timeline-layer-header-button-on-border:  $color-timeline-layer-header-button-border;
+$color-timeline-handle:             $color-giraf;
+$color-timeline-handle-shadow:      rgba(90, 30, 18, 0.5);
+$color-timeline-cell-cached:        #4BDC4B;
+$color-timeline-overlay-ctrl-border:  #FF53B2;
+$color-timeline-overlay-ctrl-bg:    transparentize($color-timeline-overlay-ctrl-border, 0.9);
+$color-project-body:                $color-white;
+$color-project-bg:                  rgb(109, 90, 68);
+$color-project-card-footage-bg:     rgb(89, 100, 101);
+$color-project-card-composition-bg: rgb(89, 96, 76);
+$color-project-loading-body:        transparentize($color-project-body, 0.7);
+$color-project-dying-body:          #F78585;
+$color-menu-bg:                     $color-nav-bg;
+$color-menu-body:                   $color-white;
+$color-menu-disabled:               $color-nav-body;
+$color-modal-bg:                    $color-white;
+$color-modal-body:                   $color-black;
+$color-modal-wall-bg:               rgba(127, 127, 127, 0.5);
+
+/*
+ *  Lists of z-index order.
+ *  A later tag will make upper than an early tag.
+ */
+$z-order-global:                    base timeline modal menu;
+$z-order: (
+        menu:                       base,
+        modal:                      wall body,
+        timeline:                   base timetable left header summary
+                                    timetable-entity-handle timetable-layer-handle,
+        base:                       base,
+);
+
+$rsc-dir:                           "rsc/";
+
+$form-text-height:                  20px;
+$form-progress-height:              3px;
+
+$nav-height:                        42px;
+$nav-li-padding:                    0 20px;
+
+$menu-li-padding:                   6px 20px;
+
+$project-brand-logo-width:          80px;
+$project-brand-logo-height:         50px;
+$project-item-height:               58px;
+$timeline-summary-width:            180px;
+$timeline-summary-height:           40px;
+$timeline-summary-badge-size:       26px;
+$timeline-layer-height:             48px;
+$timeline-layer-handle-width:       20px;
+$timeline-layer-header-font-size:   12px;
+$timeline-layer-header-button-size: 22px;
+
+$modal-title-height:                60px;
+$modal-footer-height:               60px;
+
+$scroll-bar-width:                  15px;
+
+$create-video-layer-modal-player-height:  300px;
+$create-video-layer-modal-info-height:    150px;
+
+// functions
+
+@function rscUrl($path) {
+  @return url($rsc-dir + $path);
+}
+
+// abstract mixins
+
+@mixin giraf-normal-body($background-color) {
+  @if (lightness($background-color) > 50) {
+    color: $color-white;
+  } @else {
+    color: $color-black;
+  }
+}
+
+@mixin giraf-anime($property: all, $duration: 0.2s) {
+  @include transition($property $duration cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+@mixin giraf-shadow($height: 1) {
+  @if ($height == 1) {
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16),
+    0 2px 5px  0 rgba(0, 0, 0, 0.26);
+  }
+  @else if ($height == 2) {
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19),
+    0 8px 17px 0 rgba(0, 0, 0, 0.2);
+  }
+  @else if ($height == 3) {
+    box-shadow: 0 17px 50px 0 rgba(0, 0, 0, 0.19),
+    0 12px 15px 0 rgba(0, 0, 0, 0.24);
+  }
+  @else if ($height == 4) {
+    box-shadow: 0 25px 55px 0 rgba(0, 0, 0, 0.21),
+    0 16px 28px 0 rgba(0, 0, 0, 0.22);
+  }
+  @else if ($height == 5) {
+    box-shadow: 0 40px 77px 0 rgba(0, 0, 0, 0.22),
+    0 27px 24px 0 rgba(0, 0, 0, 0.2);
+  }
+  @else if ($height == -1) {
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16) inset,
+    0 2px 5px  0 rgba(0, 0, 0, 0.26) inset;
+  }
+  @else if ($height == -2) {
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19) inset,
+    0 8px 17px 0 rgba(0, 0, 0, 0.2) inset;
+  }
+  @else if ($height == -3) {
+    box-shadow: 0 17px 50px 0 rgba(0, 0, 0, 0.19) inset,
+    0 12px 15px 0 rgba(0, 0, 0, 0.24) inset;
+  }
+  @else if ($height == -4) {
+    box-shadow: 0 25px 55px 0 rgba(0, 0, 0, 0.21) inset,
+    0 16px 28px 0 rgba(0, 0, 0, 0.22) inset;
+  }
+  @else if ($height == -5) {
+    box-shadow: 0 40px 77px 0 rgba(0, 0, 0, 0.22) inset,
+    0 27px 24px 0 rgba(0, 0, 0, 0.2) inset;
+  }
+  @else {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
+@mixin giraf-button($background-color) {
+  @include giraf-anime();
+  @include giraf-shadow(1);
+  @include giraf-normal-body($background-color);
+
+  background-color: $background-color;
+  border: 0;
+  border-radius: 2px;
+  text-align: center;
+  font-size: 14px;
+  padding: 9px 18px;
+  vertical-align: middle;
+
+  &:not(.disabled):hover {
+    @include giraf-shadow(3);
+    background-color: lighten($background-color, 5%);
+  }
+
+  &:not(.disabled):hover:active {
+    @include giraf-anime();
+    @include giraf-shadow(0);
+  }
+
+  &.disabled {
+    @include giraf-shadow(0);
+    background-color: mix($background-color, $color-black-sub);
+    cursor: not-allowed;
+  }
+}
+
+@mixin giraf-flat-button($color) {
+  @include giraf-anime();
+  @include giraf-shadow(0);
+
+  background-color: transparent;
+  color: $color;
+  border: 0;
+  border-radius: 2px;
+  text-align: center;
+  font-size: 14px;
+  padding: 9px 18px;
+  vertical-align: middle;
+
+  &:not(.disabled):hover {
+    @include giraf-shadow(0);
+    background-color: $color-button-flat-hover-bg;
+    color: darken($color, 15%);
+  }
+
+  &:not(.disabled):hover:active {
+    @include giraf-anime();
+    @include giraf-shadow(-1);
+  }
+
+  &.disabled {
+    color: mix($color, $color-black-sub);
+    cursor: not-allowed;
+  }
+}
+
+@mixin giraf-card($height: 1) {
+  @include giraf-shadow($height);
+
+  display: block;
+  border: 0;
+  border-radius: 2px;
+  margin: 4px;
+  padding: 4px;
+}
+
+@mixin giraf-badge($background-color, $color, $size: 26px, $font-size: 12px) {
+  display: inline-block;
+  width: $size;
+  height: $size;
+  font-size: $font-size;
+  padding: 0;
+  padding-top: ($size - $font-size - 6px) / 2;
+  color: $color;
+  background-color: $background-color;
+  border-radius: 50%;
+  text-align: center;
+}
+
+@mixin calculate-z-index($global-tag, $local-tag) {
+  $global: index($z-order-global, $global-tag);
+  $local: index(map-get($z-order, $global-tag), $local-tag);
+  z-index: $global * 1000 + $local;
+}
+
+@mixin font-smoothing($value: antialiased) {
+  @if ($value == antialiased) {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  @else {
+    -webkit-font-smoothing: subpixel-antialiased;
+    -moz-osx-font-smoothing: auto;
+  }
+}
+
+@mixin single-line($width: 100%) {
+  width: $width;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@mixin reveal($name, $duration: 0.2s, $reveal-display: block) {
+  @include animation(#{$name}-reveal-start 0.001s linear,
+                     #{$name}-reveal-fade-in $duration cubic-bezier(0.4, 0, 0.2, 1) 0.001s);
+
+  @include keyframes(#{$name}-reveal-start) {
+    0% {
+      display: none;
+      opacity: 0;
+    }
+
+    100% {
+      display: $reveal-display;
+      opacity: 0;
+    }
+  }
+
+  @include keyframes(#{$name}-reveal-fade-in) {
+    @content;
+  }
+}
+
+@mixin svg-fillable() {
+  path, polygon, rect, circle, ellipse {
+    @content;
+  }
+}

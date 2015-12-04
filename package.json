@@ -1,0 +1,48 @@
+{
+  "name": "giraf",
+  "version": "2.0.0-alpha-1",
+  "description": "Make gif animations on the web.",
+  "main": "index.js",
+  "scripts": {
+    "install": "./node_modules/gulp/bin/gulp.js",
+    "start": "./node_modules/http-server/bin/http-server ./dist -p 8080",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spring-raining/giraf.git"
+  },
+  "keywords": [
+    "gif"
+  ],
+  "author": "spring-raining",
+  "copyright": "(c) spring-raining",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/spring-raining/giraf/issues"
+  },
+  "homepage": "https://github.com/spring-raining/giraf#readme",
+  "dependencies": {
+    "babelify": "^6.3.0",
+    "bourbon": "^4.2.5",
+    "browserify": "^11.2.0",
+    "decimal.js": "^4.0.3",
+    "deep-diff": "^0.3.3",
+    "del": "^2.1.0",
+    "flux": "^2.1.1",
+    "gifshot": "^0.3.2",
+    "gulp": "^3.9.0",
+    "gulp-sass": "^2.0.4",
+    "gulp-uglify": "^1.5.1",
+    "http-server": "~0.8.5",
+    "keymirror": "^0.1.1",
+    "lodash": "^3.10.1",
+    "mousetrap": "^1.5.3",
+    "react": "^0.14.3",
+    "react-dom": "^0.14.3",
+    "react-inlinesvg": "~0.4.2",
+    "react-split-pane": "0.1.15",
+    "run-sequence": "^1.1.5",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}

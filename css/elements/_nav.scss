@@ -1,0 +1,37 @@
+@import "../defs";
+
+nav, .nav {
+  width: 100%;
+  height: $nav-height;
+  color: $color-nav-body;
+  background-color: $color-nav-bg;
+
+  .nav__ul {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+
+  .nav__li {
+    @include user-select(none);
+    @include giraf-anime();
+
+    position: relative;
+    display: block;
+    float: left;
+    height: 100%;
+    padding: $nav-li-padding;
+    cursor: default;
+
+    &.active,
+    &:hover {
+      color: $color-nav-active-body;
+    }
+  }
+
+  .nav__text {
+    line-height: $nav-height;
+  }
+}

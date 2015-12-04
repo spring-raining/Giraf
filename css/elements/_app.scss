@@ -1,0 +1,29 @@
+@import "../defs";
+
+.app {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  @include flex(1);
+  @include flex-direction(column);
+
+  .app__nav {
+    position: relative;
+  }
+
+  .app__main {
+    @include flex(1);
+    position: relative;
+  }
+
+  .app__modal {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}

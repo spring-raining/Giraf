@@ -132,7 +132,9 @@ export default React.createClass({
     }
   },
 
-  _onDragStart() {
+  _onDragStart(e) {
+    e.stopPropagation();
+    e.dataTransfer.setData("text", this.props.item.name);
     Actions.startDrag(this.props.item);
   },
 

@@ -43,6 +43,7 @@
     "react-inlinesvg": "~0.4.2",
     "react-split-pane": "0.1.15",
     "run-sequence": "^1.1.5",
+    "ua-parser-js": "^0.7.9",
     "vinyl-source-stream": "^1.1.0"
   }
 }

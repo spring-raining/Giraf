@@ -2,9 +2,12 @@
 
 import React                      from "react";
 import Decimal                    from "decimal.js";
+import UAParser                   from "ua-parser-js";
 
 import genDummyImg                from "src/utils/genDummyImg";
 
+
+const userAgent = new UAParser();
 
 const NativeCheckbox = React.createClass({
   propType() {
@@ -220,7 +223,20 @@ const Number = React.createClass({
     });
   },
 
+  _isEditingOnFirefox: false,
+  _dragEndOnFirefox: false,
+
   _onBlur(e) {
+    if (userAgent.getBrowser().name === "Firefox") {
+      if (this._isEditingOnFirefox) {
+        this._isEditingOnFirefox = false;
+      }
+      else {
+        this._isEditingOnFirefox = true;
+        return;
+      }
+    }
+
     let val = +e.target.value;
     if (typeof(this.props.min) === "number") {
       val = Math.max(val, this.props.min);
@@ -239,6 +255,13 @@ const Number = React.createClass({
   },
 
   _onUnfocusBoxClicked() {
+    if (userAgent.getBrowser().name === "Firefox") {
+      if (this._dragEndOnFirefox) {
+        this._dragEndOnFirefox = false;
+        return;
+      }
+    }
+
     this.setState({
       tmpValue: this.props.value,
       isEditing: true,
@@ -247,6 +270,15 @@ const Number = React.createClass({
 
   _onDragStart(e) {
     e.stopPropagation();
+
+    // On Firefox, 'onDrag' and 'onDragEnd' won't fire.
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=505521
+    if (userAgent.getBrowser().name === "Firefox") {
+      e.target.setCapture();
+      e.target.addEventListener("mousemove", this._onDrag, false);
+      e.target.addEventListener("mouseup", this._onDragEnd, false);
+    }
+
     e.dataTransfer.setDragImage(genDummyImg(), 0, 0);
     this.setState({
       draggingClientX: e.clientX,
@@ -283,6 +315,13 @@ const Number = React.createClass({
 
   _onDragEnd(e) {
     e.stopPropagation();
+
+    if (userAgent.getBrowser().name === "Firefox") {
+      this._dragEndOnFirefox = true;
+      e.target.removeEventListener("mousemove", this._onDrag, false);
+      e.target.removeEventListener("mouseup", this._onDragEnd, false);
+    }
+
     this.setState({
       draggingClientX: null,
     });

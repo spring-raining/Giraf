@@ -5,6 +5,7 @@ import ReactDOM                   from "react-dom";
 import KeyMirror                  from "keyMirror";
 import _Array                     from "lodash/array";
 import _Utility                   from "lodash/utility";
+import UAParser                   from "ua-parser-js";
 
 import Actions                    from "src/actions/actions";
 import {Composition as ModelComp} from "src/stores/model/composition";
@@ -22,6 +23,8 @@ const draggingTarget = KeyMirror({
   LAYER_START: null,
   LAYER_END: null,
 });
+
+const userAgent = new UAParser();
 
 var LayerTimetableArea = React.createClass({
   propTypes() {
@@ -233,9 +236,23 @@ var LayerTimetable = React.createClass({
     }
   },
 
+  _mouseMoveOnFirefox: null,
+  _mouseUpOnFirefox: null,
+
   _onDragStart(target) {
     return (e) => {
       e.stopPropagation();
+
+      // On Firefox, 'onDrag' and 'onDragEnd' won't fire.
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=505521
+      if (userAgent.getBrowser().name === "Firefox") {
+        this._mouseMoveOnFirefox = this._onDrag(target);
+        this._mouseUpOnFirefox   = this._onDragEnd(target);
+        e.target.setCapture();
+        e.target.addEventListener("mousemove", this._mouseMoveOnFirefox, false);
+        e.target.addEventListener("mouseup", this._mouseUpOnFirefox, false);
+      }
+
       let pos = this.getPositionInfo(e);
       e.dataTransfer.setDragImage(GenDummyImg(), 0, 0);
       this.setState({
@@ -331,6 +348,13 @@ var LayerTimetable = React.createClass({
       const fill = (a, b) => _Utility.range(Math.min(a, b), Math.max(a, b));
       const layer = this.props.layer;
       const layerPos = this.state.layerPos;
+
+      if (userAgent.getBrowser().name === "Firefox") {
+        e.target.removeEventListener("mousemove", this._mouseMoveOnFirefox, false);
+        e.target.removeEventListener("mouseup", this._mouseUpOnFirefox, false);
+        this._mouseMoveOnFirefox = null;
+        this._mouseUpOnFirefox   = null;
+      }
 
       let changedFrames = null;
       switch (target) {

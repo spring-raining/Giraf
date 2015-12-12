@@ -240,6 +240,7 @@ var Timeline = React.createClass({
   _onLayerHeaderDragStart(layer, layerHeader) {
     return (e) => {
       e.dataTransfer.setDragImage(genDummyImg(), 0, 0);
+      e.dataTransfer.setData("text", "layer");
       this.setState({draggingLayer: layer});
     };
   },

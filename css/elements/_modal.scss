@@ -322,3 +322,17 @@
     top: -10px;
   }
 }
+
+.tutorial-modal {
+  @include display(flex);
+
+  .tutorial-modal__step {
+    margin: 0 10px;
+    @include flex-grow(1);
+
+    & > img {
+      width: 150px;
+      border-radius: 75px;
+    }
+  }
+}

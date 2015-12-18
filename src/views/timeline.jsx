@@ -11,7 +11,8 @@ import Summary                        from "src/views/timeline/summary";
 import Layer                          from "src/views/timeline/layer";
 import LayerHeader                    from "src/views/timeline/layerHeader";
 import TimeController                 from "src/views/timeline/timeController";
-import TimetableOverlay               from "src/views/timeline/timetableOverlay"
+import TimetableOverlay               from "src/views/timeline/timetableOverlay";
+import TutorialModal                  from "src/views/modal/tutorialModal";
 import Scroll                         from "src/views/scroll";
 import genDummyImg                    from "src/utils/genDummyImg";
 
@@ -80,8 +81,23 @@ var Timeline = React.createClass({
 
   render() {
     let _;
-    let store = this.props.store;
-    let comp = store.get("editingComposition");
+    const store = this.props.store;
+    const comp = store.get("editingComposition");
+    const dragging = store.get("dragging");
+
+    let dragHere = null;
+    if (dragging) {
+      if (dragging.type === DragActionType.FOOTAGE
+      ||  dragging.type === DragActionType.COMPOSITION) {
+        dragHere = (
+          <div className="timeline__draghere">
+            <div className="timeline__draghere__card">
+              ここにドラッグ
+            </div>
+          </div>
+        );
+      }
+    }
 
     if (comp) {
       let cachedFrames = store.get("frameCache").getAllFrameCache(comp);
@@ -152,6 +168,7 @@ var Timeline = React.createClass({
               </div>
             </Scroll>
           </div>
+          {dragHere}
         </section>
       );
     }
@@ -162,6 +179,8 @@ var Timeline = React.createClass({
                  onDragOver={this._onDragOver}
                  onDragLeave={this._onDragLeave}
                  onDrop={this._onDrop}>
+          <TutorialModal />
+          {dragHere}
         </section>
       );
     }

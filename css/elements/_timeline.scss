@@ -15,6 +15,47 @@
   }
 }
 
+.timeline__draghere {
+  @include position(absolute, 0 0 0 0);
+  @include calculate-z-index(anyway, base);
+
+  border: 2px solid $color-timeline-draghere-border;
+  background-color: $color-timeline-draghere-bg;
+
+  .timeline__draghere__card {
+    @include giraf-card(2);
+    @include giraf-normal-body($color-timeline-draghere-border);
+    @include position(absolute, 6px 0 null 0);
+    margin: auto;
+    padding: 12px;
+    width: 200px;
+    background-color: $color-timeline-draghere-border;
+    text-align: center;
+
+    @include reveal(timeline-draghere-card, 0.2s, block, 0.2s) {
+      0% {
+        opacity: 0;
+        @include transform(translate3d(0, 20px , 0));
+      }
+
+      100% {
+        opacity: 1;
+        @include transform(translate3d(0, 0, 0));
+      }
+    }
+  }
+
+  @include reveal(timeline-draghere, 0.2s) {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+}
+
 .timeline__summary {
   @include giraf-shadow(1);
   @include calculate-z-index(timeline, summary);

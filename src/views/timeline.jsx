@@ -81,8 +81,23 @@ var Timeline = React.createClass({
 
   render() {
     let _;
-    let store = this.props.store;
-    let comp = store.get("editingComposition");
+    const store = this.props.store;
+    const comp = store.get("editingComposition");
+    const dragging = store.get("dragging");
+
+    let dragHere = null;
+    if (dragging) {
+      if (dragging.type === DragActionType.FOOTAGE
+      ||  dragging.type === DragActionType.COMPOSITION) {
+        dragHere = (
+          <div className="timeline__draghere">
+            <div className="timeline__draghere__card">
+              ここにドラッグ
+            </div>
+          </div>
+        );
+      }
+    }
 
     if (comp) {
       let cachedFrames = store.get("frameCache").getAllFrameCache(comp);
@@ -153,6 +168,7 @@ var Timeline = React.createClass({
               </div>
             </Scroll>
           </div>
+          {dragHere}
         </section>
       );
     }
@@ -164,6 +180,7 @@ var Timeline = React.createClass({
                  onDragLeave={this._onDragLeave}
                  onDrop={this._onDrop}>
           <TutorialModal />
+          {dragHere}
         </section>
       );
     }

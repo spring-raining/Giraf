@@ -79,7 +79,7 @@ var App = React.createClass({
 
   render() {
     var _;
-    let dragging = (_ = this.state.dragging)? _.type : null;
+    let dragging = (_ = this.state.store.get("dragging"))? _.type : null;
 
     const modal = !(_ = this.state.store.get("modal"))? null :
       <div className="app__modal">{_}</div>;

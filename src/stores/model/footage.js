@@ -49,6 +49,7 @@ class Footage extends Base {
     this._gifFrames = [];
     this._videoDuration = null;
     this._thumbnail = null;
+    this._videoSemaphore = 0;
     if (objectURL && width && height) {
       _loadContent(objectURL, type, width, height).then(
         (result) => {
@@ -172,7 +173,6 @@ class Footage extends Base {
     if (width !== this._width || height !== this._height) {
       super.assign("_width", width);
       super.assign("_height", height);
-      //this._prepareCanvas(width, height);
     }
   }
 
@@ -232,8 +232,8 @@ class Footage extends Base {
 
         const time_ = Math.max(0, Math.min(this.getLength(), time));
 
-        this.context.clearRect(0, 0, this.width, this.height);
         if (this.getFootageKind() === FootageKinds.IMAGE) {
+          this.context.clearRect(0, 0, this.width, this.height);
           if (this.type === "image/gif") {
             this.context.putImageData(
               this.gifFrames[Math.round(time_)].imageData,
@@ -250,25 +250,76 @@ class Footage extends Base {
           }
         }
         else if (this.getFootageKind() === FootageKinds.VIDEO) {
-          let video = document.createElement("video");
-          if (time_ === 0) {
-            // timeupdate will not fire
-            video.addEventListener("canplay", () => {
-              this.context.drawImage(video, 0, 0);
-              resolve(this.canvas);
+          const video = document.createElement("video");
+          const wait = () => {
+            return new Promise((resolve_, reject_) => {
+              if (this._videoSemaphore > 0) {
+                // the video is locked
+                setTimeout(resolve_, 50);
+              } else {
+                this._videoSemaphore += 1;
+                reject_();
+              }
             });
-            video.src = this.objectURL;
-          }
-          else {
-            video.addEventListener("timeupdate", () => {
-              video.addEventListener("canplay", () => {
-                this.context.drawImage(video, 0, 0);
-                resolve(this.canvas);
-              });
+          };
+          const run = (canvas) => {
+            return new Promise((resolve_, reject_) => {
+              try {
+                const context = canvas.getContext("2d");
+                if (time_ === 0) {
+                  // timeupdate will not fire
+                  video.addEventListener("canplay", () => {
+                    context.drawImage(video, 0, 0);
+                    this._videoSemaphore -= 1;
+                    resolve_(canvas);
+                  });
+                  video.src = this.objectURL;
+                }
+                else {
+                  setTimeout(() => {
+                    video.addEventListener("timeupdate", () => {
+                      video.addEventListener("canplaythrough", () => {
+                        setTimeout(
+                          () => {
+                            context.drawImage(video, 0, 0);
+                            this._videoSemaphore -= 1;
+                            resolve_(canvas);
+                          }, 0);
+                      });
+                    });
+                  }, 0);
+                  video.src = this.objectURL;
+                  video.currentTime = time_;
+                }
+              } catch (e) {
+                reject_(e);
+              }
             });
-            video.src = this.objectURL;
-            video.currentTime = time_;
-          }
+          };
+
+          // prepare temporary canvas
+          this._prepareCanvas(this.width, this.height, true).then(
+            (canvas) => {
+              function loop() {
+                return wait().then(
+                  loop,
+                  () => {
+                    // my turn
+                    run(canvas).then(
+                      resolve,
+                      (error) => {
+                        reject(error);
+                      }
+                    )
+                  }
+                );
+              }
+              loop();
+            },
+            (error) => {
+              reject(error);
+            }
+          );
         }
       } catch (e) {
         reject(e);
@@ -282,7 +333,7 @@ class Footage extends Base {
         reject(new RangeError("Invalid width or height."));
       }
 
-      this._prepareCanvas(width, height).then(
+      this._prepareCanvas(width, height, false).then(
         (result) => {
           if (type.indexOf("video/") === 0) {
             const video = document.createElement("video");
@@ -315,14 +366,17 @@ class Footage extends Base {
     });
   }
 
-  _prepareCanvas(width, height) {
+  _prepareCanvas(width, height, temporary=true) {
     return new Promise((resolve, reject) => {
       try {
-        this.canvas = document.createElement("canvas");
-        this.canvas.width = width;
-        this.canvas.height = height;
-        this.context = this.canvas.getContext("2d");
-        resolve(this.canvas);
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        if (!temporary) {
+          this.canvas = canvas;
+          this.context = canvas.getContext("2d");
+        }
+        resolve(canvas);
       } catch (e) {
         reject(e);
       }

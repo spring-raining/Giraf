@@ -45,5 +45,8 @@
     "run-sequence": "^1.1.5",
     "ua-parser-js": "^0.7.9",
     "vinyl-source-stream": "^1.1.0"
+  },
+  "devDependencies": {
+    "electron-prebuilt": "^0.36.3"
   }
 }

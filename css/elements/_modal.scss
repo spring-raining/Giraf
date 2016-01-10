@@ -272,6 +272,8 @@
       text-align: center;
       width: 100%;
       margin: 0 auto;
+      position: relative;
+      cursor: pointer;
 
       & > img {
         @include giraf-shadow(3);
@@ -286,6 +288,20 @@
             @include transform(scale(1));
           }
         }
+      }
+
+      &::after {
+        content: "download";
+        @extend .lsf;
+        @include giraf-anime(opacity);
+        @include position(absolute, 0 0 0 0);
+        opacity: 0;
+        color: $color-render-gif-modal-download-body;
+        background-color: $color-render-gif-modal-download-bg;
+      }
+
+      &:hover::after {
+        opacity: 1;
       }
     }
 

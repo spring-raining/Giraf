@@ -2,7 +2,7 @@
   "name": "giraf",
   "version": "2.0.0-beta-4",
   "description": "Make gif animations on the web.",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "install": "./node_modules/gulp/bin/gulp.js",
     "start": "./node_modules/http-server/bin/http-server ./dist -p 8080",
@@ -22,6 +22,8 @@
     "url": "https://github.com/spring-raining/giraf/issues"
   },
   "homepage": "https://github.com/spring-raining/giraf#readme",
+  "electronName": "Giraf",
+  "electronVersion": "0.36.3",
   "dependencies": {
     "babelify": "^6.3.0",
     "bourbon": "^4.2.5",
@@ -29,6 +31,7 @@
     "decimal.js": "^4.0.3",
     "deep-diff": "^0.3.3",
     "del": "^2.1.0",
+    "electron-packager": "^5.2.0",
     "flux": "^2.1.1",
     "gifshot": "^0.3.2",
     "gulp": "^3.9.0",

@@ -31,6 +31,26 @@ var App = React.createClass({
         Actions.redo();
         return false;
       },
+      "left": () => {
+        Actions.pause();
+        Actions.goBackwardCurrentFrame();
+        return false;
+      },
+      "shift+left": () => {
+        Actions.pause();
+        Actions.goBackwardCurrentFrame(10);
+        return false;
+      },
+      "right": () => {
+        Actions.pause();
+        Actions.goForwardCurrentFrame();
+        return false;
+      },
+      "shift+right": () => {
+        Actions.pause();
+        Actions.goForwardCurrentFrame(10);
+        return false;
+      },
     };
   },
 

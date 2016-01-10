@@ -194,6 +194,7 @@ const Number = React.createClass({
                           step={this.props.step}
                           autoFocus={true}
                           onChange={this._onChange}
+                          onKeyDown={this._onKeyDown}
                           onBlur={this._onBlur} />
           {suffix}
         </div>
@@ -208,6 +209,9 @@ const Number = React.createClass({
             {unfocusValue}
           </span>
           {suffix}
+          <input type="number"
+                 className="form-number__unfocus__dummy-input"
+                 onFocus={this._onDummyFocus}/>
         </div>;
 
     return (
@@ -225,6 +229,19 @@ const Number = React.createClass({
 
   _isEditingOnFirefox: false,
   _dragEndOnFirefox: false,
+  _editCanceled: false,
+
+  _onKeyDown(e) {
+    if (e.keyCode === 13) {   // Enter
+      e.preventDefault();
+      e.target.blur();
+    }
+    if (e.keyCode === 27) {   // Esc
+      this._editCanceled = true;
+      e.preventDefault();
+      e.target.blur();
+    }
+  },
 
   _onBlur(e) {
     if (userAgent.getBrowser().name === "Firefox") {
@@ -249,7 +266,11 @@ const Number = React.createClass({
       tmpValue: this.props.value,
       isEditing: false,
     });
-    if (this.props.onChange) {
+
+    if (this._editCanceled) {
+      this._editCanceled = false;
+    }
+    else if (this.props.onChange) {
       this.props.onChange(val);
     }
   },
@@ -266,6 +287,10 @@ const Number = React.createClass({
       tmpValue: this.props.value,
       isEditing: true,
     });
+  },
+
+  _onDummyFocus() {
+    this._onUnfocusBoxClicked();
   },
 
   _onDragStart(e) {
@@ -481,6 +506,7 @@ const Text = React.createClass({
                       name={this.props.name}
                       autoFocus={true}
                       onChange={this._onChange}
+                      onKeyDown={this._onKeyDown}
                       onBlur={this._onBlur} />
           {suffix}
         </div>
@@ -491,6 +517,9 @@ const Text = React.createClass({
             {this.props.value}
           </span>
           {suffix}
+          <input type="text"
+                 className="form-text__unfocus__dummy-input"
+                 onFocus={this._onDummyFocus}/>
         </div>;
 
     return (
@@ -506,12 +535,30 @@ const Text = React.createClass({
     });
   },
 
+  _editCanceled: false,
+
+  _onKeyDown(e) {
+    if (e.keyCode === 13) {   // Enter
+      e.preventDefault();
+      e.target.blur();
+    }
+    if (e.keyCode === 27) {   // Esc
+      e.preventDefault();
+      this._editCanceled = true;
+      e.target.blur();
+    }
+  },
+
   _onBlur(e) {
     this.setState({
       tmpValue: this.props.value,
       isEditing: false,
     });
-    if (this.props.onChange) {
+
+    if (this._editCanceled) {
+      this._editCanceled = false;
+    }
+    else if (this.props.onChange) {
       this.props.onChange(e.target.value);
     }
   },
@@ -521,6 +568,10 @@ const Text = React.createClass({
       tmpValue: this.props.value,
       isEditing: true,
     });
+  },
+
+  _onDummyFocus() {
+    this._onUnfocusBoxClicked();
   },
 });
 

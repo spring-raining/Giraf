@@ -27,6 +27,12 @@ const CreateCompositionModal = React.createClass({
     };
   },
 
+  getKeyEvents() {
+    return {
+      "enter": this._onSubmit,
+    };
+  },
+
   render() {
     const title = "新しいコンポジションを作成";
 
@@ -34,34 +40,17 @@ const CreateCompositionModal = React.createClass({
       {
         text: "キャンセル",
         className: "sub",
-        onClick: () => {
-          Actions.updateModal(null);
-          if (this.props.onCancelClicked) {
-            this.props.onCancelClicked();
-          }
-        },
+        onClick: this._onCancel,
       }, {
         text: "作成",
-        onClick: () => {
-          Actions.updateModal(null);
-          if (this.props.onCreateClicked) {
-            this.props.onCreateClicked(
-              new Composition(
-                genUUID(),
-                this.state.compName,
-                this.state.compWidth,
-                this.state.compHeight,
-                this.state.compFrame,
-                this.state.compFPS)
-            );
-          }
-        },
+        onClick: this._onSubmit,
       },
     ];
 
     return (
       <Modal title={title}
              footer={ <ModalButtonSet content={buttonContent} /> }
+             keyEvents={this.getKeyEvents()}
              className="small">
         <div className="create-composition-modal">
           <div className="create-composition-modal__settings">
@@ -127,6 +116,29 @@ const CreateCompositionModal = React.createClass({
         </div>
       </Modal>
     );
+  },
+
+  _onSubmit() {
+    Actions.updateModal(null);
+    if (this.props.onCreateClicked) {
+      this.props.onCreateClicked(
+        new Composition(
+          genUUID(),
+          this.state.compName,
+          this.state.compWidth,
+          this.state.compHeight,
+          this.state.compFrame,
+          this.state.compFPS)
+      );
+    }
+    return false;
+  },
+
+  _onCancel() {
+    Actions.updateModal(null);
+    if (this.props.onCancelClicked) {
+      this.props.onCancelClicked();
+    }
   },
 
   _onCompNameChanged(value) {

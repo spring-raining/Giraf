@@ -26,6 +26,8 @@ function buildElectronApp(callback, opt) {
     arch: "all",
     platform: "all",
     version: packageJson.electronVersion,
+    "app-version": packageJson.version,
+    "build-version": packageJson.version,
     overwrite: true,
   }, opt);
 

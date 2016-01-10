@@ -6,6 +6,7 @@
 const electron = require("electron");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
+const shell = require("shell");
 
 // Report crashes to our server.
 //require('crash-reporter').start();
@@ -29,6 +30,12 @@ function launchMainWindow() {
       e.preventDefault();
       mainWindow.hide();
     }
+  });
+
+  // Open links on the external browser
+  mainWindow.webContents.on("new-window", function(e, url) {
+    e.preventDefault();
+    shell.openExternal(url);
   });
 }
 

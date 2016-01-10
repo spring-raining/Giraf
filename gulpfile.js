@@ -5,13 +5,16 @@ var source = require("vinyl-source-stream");
 var sequence = require("run-sequence");
 var sass = require("gulp-sass");
 var del = require("del");
+var packager = require("electron-packager");
+
+var packageJson = require("./package.json");
 
 var dir = {
   src:      "./src",
   css:      "./css",
-  html:     "./html",
-  rsc:      "./rsc",
+  static:   "./static",
   dist:     "./dist",
+  release:  "./release",
 };
 
 
@@ -21,7 +24,7 @@ gulp.task("default", ["build"]);
 gulp.task("build", function(callback) {
   return sequence(
     "clean",
-    ["js", "css", "html", "rsc"],
+    ["js", "css", "static"],
     callback
   );
 });
@@ -29,10 +32,26 @@ gulp.task("build", function(callback) {
 gulp.task("watch", function() {
   gulp.watch(dir.src  + "/*", ["js"]);
   gulp.watch(dir.css  + "/*", ["css"]);
-  gulp.watch(dir.html + "/*", ["html"]);
-  gulp.watch(dir.rsc  + "/*", ["rsc"]);
+  gulp.watch(dir.static + "/*", ["static"]);
 });
 
+gulp.task("release", ["build"], function(callback) {
+  // include package.json
+  gulp.src("./package.json")
+    .pipe(gulp.dest(dir.dist));
+
+  packager({
+    dir: dir.dist,
+    out: "./release",
+    name: packageJson.electronName,
+    arch: "all",
+    platform: "all",
+    version: packageJson.electronVersion,
+    overwrite: true,
+  }, function(err, appPath) {
+    callback();
+  });
+});
 
 
 gulp.task("clean", del.bind(null, [
@@ -57,12 +76,7 @@ gulp.task("css", function() {
     .pipe(gulp.dest(dir.dist));
 });
 
-gulp.task("html", function() {
-  return gulp.src(dir.html + "/**/*")
+gulp.task("static", function() {
+  return gulp.src(dir.static + "/**/*")
     .pipe(gulp.dest(dir.dist));
-});
-
-gulp.task("rsc", function() {
-  return gulp.src(dir.rsc +"/**/*")
-    .pipe(gulp.dest(dir.dist + "/rsc"));
 });

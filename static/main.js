@@ -1,3 +1,8 @@
+/*
+ *  main.js
+ *  Script that launch electron apps.
+ */
+
 const electron = require("electron");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
@@ -17,7 +22,7 @@ function launchMainWindow() {
     height: 900,
     center: true
   });
-  mainWindow.loadURL("file://" + __dirname + "/../dist/index.html");
+  mainWindow.loadURL("file://" + __dirname + "/index.html");
 
   mainWindow.on("close", function (e) {
     if (process.platform == "darwin" && !osxQuitNow) {

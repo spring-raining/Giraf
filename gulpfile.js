@@ -18,6 +18,24 @@ var dir = {
 };
 
 
+function buildElectronApp(callback, opt) {
+  const opt_ = Object.assign({
+    dir: dir.dist,
+    out: dir.release,
+    name: packageJson.electronName,
+    arch: "all",
+    platform: "all",
+    version: packageJson.electronVersion,
+    overwrite: true,
+  }, opt);
+
+  // include package.json
+  gulp.src("./package.json")
+    .pipe(gulp.dest(dir.dist));
+  packager(opt_, function(err, appPath) {
+    callback();
+  });
+}
 
 gulp.task("default", ["build"]);
 
@@ -35,21 +53,29 @@ gulp.task("watch", function() {
   gulp.watch(dir.static + "/*", ["static"]);
 });
 
-gulp.task("release", ["build"], function(callback) {
-  // include package.json
-  gulp.src("./package.json")
-    .pipe(gulp.dest(dir.dist));
+gulp.task("release", [
+  "release:win32",
+  "release:darwin",
+  "release:linux",
+]);
 
-  packager({
-    dir: dir.dist,
-    out: "./release",
-    name: packageJson.electronName,
-    arch: "all",
-    platform: "all",
-    version: packageJson.electronVersion,
-    overwrite: true,
-  }, function(err, appPath) {
-    callback();
+gulp.task("release:win32", ["build"], function(callback) {
+  buildElectronApp(callback, {
+    platform: "win32",
+    icon: dir.static + "/rsc/Giraf.ico",
+  });
+});
+
+gulp.task("release:darwin", ["build"], function(callback) {
+  buildElectronApp(callback, {
+    platform: "darwin",
+    icon: dir.static + "/rsc/Giraf.icns",
+  });
+});
+
+gulp.task("release:linux", ["build"], function(callback) {
+  buildElectronApp(callback, {
+    platform: "linux",
   });
 });
 

@@ -11,6 +11,7 @@ import {renderFrameAsync}                       from "src/utils/renderUtils";
 import formatByte                               from "src/utils/formatByte";
 import writeGIF                                 from "src/utils/writeGIF";
 import dataURLToBlob                            from "src/utils/dataURLToBlob";
+import saveFile                                 from "src/utils/saveFile";
 
 
 const MODAL_SCENE = keyMirror({
@@ -157,8 +158,11 @@ const RenderGIFModal = React.createClass({
         previewCanvasDOM.appendChild(canvas);
         const width = this.state.gifSize;
         const height = Math.round(composition.height * this.state.gifSize / composition.width);
+        const font = Math.min(100, height - 30);
         previewCanvasDOM.style.width = `${width}px`;
         previewCanvasDOM.style.height = `${height}px`;
+        previewCanvasDOM.style.lineHeight = `${height}px`;
+        previewCanvasDOM.style.fontSize = `${font}px`;
       }
     }
     const previewGIFDOM = this.refs.previewGIFContainer;
@@ -275,6 +279,7 @@ const RenderGIFModal = React.createClass({
           return (
             <div className="render-gif-modal__preview">
               <div className="render-gif-modal__preview__gif-container"
+                   onClick={this._saveGIF}
                    ref="previewGIFContainer">
               </div>
               <div className="render-gif-modal__preview__gif-description">
@@ -503,6 +508,13 @@ const RenderGIFModal = React.createClass({
   _canCreateGIF() {
     return this.props.composition.frame
            === Object.keys(this.state.renderedCanvases).length;
+  },
+
+  _saveGIF() {
+    if (this.state.resultGIF) {
+      saveFile(this.state.resultGIF,
+               this.props.composition.name + ".gif");
+    }
   },
 });
 

@@ -47,6 +47,9 @@ const CreateVideoLayerModal = React.createClass({
         });
         return false;
       },
+      "enter": this._onSubmit,
+      "left": this._onPrevFrameButtonClicked,
+      "right": this._onNextFrameButtonClicked,
     };
   },
 
@@ -56,23 +59,10 @@ const CreateVideoLayerModal = React.createClass({
     const buttonContent = [
       {
         text: "キャンセル",
-        onClick: () => {
-          Actions.updateModal(null);
-          if (this.props.onCancelClicked) {
-            this.props.onCancelClicked();
-          }
-        },
+        onClick: this._onCancel,
       }, {
         text: "決定",
-        onClick: () => {
-          const newLayer = this._getNewLayer();
-          if (newLayer) {
-            Actions.updateModal(null);
-            if (this.props.onCreateClicked) {
-              this.props.onCreateClicked(newLayer);
-            }
-          }
-        },
+        onClick: this._onSubmit,
       },
     ];
 
@@ -189,6 +179,24 @@ const CreateVideoLayerModal = React.createClass({
     );
   },
 
+  _onSubmit() {
+    const newLayer = this._getNewLayer();
+    if (newLayer) {
+      Actions.updateModal(null);
+      if (this.props.onCreateClicked) {
+        this.props.onCreateClicked(newLayer);
+      }
+    }
+    return false;
+  },
+
+  _onCancel() {
+    Actions.updateModal(null);
+    if (this.props.onCancelClicked) {
+      this.props.onCancelClicked();
+    }
+  },
+
   _onPlayerPlay(time) {
     this.setState({
       playerPlaying: true,
@@ -246,6 +254,7 @@ const CreateVideoLayerModal = React.createClass({
         playerTime: this.state.currentTime - 1,
       });
     }
+    return false;
   },
 
   _onNextFrameButtonClicked() {
@@ -261,6 +270,7 @@ const CreateVideoLayerModal = React.createClass({
         playerTime: this.state.currentTime + 1,
       });
     }
+    return false;
   },
 
   _onEndButtonClicked() {

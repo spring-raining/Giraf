@@ -15,6 +15,15 @@ var fs = require("fs");
 var girafLicense = fs.readFileSync(__dirname + "/../../../LICENSE", "utf8");
 
 const AboutGirafModal = React.createClass({
+  getKeyEvents() {
+    return {
+      "enter": () => {
+        Actions.updateModal(null);
+        return false;
+      },
+    };
+  },
+
   render() {
     const title = "Girafについて";
 
@@ -43,7 +52,8 @@ const AboutGirafModal = React.createClass({
 
     return (
       <Modal title={title}
-             footer={ <ModalButtonSet content={buttonContent} /> }>
+             footer={ <ModalButtonSet content={buttonContent} /> }
+             keyEvents={this.getKeyEvents()}>
         <div className="pretty">
           <img src="rsc/giraf_logo_brown.png" alt="Giraf"
                style={{height: "100px"}}/>

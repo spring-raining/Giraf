@@ -180,6 +180,18 @@ const RenderGIFModal = React.createClass({
     this.alive = false;
   },
 
+  getKeyEvents() {
+    return {
+      "enter": () => {
+        if (this.state.modalScene === MODAL_SCENE.SETTING
+        &&  this._canCreateGIF()) {
+          this._onCreateClicked();
+        }
+        return false;
+      },
+    };
+  },
+
   render() {
     const title = "GIFを作成";
 
@@ -192,7 +204,8 @@ const RenderGIFModal = React.createClass({
 
     return (
       <Modal title={title}
-             footer={footer}>
+             footer={footer}
+             keyEvents={this.getKeyEvents()}>
         {this._modalContent()}
       </Modal>
     )

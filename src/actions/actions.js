@@ -220,8 +220,20 @@ export default {
     }
   },
 
-  renderComposition(composition) {
+  goForwardCurrentFrame(frame = 1) {
+    if (frame === null || typeof(frame) === "number") {
+      const comp = Store.get("editingComposition");
+      const fr = (Store.get("currentFrame") || 0) + frame;
+      if (comp) {
+        this.updateCurrentFrame(
+          Math.max(0, Math.min(comp.frame - 1, fr))
+        );
+      }
+    }
+  },
 
+  goBackwardCurrentFrame(frame = 1) {
+    this.goForwardCurrentFrame(-frame);
   },
 
   renderFrame(composition, frame) {
@@ -296,7 +308,7 @@ export default {
     this.play(!isPlaying);
   },
 
-  play(play) {
+  play(play = true) {
     if (typeof(play) !== "boolean") {
       return;
     }
@@ -304,6 +316,10 @@ export default {
       actionType: ActionConst.PLAY,
       play: play,
     });
+  },
+
+  pause() {
+    this.play(false);
   },
 
   undo(repeat = 1) {

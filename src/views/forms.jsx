@@ -3,6 +3,7 @@
 import React                      from "react";
 import Decimal                    from "decimal.js";
 import UAParser                   from "ua-parser-js";
+import _Lang                      from "lodash/lang";
 
 import genDummyImg                from "src/utils/genDummyImg";
 
@@ -172,13 +173,19 @@ const Number = React.createClass({
   },
 
   render() {
-    const prefix = <span className="form-number__prefix">
-                     {this.props.prefixString}
-                   </span>;
+    const prefix = (_Lang.isString(this.props.prefixString)
+                 && this.props.prefixString.length > 0)
+      ? <span className="form-number__prefix">
+          {this.props.prefixString}
+        </span>
+      : null;
 
-    const suffix = <span className="form-number__suffix">
-                     {this.props.suffixString}
-                   </span>;
+    const suffix = (_Lang.isString(this.props.suffixString)
+                 && this.props.suffixString.length > 0)
+      ? <span className="form-number__suffix">
+          {this.props.suffixString}
+        </span>
+      : null;
 
     const unfocusValue = (this.state.draggingClientX !== null)
       ? this.state.tmpValue
@@ -491,13 +498,19 @@ const Text = React.createClass({
   },
 
   render() {
-    const prefix = <span className="form-text__prefix">
-                     {this.props.prefixString}
-                   </span>;
+    const prefix = (_Lang.isString(this.props.prefixString)
+                 && this.props.prefixString.length > 0)
+      ? <span className="form-text__prefix">
+          {this.props.prefixString}
+        </span>
+      : null;
 
-    const suffix = <span className="form-text__suffix">
-                     {this.props.suffixString}
-                   </span>;
+    const suffix = (_Lang.isString(this.props.suffixString)
+                 && this.props.suffixString.length > 0)
+      ? <span className="form-text__suffix">
+          {this.props.suffixString}
+        </span>
+      : null;
 
     const input = (this.state.isEditing)
       ? <div className="form-text__focus">

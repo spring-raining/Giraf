@@ -2,7 +2,8 @@
 
 import React                              from "react";
 
-import {Number, Checkbox, ScriptArea}     from "src/views/forms";
+import {Number, Checkbox, ScriptArea, Text}
+                                          from "src/views/forms";
 
 
 var Effect = React.createClass({
@@ -22,7 +23,10 @@ var Effect = React.createClass({
         <section className="effect panel">
 
           <fieldset>
-            <div className="effect__legend">{layer.name}</div>
+            <div className="effect__legend">
+              <Text value={layer.name}
+                    onChange={this._onLayerNameChanged(layer)} />
+            </div>
           </fieldset>
 
           <fieldset>
@@ -110,7 +114,10 @@ var Effect = React.createClass({
       return (
         <section className="effect panel">
           <fieldset>
-            <div className="effect__legend">{comp.name}</div>
+            <div className="effect__legend">
+              <Text value={comp.name}
+                    onChange={this._onCompositionNameChanged(comp)} />
+            </div>
 
             <div className="effect__input">
               <div className="effect__input__left">幅</div>
@@ -171,6 +178,20 @@ var Effect = React.createClass({
         </section>
       );
     }
+  },
+
+  _onLayerNameChanged(layer) {
+    return (value) => {
+      layer.name = value;
+      layer.update();
+    };
+  },
+
+  _onCompositionNameChanged(composition) {
+    return (value) => {
+      composition.name = value;
+      composition.update();
+    };
   },
 
   _onAnchorPointXChanged(value) {

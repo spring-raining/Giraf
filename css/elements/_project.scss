@@ -111,6 +111,7 @@
         right: 0;
         border: 2px solid $color-giraf;
         border-radius: 2px;
+        pointer-events: none;
       }
     }
 
@@ -149,9 +150,15 @@
 
     .project__item__title {
       @include single-line();
+      height: 24px;
       font-size: 14px;
       font-weight: 700;
-      color: $color-white;
+
+      .form-text__unfocus__value {
+        color: $color-white;
+        text-decoration: none;
+        min-width: 50px;
+      }
     }
 
     .project__item__description {

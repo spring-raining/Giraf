@@ -6,6 +6,7 @@ import Actions              from "src/actions/actions";
 import {Footage}            from "src/stores/model/footage";
 import {Composition}        from "src/stores/model/composition";
 import {cloneCanvas}        from "src/utils/renderUtils";
+import {Text}               from "src/views/forms";
 
 
 export default React.createClass({
@@ -112,7 +113,10 @@ export default React.createClass({
              ref="thumbnailContainer">
         </div>
         <div className="project__item__text">
-          <span className="project__item__title">{this.props.item.name}</span>
+          <div className="project__item__title">
+            <Text value={this.props.item.name}
+                  onChange={this._onTitleChange} />
+          </div>
           {description}
         </div>
       </li>
@@ -140,5 +144,11 @@ export default React.createClass({
 
   _onDragEnd() {
     Actions.endDrag();
+  },
+
+  _onTitleChange(value) {
+    this.props.item.update({
+      name: value,
+    });
   },
 });

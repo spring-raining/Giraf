@@ -12,6 +12,16 @@
   color: $color-project-body;
   background-color: $color-project-bg;
 
+  input.form-native,
+  textarea.form-native,
+  select.form-native {
+    background: $color-project-input-bg;
+
+    &:focus {
+      border-color: $color-giraf;
+    }
+  }
+
   .project__brand {
     position: relative;
     margin: 8px 15px;
@@ -129,7 +139,7 @@
       right: 0;
       opacity: 0.5;
 
-      & > img,canvas {
+      & > img, canvas {
         height: $project-item-height;
         @include reveal(project-item-canvas, 0.2s) {
           0% {

@@ -265,6 +265,21 @@ $create-video-layer-modal-info-height:    150px;
   text-align: center;
 }
 
+@mixin giraf-link($body-color: $color-a, $hover-color: darken($body-color, 20%)) {
+  color: $body-color;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:active, &:hover {
+    outline: 0;
+  }
+
+  &:hover, &:focus {
+    color: $hover-color;
+    text-decoration: underline;
+  }
+}
+
 @mixin calculate-z-index($global-tag, $local-tag) {
   $global: index($z-order-global, $global-tag);
   $local: index(map-get($z-order, $global-tag), $local-tag);

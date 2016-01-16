@@ -2,6 +2,7 @@
 
 import React                              from "react";
 
+import Actions                            from "src/actions/actions";
 import Store                              from "src/stores/store";
 import {Composition}                      from "src/stores/model/composition";
 import {Layer}                            from "src/stores/model/layer";
@@ -26,6 +27,20 @@ var Effect = React.createClass({
       if (selectingItem instanceof Layer) {
         // Layer edit mode
         const layer = selectingItem;
+        const source = (layer.entity)
+          ? <div className="effect__input">
+              <div className="effect__input__left">ソース名</div>
+              <div className="effect__input__right">
+                <div>
+                  <div>{layer.entity.name}</div>
+                  <a onClick={this._onChangeActiveItemClicked(layer.entity)}>
+                    ソースを編集
+                  </a>
+                </div>
+              </div>
+            </div>
+          : null;
+
         return (
           <section className="effect panel">
 
@@ -34,6 +49,8 @@ var Effect = React.createClass({
                 <Text value={layer.name}
                       onChange={this._onLayerNameChanged(layer)} />
               </div>
+
+              {source}
             </fieldset>
 
             <fieldset>
@@ -199,6 +216,13 @@ var Effect = React.createClass({
     return (value) => {
       composition.name = value;
       composition.update();
+    };
+  },
+
+  _onChangeActiveItemClicked(item) {
+    return () => {
+      Actions.changeSelectingItem(null);
+      Actions.changeActiveItem(item);
     };
   },
 

@@ -239,6 +239,8 @@ var Timeline = React.createClass({
     if (!dropped) {
       return;
     }
+    Actions.endDrag();
+
     const activeItem = this.props.store.get("activeItem");
     const nowComp = (activeItem instanceof Composition)? activeItem : null;
     if (nowComp) {

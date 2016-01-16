@@ -112,7 +112,6 @@ class History {
     while (this._commitStack.length > HISTORY_LIMIT) {
       this._commitStack.shift();
     }
-    console.log(this._changes);
     this._changes = [];
     this._revertStack = [];
     this._isChanged = true;

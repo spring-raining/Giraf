@@ -58,6 +58,13 @@ export default {
     }
   },
 
+  deleteSelectingItem() {
+    const item = Store.get("selectingItem");
+    if (item instanceof Layer) {
+      this.deleteLayer(item);
+    }
+  },
+
   changeActiveItem(item) {
     if (item === null || hasTrait(item, _Selectable)) {
       Dispatcher.dispatch({
@@ -186,6 +193,15 @@ export default {
       if (refreshFrameCache) {
         this.clearFrameCache(parentComp, _Utility.range(layer.layerStart, layer.layerEnd));
       }
+    }
+  },
+
+  deleteLayer(layer) {
+    if (layer instanceof Layer) {
+      Dispatcher.dispatch({
+        actionType: ActionConst.DELETE_LAYER,
+        layer: layer,
+      });
     }
   },
 

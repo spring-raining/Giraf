@@ -11,6 +11,7 @@ export default keyMirror({
   UPDATE_COMPOSITION: null,
   CREATE_LAYER: null,
   UPDATE_LAYER: null,
+  DELETE_LAYER: null,
   START_DRAG: null,
   END_DRAG: null,
   UPDATE_CURRENT_FRAME: null,

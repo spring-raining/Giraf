@@ -107,6 +107,20 @@ function dispatcherCallback(action) {
     }
   }
 
+  else if (action.actionType === ActionConst.DELETE_LAYER) {
+    const comp = searchById(Store.get("compositions"))(action.layer.parentCompId);
+    if (comp && searchById(comp.layers)(action.layer.id)) {
+      comp.layers = comp.layers.filter((e) => e.id !== action.layer.id);
+      Store.update({
+        selectingItem: null,
+        activeItem: comp,
+        isPlaying: false,
+      });
+      History.save(action.actionType, false);
+      Store.emitChange();
+    }
+  }
+
   else if (action.actionType === ActionConst.START_DRAG) {
     Store.set("dragging")(action.dragAction);
     Store.emitChange();

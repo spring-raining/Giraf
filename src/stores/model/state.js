@@ -15,8 +15,7 @@ class State extends ModelBase {
     this._footages = [];
     this._compositions = [];
     this._selectingItem = null;
-    this._editingComposition = null;
-    this._editingLayer = null;
+    this._activeItem = null;
     this._dragging = null;
     this._currentFrame = 0;
     this._frameCache = new FrameCacheHolder();
@@ -49,20 +48,12 @@ class State extends ModelBase {
     super.assign("_selectingItem", selectingItem);
   }
 
-  get editingComposition() {
-    return this._editingComposition;
+  get activeItem() {
+    return this._activeItem;
   }
 
-  set editingComposition(editingComposition) {
-    super.assign("_editingComposition", editingComposition);
-  }
-
-  get editingLayer() {
-    return this._editingLayer;
-  }
-
-  set editingLayer(editingLayer) {
-    super.assign("_editingLayer", editingLayer);
+  set activeItem(activeItem) {
+    super.assign("_activeItem", activeItem);
   }
 
   get dragging() {

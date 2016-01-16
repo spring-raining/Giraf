@@ -54,7 +54,16 @@ export default {
       Dispatcher.dispatch({
         actionType: ActionConst.CHANGE_SELECTING_ITEM,
         item: item
-      })
+      });
+    }
+  },
+
+  changeActiveItem(item) {
+    if (item === null || hasTrait(item, _Selectable)) {
+      Dispatcher.dispatch({
+        actionType: ActionConst.CHANGE_ACTIVE_ITEM,
+        item: item,
+      });
     }
   },
 
@@ -129,19 +138,13 @@ export default {
 
   changeEditingComposition(composition) {
     if (composition === null || composition instanceof Composition) {
-      Dispatcher.dispatch({
-        actionType: ActionConst.CHANGE_EDITING_COMPOSITION,
-        composition: composition
-      });
+      this.changeActiveItem(composition);
     }
   },
 
   changeEditingLayer(layer) {
     if (layer === null || layer instanceof Layer) {
-      Dispatcher.dispatch({
-        actionType: ActionConst.CHANGE_EDITING_LAYER,
-        layer: layer
-      });
+      this.changeSelectingItem(layer);
     }
   },
 
@@ -222,7 +225,8 @@ export default {
 
   goForwardCurrentFrame(frame = 1) {
     if (frame === null || typeof(frame) === "number") {
-      const comp = Store.get("editingComposition");
+      const activeItem = Store.get("activeItem");
+      const comp = (activeItem instanceof Composition)? activeItem : null;
       const fr = (Store.get("currentFrame") || 0) + frame;
       if (comp) {
         this.updateCurrentFrame(

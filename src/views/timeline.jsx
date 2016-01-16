@@ -33,8 +33,10 @@ var Timeline = React.createClass({
   },
 
   componentWillReceiveProps(nextProps) {
+    const activeItem = nextProps.store.get("activeItem");
+    const layers = (activeItem instanceof Composition)? activeItem.layers : null;
     this.setState({
-      layers: nextProps.store.get("editingComposition", "layers"),
+      layers: layers,
     });
   },
 
@@ -44,12 +46,13 @@ var Timeline = React.createClass({
     this.headerDOM    = (_ = this.refs.header)? _.getContentDOM() : null;
     this.leftDOM      = (_ = this.refs.left)? _.getContentDOM() : null;
 
-    let comp = this.props.store.get("editingComposition");
-    let currentFrame = this.props.store.get("currentFrame");
+    const activeItem = this.props.store.get("activeItem");
+    const comp = (activeItem instanceof Composition)? activeItem : null;
+    const currentFrame = this.props.store.get("currentFrame");
+    console.log(comp);
     if (comp !== null) {
       // start auto render
-      if (this.props.store.get("selectingItem", "id") === comp.id
-      &&  this.props.store.get("isPlaying")
+      if (this.props.store.get("isPlaying")
       &&  !this.state.executingAutoRender) {
         this.setState({
           executingAutoRender: true,
@@ -82,7 +85,8 @@ var Timeline = React.createClass({
   render() {
     let _;
     const store = this.props.store;
-    const comp = store.get("editingComposition");
+    const activeItem = store.get("activeItem");
+    const comp = (activeItem instanceof Composition) ? activeItem : null;
     const dragging = store.get("dragging");
 
     let dragHere = null;
@@ -107,12 +111,12 @@ var Timeline = React.createClass({
                              onClick={this._onBlankAreaClick}/>;
       let layers = this.state.layers.map((e) =>
         <Layer composition={comp} layer={e} key={e.id}
-               isEdited={e.id === store.get("editingLayer", "id")}
+               isEdited={e.id === store.get("selectingItem", "id")}
                onClick={this._onLayerClick} />
       );
       let layerHeaders = this.state.layers.map((e) =>
         <LayerHeader composition={comp} layer={e} key={e.id}
-                     isEdited={e.id === store.get("editingLayer", "id")}
+                     isEdited={e.id === store.get("selectingItem", "id")}
                      onClick={this._onLayerClick}
                      onDragStart={this._onLayerHeaderDragStart}
                      onDragEnter={this._onLayerHeaderDragEnter}
@@ -232,11 +236,12 @@ var Timeline = React.createClass({
 
   _onDrop(e) {
     e.preventDefault();
-    let dropped = this.props.store.get("dragging");
+    const dropped = this.props.store.get("dragging");
     if (!dropped) {
       return;
     }
-    let nowComp = this.props.store.get("editingComposition");
+    const activeItem = this.props.store.get("activeItem");
+    const nowComp = (activeItem instanceof Composition)? activeItem : null;
     if (nowComp) {
       if (dropped.type === DragActionType.FOOTAGE) {
         Actions.createLayer(nowComp, 0, dropped.object);
@@ -298,7 +303,8 @@ var Timeline = React.createClass({
 
   _onLayerHeaderDragEnd(layer, layerHeader) {
     return (e) => {
-      let comp = this.props.store.get("editingComposition");
+      const activeItem = this.props.store.get("activeItem");
+      const comp = (activeItem instanceof Composition)? activeItem : null;
       if (!comp) {
         return;
       }

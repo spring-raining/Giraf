@@ -17,7 +17,7 @@ export default React.createClass({
         React.PropTypes.instanceOf(Composition),
       ]).isRequired,
       isSelected: React.PropTypes.boolean.isRequired,
-      isEdited: React.PropTypes.boolean.ieRequired,
+      isActive: React.PropTypes.boolean.ieRequired,
     }
   },
 
@@ -65,6 +65,7 @@ export default React.createClass({
         ${this.props.item.getFootageKind().toLowerCase()}
         ${this.props.item.type}
         ${this.props.isSelected? "selected" : ""}
+        ${this.props.isActive?   "active" : ""}
       `.replace("\s+", " ");
 
       description = (
@@ -85,7 +86,7 @@ export default React.createClass({
       className += `
         composition
         ${this.props.isSelected? "selected" : ""}
-        ${this.props.isEdited?   "edited" : ""}
+        ${this.props.isActive?   "active" : ""}
       `.replace("\s+", " ");
 
       description = (
@@ -128,12 +129,7 @@ export default React.createClass({
   },
 
   _onDoubleClick() {
-    if (this.props.item instanceof Composition) {
-      Actions.changeEditingComposition(this.props.item);
-    }
-    else {
-      Actions.changeEditingComposition(null);
-    }
+    Actions.changeActiveItem(this.props.item);
   },
 
   _onDragStart(e) {

@@ -111,7 +111,7 @@
       }
     }
 
-    &.edited {
+    &.active {
       &::after {
         content: "";
         position: absolute;

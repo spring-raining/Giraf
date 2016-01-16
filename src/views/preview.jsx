@@ -8,28 +8,28 @@ import {Composition}              from "src/stores/model/composition";
 
 var Preview = React.createClass({
   componentWillUpdate(nextProps, nextState) {
-    let selectingItem = nextProps.store.get("selectingItem");
+    let activeItem = nextProps.store.get("activeItem");
 
     if (this.refs.compositionContainer
-    &&  !(selectingItem instanceof Composition)) {
+    &&  !(activeItem instanceof Composition)) {
       this._flushDOM(this.refs.compositionContainer);
     }
   },
 
   componentDidUpdate() {
     let store = this.props.store;
-    let selectingItem = store.get("selectingItem");
+    let activeItem = store.get("activeItem");
 
-    if (selectingItem !== null) {
+    if (activeItem !== null) {
 
       // insert canvas into DOM
-      if (selectingItem instanceof Composition) {
-        this._updatePreviewCompositionDOM(selectingItem);
+      if (activeItem instanceof Composition) {
+        this._updatePreviewCompositionDOM(activeItem);
       }
 
       // play video
-      if (selectingItem instanceof Footage
-      &&  selectingItem.getFootageKind() === FootageKinds.VIDEO) {
+      if (activeItem instanceof Footage
+      &&  activeItem.getFootageKind() === FootageKinds.VIDEO) {
         let dom = this.refs.video;
         if (store.get("isPlaying")) {
           dom.play();
@@ -74,32 +74,32 @@ var Preview = React.createClass({
   },
 
   render() {
-    let selectingItem = this.props.store.get("selectingItem");
+    const activeItem = this.props.store.get("activeItem");
     let previewContainer;
-    if (selectingItem === null) {
-      previewContainer =
-        <div className="preview__container preview__none-container"></div>;
-    }
-    else if (selectingItem instanceof Footage) {
-      if (selectingItem.getFootageKind() === FootageKinds.IMAGE) {
+    if (activeItem instanceof Footage) {
+      if (activeItem.getFootageKind() === FootageKinds.IMAGE) {
         previewContainer =
           <div className="preview__container preview__footage-container">
-            <img src={selectingItem.objectURL} />
+            <img src={activeItem.objectURL} />
           </div>;
       }
-      else if (selectingItem.getFootageKind() === FootageKinds.VIDEO) {
+      else if (activeItem.getFootageKind() === FootageKinds.VIDEO) {
         previewContainer =
           <div className="preview__container preview__footage-container">
-            <video controls src={selectingItem.objectURL}
+            <video controls src={activeItem.objectURL}
                    onPause={this._onPause}
                    ref="video" />
           </div>;
       }
     }
-    else if (selectingItem instanceof Composition) {
+    else if (activeItem instanceof Composition) {
       previewContainer =
         <div className="preview__container preview__composition-container"
              ref="compositionContainer"></div>;
+    }
+    else {
+      previewContainer =
+        <div className="preview__container preview__none-container"></div>;
     }
 
     return <section className="preview panel">

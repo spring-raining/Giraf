@@ -31,7 +31,9 @@ const Modal = React.createClass({
   },
 
   componentDidMount() {
-    setKeyEvnets(this.getModalKeyEvents());
+    if (_Lang.isObject(this.props.keyEvents)) {
+      setKeyEvnets(this.getModalKeyEvents());
+    }
 
     // reveal
     this.refs.modalWall.classList.remove("hidden");

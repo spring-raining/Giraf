@@ -7,6 +7,7 @@ import Menu                   from "src/views/menu";
 import AboutGirafModal        from "src/views/modal/aboutGirafModal";
 import Store                  from "src/stores/store";
 import History                from "src/stores/history";
+import {Composition}          from "src/stores/model/composition";
 import genUUID                from "src/utils/genUUID";
 
 
@@ -15,7 +16,8 @@ var Nav = React.createClass({
   menuId: genUUID(),
 
   getNavContent() {
-    const editingComposition = Store.get("editingComposition");
+    const activeItem = Store.get("activeItem");
+    const editingComposition = (activeItem instanceof Composition) ? activeItem : null;
     const canUndo = History.commitStack.length > 0;
     const canRedo = History.revertStack.length > 0;
 

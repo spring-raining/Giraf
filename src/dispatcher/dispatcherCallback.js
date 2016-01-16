@@ -46,15 +46,8 @@ function dispatcherCallback(action) {
     Store.emitChange();
   }
 
-  else if (action.actionType === ActionConst.CHANGE_EDITING_COMPOSITION) {
-    Store.set("editingComposition")(action.composition);
-    Store.set("editingLayer")(null);
-    Store.set("isPlaying")(false);
-    Store.emitChange();
-  }
-
-  else if (action.actionType === ActionConst.CHANGE_EDITING_LAYER) {
-    Store.set("editingLayer")(action.layer);
+  else if (action.actionType === ActionConst.CHANGE_ACTIVE_ITEM) {
+    Store.set("activeItem")(action.item);
     Store.set("isPlaying")(false);
     Store.emitChange();
   }
@@ -63,8 +56,7 @@ function dispatcherCallback(action) {
     Store.push("compositions")(action.composition);
     Store.update({
       selectingItem: action.composition,
-      editingComposition: action.composition,
-      editingLayer: null,
+      activeItem: action.composition,
       isPlaying: false,
     });
     History.save(action.actionType, false);
@@ -77,8 +69,7 @@ function dispatcherCallback(action) {
         return (e.id === action.composition.id)? action.composition : e;
       }));
       Store.update({
-        selectingItem: action.composition,
-        editingComposition: action.composition,
+        activeItem: action.composition,
         isPlaying: false,
       });
       History.save(action.actionType, false);
@@ -91,9 +82,8 @@ function dispatcherCallback(action) {
     if (comp) {
       comp.layers = [action.layer].concat(comp.layers);
       Store.update({
-        selectingItem: comp,
-        editingComposition: comp,
-        editingLayer: action.layer,
+        selectingItem: action.layer,
+        activeItem: comp,
         isPlaying: false,
       });
       History.save(action.actionType, false);
@@ -108,9 +98,22 @@ function dispatcherCallback(action) {
         return (e.id === action.layer.id)? action.layer : e;
       });
       Store.update({
-        selectingItem: comp,
-        editingComposition: comp,
-        editingLayer: action.layer,
+        selectingItem: action.layer,
+        activeItem: comp,
+        isPlaying: false,
+      });
+      History.save(action.actionType, false);
+      Store.emitChange();
+    }
+  }
+
+  else if (action.actionType === ActionConst.DELETE_LAYER) {
+    const comp = searchById(Store.get("compositions"))(action.layer.parentCompId);
+    if (comp && searchById(comp.layers)(action.layer.id)) {
+      comp.layers = comp.layers.filter((e) => e.id !== action.layer.id);
+      Store.update({
+        selectingItem: null,
+        activeItem: comp,
         isPlaying: false,
       });
       History.save(action.actionType, false);

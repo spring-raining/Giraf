@@ -38,28 +38,39 @@ class ModelBase {
     }
     const lastKey = _Array.last(keys);
     const trimmedKeys = _Array.dropRight(keys);
-    if (target[lastKey] === undefined) {
-      if (Array.isArray(target)) {
-        History.recordNewOnArrayDiff(this, trimmedKeys, lastKey, value);
-      }
-      else {
-        History.recordNewDiff(this, keys, value);
+    if (typeof target[lastKey] === "undefined") {
+      if (typeof value !== "undefined") {
+        if (Array.isArray(target)) {
+          History.recordNewOnArrayDiff(this, trimmedKeys, lastKey, value);
+        }
+        else {
+          History.recordNewDiff(this, keys, value);
+        }
       }
       target[lastKey] = value;
     }
     else {
       if (Array.isArray(target[lastKey]) && Array.isArray(value)) {
-        value.forEach((e, i) => {
-          if (target[lastKey][i] === undefined) {
-            History.recordNewOnArrayDiff(this, keys, i, e);
+        let i;
+        for (i = 0; i < value.length; i++) {
+          if (typeof target[lastKey][i] === "undefined") {
+            History.recordNewOnArrayDiff(this, keys, i, value[i]);
+          } else {
+            History.recordEditDiff(this, keys.concat(i), target[lastKey][i], value[i]);
           }
-          else if (target[lastKey][i] !== value) {
-            History.recordEditDiff(this, keys.concat(i), target[lastKey][i], e);
-          }
-        });
+        }
+        while (i < target[lastKey].length) {
+          History.recordDeleteOnArrayDiff(this, keys, i, target[lastKey][i]);
+          i += 1;
+        }
       }
       else {
-        History.recordEditDiff(this, keys, target[_Array.last(keys)], value);
+        if (typeof value === "undefined") {
+          History.recordDeleteDiff(this, keys, target[lastKey]);
+        }
+        else {
+          History.recordEditDiff(this, keys, target[lastKey], value);
+        }
       }
       target[_Array.last(keys)] = value;
     }

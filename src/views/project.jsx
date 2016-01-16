@@ -36,16 +36,17 @@ var Project = React.createClass({
 
     const footages = store.get("footages").map((e) => {
       const isSelected = (e.id === store.get("selectingItem", "id"));
+      const isActive   = (e.id === store.get("activeItem", "id"));
       return <Item item={e} key={e.id}
                    isSelected={isSelected}
-                   isEdited={false} />;
+                   isActive={isActive} />;
     });
     const comps = store.get("compositions").map((e) => {
       const isSelected = (e.id === store.get("selectingItem", "id"));
-      const isEdited   = (e.id === store.get("editingComposition", "id"));
+      const isActive   = (e.id === store.get("activeItem", "id"));
       return <Item item={e} key={e.id}
                    isSelected={isSelected}
-                   isEdited={isEdited} />;
+                   isActive={isActive} />;
     });
 
     return (

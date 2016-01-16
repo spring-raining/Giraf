@@ -12,6 +12,16 @@
   color: $color-project-body;
   background-color: $color-project-bg;
 
+  input.form-native,
+  textarea.form-native,
+  select.form-native {
+    background: $color-project-input-bg;
+
+    &:focus {
+      border-color: $color-giraf;
+    }
+  }
+
   .project__brand {
     position: relative;
     margin: 8px 15px;
@@ -101,7 +111,7 @@
       }
     }
 
-    &.edited {
+    &.active {
       &::after {
         content: "";
         position: absolute;
@@ -111,6 +121,7 @@
         right: 0;
         border: 2px solid $color-giraf;
         border-radius: 2px;
+        pointer-events: none;
       }
     }
 
@@ -128,7 +139,7 @@
       right: 0;
       opacity: 0.5;
 
-      & > img,canvas {
+      & > img, canvas {
         height: $project-item-height;
         @include reveal(project-item-canvas, 0.2s) {
           0% {
@@ -149,9 +160,15 @@
 
     .project__item__title {
       @include single-line();
+      height: 24px;
       font-size: 14px;
       font-weight: 700;
-      color: $color-white;
+
+      .form-text__unfocus__value {
+        color: $color-white;
+        text-decoration: none;
+        min-width: 50px;
+      }
     }
 
     .project__item__description {

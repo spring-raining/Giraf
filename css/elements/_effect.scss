@@ -15,9 +15,20 @@
   .effect__legend {
     width: 100%;
     height: 36px;
-    line-height: 36px;
     font-size: 16px;
     margin-bottom: 8px;
+
+    .form-text {
+      width: 100%;
+      margin: 8px 0;
+
+      .form-text__unfocus__value,
+      .form-text__prefix,
+      .form-text__suffix {
+        color: $color-effect-body;
+        text-decoration: none;
+      }
+    }
   }
 
   input.form-native,

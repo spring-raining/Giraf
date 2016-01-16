@@ -6,6 +6,7 @@ import Actions              from "src/actions/actions";
 import {Footage}            from "src/stores/model/footage";
 import {Composition}        from "src/stores/model/composition";
 import {cloneCanvas}        from "src/utils/renderUtils";
+import {Text}               from "src/views/forms";
 
 
 export default React.createClass({
@@ -16,7 +17,7 @@ export default React.createClass({
         React.PropTypes.instanceOf(Composition),
       ]).isRequired,
       isSelected: React.PropTypes.boolean.isRequired,
-      isEdited: React.PropTypes.boolean.ieRequired,
+      isActive: React.PropTypes.boolean.ieRequired,
     }
   },
 
@@ -64,6 +65,7 @@ export default React.createClass({
         ${this.props.item.getFootageKind().toLowerCase()}
         ${this.props.item.type}
         ${this.props.isSelected? "selected" : ""}
+        ${this.props.isActive?   "active" : ""}
       `.replace("\s+", " ");
 
       description = (
@@ -84,7 +86,7 @@ export default React.createClass({
       className += `
         composition
         ${this.props.isSelected? "selected" : ""}
-        ${this.props.isEdited?   "edited" : ""}
+        ${this.props.isActive?   "active" : ""}
       `.replace("\s+", " ");
 
       description = (
@@ -112,7 +114,10 @@ export default React.createClass({
              ref="thumbnailContainer">
         </div>
         <div className="project__item__text">
-          <span className="project__item__title">{this.props.item.name}</span>
+          <div className="project__item__title">
+            <Text value={this.props.item.name}
+                  onChange={this._onTitleChange} />
+          </div>
           {description}
         </div>
       </li>
@@ -124,12 +129,7 @@ export default React.createClass({
   },
 
   _onDoubleClick() {
-    if (this.props.item instanceof Composition) {
-      Actions.changeEditingComposition(this.props.item);
-    }
-    else {
-      Actions.changeEditingComposition(null);
-    }
+    Actions.changeActiveItem(this.props.item);
   },
 
   _onDragStart(e) {
@@ -140,5 +140,11 @@ export default React.createClass({
 
   _onDragEnd() {
     Actions.endDrag();
+  },
+
+  _onTitleChange(value) {
+    this.props.item.update({
+      name: value,
+    });
   },
 });

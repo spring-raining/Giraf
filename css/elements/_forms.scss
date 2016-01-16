@@ -33,14 +33,21 @@
   .form-text__unfocus {
     position: absolute;
     width: 100%;
+
+    & > * {
+      display: inline-block;
+    }
   }
 
   .form-text__focus {
-    top: -4px;
+    .form-native-text {
+      width: auto;
+    }
   }
 
   .form-text__unfocus {
     line-height: $form-text-height;
+    cursor: text;
 
     .form-text__unfocus__value {
       color: $color-form-focus-border;
@@ -73,10 +80,16 @@
   .form-number__unfocus {
     position: absolute;
     width: 100%;
+
+    & > * {
+      display: inline-block;
+    }
   }
 
   .form-number__focus {
-    top: -4px;
+    .form-native-number {
+      width: auto;
+    }
   }
 
   .form-number__unfocus {

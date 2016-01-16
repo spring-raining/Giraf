@@ -51,6 +51,10 @@ var App = React.createClass({
         Actions.goForwardCurrentFrame(10);
         return false;
       },
+      "backspace": () => {
+        Actions.deleteSelectingItem();
+        return false;
+      }
     };
   },
 

@@ -1,6 +1,6 @@
 {
   "name": "giraf",
-  "version": "2.0.0-beta-5",
+  "version": "2.0.0-beta-6",
   "description": "Make gif animations on the web.",
   "main": "main.js",
   "scripts": {

@@ -49,7 +49,6 @@ var Timeline = React.createClass({
     const activeItem = this.props.store.get("activeItem");
     const comp = (activeItem instanceof Composition)? activeItem : null;
     const currentFrame = this.props.store.get("currentFrame");
-    console.log(comp);
     if (comp !== null) {
       // start auto render
       if (this.props.store.get("isPlaying")

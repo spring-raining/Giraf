@@ -1,11 +1,19 @@
 "use strict";
 
 import React                      from "react";
+import AceEditor                  from "react-ace";
+import brace                      from "brace";
 import Decimal                    from "decimal.js";
 import UAParser                   from "ua-parser-js";
 import _Lang                      from "lodash/lang";
 
 import genDummyImg                from "src/utils/genDummyImg";
+import genUUID                    from "src/utils/genUUID";
+
+// Customize Ace Editor
+import "brace/mode/javascript";
+import "brace/theme/github";
+import "brace/theme/monokai";
 
 
 const userAgent = new UAParser();
@@ -431,9 +439,10 @@ const ScriptArea = React.createClass({
   propTypes() {
     return {
       value:    React.PropTypes.string.isRequired,
-      name:    React.PropTypes.string,
-      cols:     React.PropTypes.number,
-      rows:     React.PropTypes.number,
+      name:     React.PropTypes.string,
+      width:    React.PropTypes.string,
+      height:   React.PropTypes.string,
+      theme:    React.PropTypes.string,
       onChange: React.PropTypes.func,
     };
   },
@@ -441,6 +450,7 @@ const ScriptArea = React.createClass({
   getInitialState() {
     return {
       tmpValue: this.props.value,
+      editorID: genUUID(),
     };
   },
 
@@ -451,30 +461,33 @@ const ScriptArea = React.createClass({
   },
 
   render() {
+    const theme = ["github", "monokai"].indexOf(this.props.theme)
+      ? this.props.theme
+      : "github";
+
     return (
       <div className="form form-script-area">
-        <NativeTextarea value={this.state.tmpValue}
-                        name={this.props.name}
-                        cols={this.props.cols}
-                        rows={this.props.rows}
-                        onBlur={this._onBlur}
-                        onChange={this._onChange} />
+        <AceEditor mode="javascript"
+                   theme={theme}
+                   width={this.props.width}
+                   height={this.props.height}
+                   value={this.state.tmpValue}
+                   onBlur={this._onBlur}
+                   onChange={this._onChange}
+                   name={this.state.editorID} />
       </div>
     );
   },
 
-  _onBlur(e) {
-    this.setState({
-      tmpValue: e.target.value,
-    });
+  _onBlur() {
     if (this.props.onChange) {
-      this.props.onChange(e.target.value);
+      this.props.onChange(this.state.tmpValue);
     }
   },
 
-  _onChange(e) {
+  _onChange(newValue) {
     this.setState({
-      tmpValue: e.target.value,
+      tmpValue: newValue,
     });
   },
 });

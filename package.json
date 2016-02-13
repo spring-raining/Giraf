@@ -27,6 +27,7 @@
   "dependencies": {
     "babelify": "^6.3.0",
     "bourbon": "^4.2.5",
+    "brace": "^0.7.0",
     "browserify": "^11.2.0",
     "decimal.js": "^4.0.3",
     "deep-diff": "^0.3.3",
@@ -42,6 +43,7 @@
     "lodash": "^3.10.1",
     "mousetrap": "^1.5.3",
     "react": "^0.14.3",
+    "react-ace": "^3.1.0",
     "react-dom": "^0.14.3",
     "react-inlinesvg": "~0.4.2",
     "react-split-pane": "0.1.15",

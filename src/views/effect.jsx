@@ -121,13 +121,16 @@ var Effect = React.createClass({
                           onChange={this._onOpacityChanged(layer)} />
                 </div>
               </div>
+            </fieldset>
+
+            <fieldset>
+              <div className="effect__legend">効果</div>
               <div className="effect__input">
-                <div className="effect__input__left">効果</div>
-                <div className="effect__input__right">
-                  <ScriptArea value={layer.scriptString}
-                              rows={10}
-                              onChange={this._onScriptChanged(layer)} />
-                </div>
+                <ScriptArea value={layer.scriptString}
+                            width="100%"
+                            height="250px"
+                            theme="github"
+                            onChange={this._onScriptChanged(layer)} />
               </div>
             </fieldset>
           </section>

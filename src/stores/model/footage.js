@@ -10,14 +10,14 @@ import {classWithTraits}                from "src/utils/traitUtils";
 import readGIF                          from "src/utils/readGIF";
 
 
-const StatusTypes = keyMirror({
+export const StatusTypes = keyMirror({
   UNKNOWN: null,
   LOADING: null,
   NORMAL: null,
   DYING: null,
 });
 
-const FootageKinds = keyMirror({
+export const FootageKinds = keyMirror({
   UNKNOWN: null,
   IMAGE: null,
   VIDEO: null,
@@ -25,7 +25,7 @@ const FootageKinds = keyMirror({
 
 const Base = classWithTraits(ModelBase, _Selectable, _Renderable);
 
-class Footage extends Base {
+export class Footage extends Base {
   /**
    *
    * @param {string} id

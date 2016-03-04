@@ -8,7 +8,7 @@ import Actions                                  from "src/actions/actions";
 import setKeyEvnets                             from "src/utils/setKeyEvents";
 
 
-const Modal = React.createClass({
+export const Modal = React.createClass({
   propTypes() {
     return {
       title: React.PropTypes.string,
@@ -75,7 +75,7 @@ const Modal = React.createClass({
   }
 });
 
-const ModalButtonSet = React.createClass({
+export const ModalButtonSet = React.createClass({
   propTypes() {
     return {
       content: React.PropTypes.arrayOf(

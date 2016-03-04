@@ -7,7 +7,7 @@ import ModelBase            from "src/stores/model/modelBase";
 import {hasTrait}           from "src/utils/traitUtils";
 
 
-class FrameCacheHolder extends ModelBase {
+export class FrameCacheHolder extends ModelBase {
   constructor() {
     super();
     this._frameCache = {};

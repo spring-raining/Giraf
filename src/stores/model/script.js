@@ -3,7 +3,7 @@
 import ModelBase            from "src/stores/model/modelBase";
 
 
-class Script extends ModelBase {
+export class Script extends ModelBase {
   constructor(scriptString = "") {
     super();
     this._scriptString = scriptString;

@@ -3,7 +3,7 @@
 import ModelBase            from "src/stores/model/modelBase";
 
 
-class Point extends ModelBase {
+export class Point extends ModelBase {
   constructor(points) {
     super();
     if (points.length === 2) {

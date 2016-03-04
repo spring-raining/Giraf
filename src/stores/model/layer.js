@@ -14,13 +14,13 @@ import {classWithTraits, hasTrait}    from "src/utils/traitUtils";
 
 const Base = classWithTraits(ModelBase, _Selectable);
 
-const LayerKinds = keyMirror({
+export const LayerKinds = keyMirror({
   UNKNOWN: null,
   STILL: null,
   ANIMATED: null,
 });
 
-class Layer extends Base {
+export class Layer extends Base {
   /**
    *
    * @param {string} id

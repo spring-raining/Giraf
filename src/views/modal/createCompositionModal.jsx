@@ -1,6 +1,7 @@
 "use strict";
 
 import React                                    from "react";
+import {FormattedMessage}                       from "react-intl";
 
 import Actions                                  from "src/actions/actions";
 import {Composition}                            from "src/stores/model/composition";
@@ -34,15 +35,18 @@ const CreateCompositionModal = React.createClass({
   },
 
   render() {
-    const title = "新しいコンポジションを作成";
+    const title = <FormattedMessage id="views.modal.create_composition_modal.title"
+                                    defaultMessage="新しいコンポジションを作成" />;
 
     const buttonContent = [
       {
-        text: "キャンセル",
+        text: <FormattedMessage id="views.modal.create_composition_modal.cancel"
+                                defaultMessage="キャンセル" />,
         className: "sub",
         onClick: this._onCancel,
       }, {
-        text: "作成",
+        text: <FormattedMessage id="views.modal.create_composition_modal.create"
+                                defaultMessage="作成" />,
         onClick: this._onSubmit,
       },
     ];
@@ -56,7 +60,8 @@ const CreateCompositionModal = React.createClass({
           <div className="create-composition-modal__settings">
             <div className="create-composition-modal__input">
               <div className="create-composition-modal__input__left">
-                コンポジション名
+                <FormattedMessage id="views.modal.create_composition_modal.composition_name"
+                                  defaultMessage="コンポジション名" />
               </div>
               <div className="create-composition-modal__input__right">
                 <Text value={this.state.compName}
@@ -65,7 +70,8 @@ const CreateCompositionModal = React.createClass({
             </div>
             <div className="create-composition-modal__input">
               <div className="create-composition-modal__input__left">
-                幅
+                <FormattedMessage id="views.modal.create_composition_modal.width"
+                                  defaultMessage="幅" />
               </div>
               <div className="create-composition-modal__input__right">
                 <Number value={this.state.compWidth}
@@ -77,7 +83,8 @@ const CreateCompositionModal = React.createClass({
             </div>
             <div className="create-composition-modal__input">
               <div className="create-composition-modal__input__left">
-                高さ
+                <FormattedMessage id="views.modal.create_composition_modal.height"
+                                  defaultMessage="高さ" />
               </div>
               <div className="create-composition-modal__input__right">
                 <Number value={this.state.compHeight}
@@ -89,7 +96,8 @@ const CreateCompositionModal = React.createClass({
             </div>
             <div className="create-composition-modal__input">
               <div className="create-composition-modal__input__left">
-                フレーム数
+                <FormattedMessage id="views.modal.create_composition_modal.number_of_frames"
+                                  defaultMessage="フレーム数" />
               </div>
               <div className="create-composition-modal__input__right">
                 <Number value={this.state.compFrame}
@@ -101,7 +109,8 @@ const CreateCompositionModal = React.createClass({
             </div>
             <div className="create-composition-modal__input">
               <div className="create-composition-modal__input__left">
-                フレームレート
+                <FormattedMessage id="views.modal.create_composition_modal.frame_rate"
+                                  defaultMessage="フレームレート" />
               </div>
               <div className="create-composition-modal__input__right">
                 <Number value={this.state.compFPS}

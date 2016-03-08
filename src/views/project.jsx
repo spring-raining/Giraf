@@ -2,6 +2,7 @@
 
 import React              from "react";
 import Isvg               from "react-inlinesvg";
+import {FormattedMessage} from "react-intl";
 
 import pkg                from "package.json";
 import Actions            from "src/actions/actions";
@@ -14,13 +15,15 @@ var Project = React.createClass({
 
   menuContent: [
     {
-      name: "ファイルを読み込む",
+      name: <FormattedMessage id="views.project.import_file"
+                              defaultMessage="ファイルを読み込む" />,
       onClick: () => {
         Actions.updateExpandingMenuId(null);
         Actions.importFile();
       },
     }, {
-      name: "コンポジションを作成",
+      name: <FormattedMessage id="views.project.create_composition"
+                              defaultMessage="コンポジションを作成" />,
       onClick: () => {
         Actions.updateExpandingMenuId(null);
         Actions.createComposition();

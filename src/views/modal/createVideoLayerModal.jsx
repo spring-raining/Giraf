@@ -1,6 +1,7 @@
 "use strict";
 
 import React                                    from "react";
+import {FormattedMessage}                       from "react-intl";
 import _Utility                                 from "lodash/utility";
 
 import Actions                                  from "src/actions/actions";
@@ -54,14 +55,17 @@ const CreateVideoLayerModal = React.createClass({
   },
 
   render() {
-    const title = "範囲を選択";
+    const title = <FormattedMessage id="views.create_video_layer_modal.title"
+                                    defaultMessage="範囲を選択" />;
 
     const buttonContent = [
       {
-        text: "キャンセル",
+        text: <FormattedMessage id="views.create_video_layer_modal.cancel"
+                                defaultMessage="キャンセル" />,
         onClick: this._onCancel,
       }, {
-        text: "決定",
+        text: <FormattedMessage id="views.create_video_layer_modal.ok"
+                                defaultMessage="決定" />,
         onClick: this._onSubmit,
       },
     ];
@@ -81,7 +85,8 @@ const CreateVideoLayerModal = React.createClass({
             <li>
               <label>
                 <div className="create-video-layer-modal__info__center__dt">
-                  フレームレート
+                  <FormattedMessage id="views.create_video_layer_modal.frame_rate"
+                                    defaultMessage="フレームレート" />
                 </div>
                 <div className="create-video-layer-modal__info__center__dd">
                   <Select name="videoFPS"
@@ -94,7 +99,8 @@ const CreateVideoLayerModal = React.createClass({
             </li>
             <li>
               <div className="create-video-layer-modal__info__center__dt">
-                フレーム数
+                <FormattedMessage id="views.create_video_layer_modal.number_of_frame"
+                                  defaultMessage="フレーム数" />
               </div>
               <div className="create-video-layer-modal__info__center__dd">
                 <span className="modal__badge">
@@ -112,7 +118,8 @@ const CreateVideoLayerModal = React.createClass({
           <ul>
             <li>
               <div className="create-video-layer-modal__info__center__dt">
-                フレーム数
+                <FormattedMessage id="views.create_video_layer_modal.number_of_frame"
+                                  defaultMessage="フレーム数" />
               </div>
               <div className="create-video-layer-modal__info__center__dd">
                 <span className="modal__badge">
@@ -143,16 +150,20 @@ const CreateVideoLayerModal = React.createClass({
           </div>
           <div className="create-video-layer-modal__controller">
             <button onClick={this._onBeginButtonClicked}>
-              ここを始点にする
+              <FormattedMessage id="views.create_video_layer_modal.set_in_point"
+                                defaultMessage="ここを始点にする" />
             </button>
             <button onClick={this._onPrevFrameButtonClicked}>
-              前のフレーム
+              <FormattedMessage id="views.create_video_layer_modal.previous_frame"
+                                defaultMessage="前のフレーム" />
             </button>
             <button onClick={this._onNextFrameButtonClicked}>
-              次のフレーム
+              <FormattedMessage id="views.create_video_layer_modal.next_frame"
+                                defaultMessage="次のフレーム" />
             </button>
             <button onClick={this._onEndButtonClicked}>
-              ここを終点にする
+              <FormattedMessage id="views.create_video_layer_modal.set_out_point"
+                                defaultMessage="ここを終点にする" />
             </button>
           </div>
           <div className="create-video-layer-modal__info">

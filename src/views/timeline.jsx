@@ -1,6 +1,7 @@
 "use strict";
 
 import React                          from "react";
+import {FormattedMessage}             from "react-intl";
 import _Array                         from "lodash/array";
 import _Utility                       from "lodash/utility";
 
@@ -88,14 +89,15 @@ var Timeline = React.createClass({
     const comp = (activeItem instanceof Composition) ? activeItem : null;
     const dragging = store.get("dragging");
 
-    let dragHere = null;
+    let drophere = null;
     if (dragging) {
       if (dragging.type === DragActionType.FOOTAGE
       ||  dragging.type === DragActionType.COMPOSITION) {
-        dragHere = (
-          <div className="timeline__draghere">
-            <div className="timeline__draghere__card">
-              ここにドラッグ
+        drophere = (
+          <div className="timeline__drophere">
+            <div className="timeline__drophere__card">
+              <FormattedMessage id="views.timeline.drop_here"
+                                defaultMessage="ここにドロップ" />
             </div>
           </div>
         );
@@ -171,7 +173,7 @@ var Timeline = React.createClass({
               </div>
             </Scroll>
           </div>
-          {dragHere}
+          {drophere}
         </section>
       );
     }
@@ -183,7 +185,7 @@ var Timeline = React.createClass({
                  onDragLeave={this._onDragLeave}
                  onDrop={this._onDrop}>
           <TutorialModal />
-          {dragHere}
+          {drophere}
         </section>
       );
     }

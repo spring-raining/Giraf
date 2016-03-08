@@ -1,26 +1,21 @@
 "use strict";
 
-import React            from "react";
+import React                                    from "react";
+import {FormattedMessage}                       from 'react-intl';
 
-import Actions          from "src/actions/actions";
-import Store            from "src/stores/store";
-import {Composition}    from "src/stores/model/composition";
-import Menu             from "src/views/menu";
-import genUUID          from "src/utils/genUUID";
+import Actions                                  from "src/actions/actions";
+import Store                                    from "src/stores/store";
+import {Composition}                            from "src/stores/model/composition";
+import Menu                                     from "src/views/menu";
+import genUUID                                  from "src/utils/genUUID";
 
 
 export default React.createClass({
 
   menuContent: (composition) => [
-    //{
-    //  name: "空レイヤーを追加",
-    //  onClick: () => {
-    //    Actions.updateExpandingMenuId(null);
-    //    Actions.createLayer(composition);
-    //  },
-    //},
     {
-      name: "GIFを作成",
+      name: <FormattedMessage id="views.timeline.summary.create_gif"
+                              defaultMessage="GIFを作成" />,
       onClick: () => {
         Actions.updateExpandingMenuId(null);
         Actions.renderGIF(composition);

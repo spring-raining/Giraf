@@ -15,24 +15,24 @@
   }
 }
 
-.timeline__draghere {
+.timeline__drophere {
   @include position(absolute, 0 0 0 0);
   @include calculate-z-index(anyway, base);
 
-  border: 2px solid $color-timeline-draghere-border;
-  background-color: $color-timeline-draghere-bg;
+  border: 2px solid $color-timeline-drophere-border;
+  background-color: $color-timeline-drophere-bg;
 
-  .timeline__draghere__card {
+  .timeline__drophere__card {
     @include giraf-card(2);
-    @include giraf-normal-body($color-timeline-draghere-border);
+    @include giraf-normal-body($color-timeline-drophere-border);
     @include position(absolute, 6px 0 null 0);
     margin: auto;
     padding: 12px;
     width: 200px;
-    background-color: $color-timeline-draghere-border;
+    background-color: $color-timeline-drophere-border;
     text-align: center;
 
-    @include reveal(timeline-draghere-card, 0.2s, block, 0.2s) {
+    @include reveal(timeline-drophere-card, 0.2s, block, 0.2s) {
       0% {
         opacity: 0;
         @include transform(translate3d(0, 20px , 0));
@@ -45,7 +45,7 @@
     }
   }
 
-  @include reveal(timeline-draghere, 0.2s) {
+  @include reveal(timeline-drophere, 0.2s) {
     0% {
       opacity: 0;
     }

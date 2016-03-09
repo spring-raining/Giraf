@@ -1,7 +1,7 @@
 "use strict";
 
 import React                  from "react";
-import {FormattedMessage}     from 'react-intl';
+import {FormattedMessage, defineMessages} from 'react-intl';
 
 import Actions                from "src/actions/actions";
 import Menu                   from "src/views/menu";
@@ -12,48 +12,48 @@ import {Composition}          from "src/stores/model/composition";
 import genUUID                from "src/utils/genUUID";
 
 
-const messages = {
+const messages = defineMessages({
   aboutGiraf: {
-    id: "nav.about_giraf",
-    defaultMessage: "Girafについて",
+    id: "views.nav.about_giraf",
+    defaultMessage: "About Giraf",
   },
   github: {
-    id: "nav.github",
+    id: "views.nav.github",
     defaultMessage: "GitHub",
   },
   harusamexCom: {
-    id: "nav.harusamex_com",
+    id: "views.nav.harusamex_com",
     defaultMessage: "harusamex.com",
   },
   file: {
-    id: "nav.file",
-    defaultMessage: "ファイル",
+    id: "views.nav.file",
+    defaultMessage: "File",
   },
   importFile: {
-    id: "nav.import_file",
-    defaultMessage: "ファイルを読み込む",
+    id: "views.nav.import_file",
+    defaultMessage: "Import File",
   },
   createComposition: {
-    id: "nav.create_composition",
-    defaultMessage: "コンポジションを作成",
+    id: "views.nav.create_composition",
+    defaultMessage: "Create Composition",
   },
   createGIF: {
-    id: "nav.create_gif",
-    defaultMessage: "GIFを作成",
+    id: "views.nav.create_gif",
+    defaultMessage: "Create GIF",
   },
   edit: {
-    id: "nav.edit",
-    defaultMessage: "編集",
+    id: "views.nav.edit",
+    defaultMessage: "Edit",
   },
   undo: {
-    id: "nav.undo",
-    defaultMessage: "元に戻す"
+    id: "views.nav.undo",
+    defaultMessage: "Undo"
   },
   redo: {
-    id: "nav.redo",
-    defaultMessage: "やり直す",
+    id: "views.nav.redo",
+    defaultMessage: "Redo",
   },
-};
+});
 
 var Nav = React.createClass({
 
@@ -91,7 +91,7 @@ var Nav = React.createClass({
           },
         ],
       }, {
-        name: "ファイル",
+        name: <FormattedMessage {...messages.file} />,
         id: this.menuId + "_2",
         child: [
           {
@@ -118,7 +118,7 @@ var Nav = React.createClass({
           },
         ],
       }, {
-        name: "編集",
+        name: <FormattedMessage {...messages.edit} />,
         id: this.menuId + "_3",
         child: [
           {

@@ -40,12 +40,12 @@ var Effect = React.createClass({
             <fieldset>
               <div className="effect__legend">
                 <FormattedMessage id="views.effect.transform"
-                                  defaultMessage="トランスフォーム" />
+                                  defaultMessage="Transform" />
               </div>
               <div className="effect__input">
                 <div className="effect__input__left">
                   <FormattedMessage id="views.effect.anchor_point"
-                                    defaultMessage="アンカーポイント" />
+                                    defaultMessage="Anchor Point" />
                 </div>
                 <div className="effect__input__right">
                   <Number value={layer.transform.anchorPoint.x}
@@ -60,7 +60,7 @@ var Effect = React.createClass({
               <div className="effect__input">
                 <div className="effect__input__left">
                   <FormattedMessage id="views.effect.position"
-                                    defaultMessage="位置" />
+                                    defaultMessage="Position" />
                 </div>
 
                 <div className="effect__input__right">
@@ -75,7 +75,7 @@ var Effect = React.createClass({
               <div className="effect__input">
                 <div className="effect__input__left">
                   <FormattedMessage id="views.effect.scale"
-                                    defaultMessage="大きさ" />
+                                    defaultMessage="Scale" />
                 </div>
                 <div className="effect__input__right">
                   <Number value={layer.transform.scale.x}
@@ -91,7 +91,7 @@ var Effect = React.createClass({
               <div className="effect__input">
                 <div className="effect__input__left">
                   <FormattedMessage id="views.effect.fix_aspect_ratio"
-                                    defaultMessage="縦横比を固定" />
+                                    defaultMessage="Fix Aspect Ratio" />
                 </div>
                 <div className="effect__input__right">
                   <Checkbox value={this.state.isFixingAspect}
@@ -101,7 +101,7 @@ var Effect = React.createClass({
               <div className="effect__input">
                 <div className="effect__input__left">
                   <FormattedMessage id="views.effect.rotation"
-                                    defaultMessage="回転" />
+                                    defaultMessage="Rotation" />
                 </div>
                 <div className="effect__input__right">
                   <Number value={layer.transform.rotation}
@@ -114,7 +114,7 @@ var Effect = React.createClass({
               <div className="effect__input">
                 <div className="effect__input__left">
                   <FormattedMessage id="views.effect.opacity"
-                                    defaultMessage="透明度" />
+                                    defaultMessage="Opacity" />
                 </div>
                 <div className="effect__input__right">
                   <Number value={layer.transform.opacity}
@@ -127,7 +127,7 @@ var Effect = React.createClass({
               <div className="effect__input">
                 <div className="effect__input__left">
                   <FormattedMessage id="views.effect.script"
-                                    defaultMessage="スクリプト" />
+                                    defaultMessage="Script" />
                 </div>
                 <div className="effect__input__right">
                   <ScriptArea value={layer.scriptString}
@@ -152,7 +152,7 @@ var Effect = React.createClass({
               <div className="effect__input">
                 <div className="effect__input__left">
                   <FormattedMessage id="views.effect.width"
-                                    defaultMessage="幅" />
+                                    defaultMessage="Width" />
                 </div>
                 <div className="effect__input__right">
                   <Number value={comp.width}
@@ -165,7 +165,7 @@ var Effect = React.createClass({
               <div className="effect__input">
                 <div className="effect__input__left">
                   <FormattedMessage id="views.effect.height"
-                                    defaultMessage="高さ" />
+                                    defaultMessage="Height" />
                 </div>
                 <div className="effect__input__right">
                   <Number value={comp.height}
@@ -178,7 +178,7 @@ var Effect = React.createClass({
               <div className="effect__input">
                 <div className="effect__input__left">
                   <FormattedMessage id="views.effect.fix_aspect_ratio"
-                                    defaultMessage="縦横比を固定" />
+                                    defaultMessage="Fix Aspect Ratio" />
                 </div>
                 <div className="effect__input__right">
                   <Checkbox value={this.state.isFixingAspect}
@@ -188,7 +188,7 @@ var Effect = React.createClass({
               <div className="effect__input">
                 <div className="effect__input__left">
                   <FormattedMessage id="views.effect.number_of_frames"
-                                    defaultMessage="フレーム数" />
+                                    defaultMessage="Number of Frames" />
                 </div>
                 <div className="effect__input__right">
                   <Number value={comp.frame}
@@ -201,7 +201,7 @@ var Effect = React.createClass({
               <div className="effect__input">
                 <div className="effect__input__left">
                   <FormattedMessage id="views.effect.frame_rate"
-                                    defaultMessage="フレームレート" />
+                                    defaultMessage="Frame Rate" />
                 </div>
                 <div className="effect__input__right">
                   <Number value={comp.fps}

@@ -15,7 +15,7 @@ export default React.createClass({
   menuContent: (composition) => [
     {
       name: <FormattedMessage id="views.timeline.summary.create_gif"
-                              defaultMessage="GIFを作成" />,
+                              defaultMessage="Create GIF" />,
       onClick: () => {
         Actions.updateExpandingMenuId(null);
         Actions.renderGIF(composition);

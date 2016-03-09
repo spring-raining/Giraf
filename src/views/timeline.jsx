@@ -97,7 +97,7 @@ var Timeline = React.createClass({
           <div className="timeline__drophere">
             <div className="timeline__drophere__card">
               <FormattedMessage id="views.timeline.drop_here"
-                                defaultMessage="ここにドロップ" />
+                                defaultMessage="Drop Here" />
             </div>
           </div>
         );

@@ -27,12 +27,12 @@ const AboutGirafModal = React.createClass({
 
   render() {
     const title = <FormattedMessage id="views.modal.about_giraf_modal.title"
-                                    defaultMessage="Girafについて" />;
+                                    defaultMessage="About Giraf" />;
 
     const buttonContent = [
       {
         text: <FormattedMessage id="views.modal.about_giraf_modal.close"
-                                defaultMessage="閉じる" />,
+                                defaultMessage="Close" />,
         onClick: () => {
           Actions.updateModal(null);
         },
@@ -66,7 +66,7 @@ const AboutGirafModal = React.createClass({
           <h2>Acknowledgement</h2>
           <p>
             <FormattedMessage id="views.modal.about_giraf_modal.acknowledgement_message"
-                              defaultMessage="Girafは多くのオープンソースソフトウェアで成り立っています。" />
+                              defaultMessage="Giraf depends on many open source projects." />
           </p>
           {thirdPartyLicenses}
         </div>

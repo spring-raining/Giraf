@@ -5,7 +5,7 @@
   ],
   "plugins": [
     ["react-intl", {
-      "messagesDir": "./build/messages/"
+      "messagesDir": "./.tmp/messages/"
     }]
   ]
 }

@@ -55,17 +55,17 @@ const CreateVideoLayerModal = React.createClass({
   },
 
   render() {
-    const title = <FormattedMessage id="views.create_video_layer_modal.title"
-                                    defaultMessage="範囲を選択" />;
+    const title = <FormattedMessage id="views.modal.create_video_layer_modal.title"
+                                    defaultMessage="Select Range" />;
 
     const buttonContent = [
       {
-        text: <FormattedMessage id="views.create_video_layer_modal.cancel"
-                                defaultMessage="キャンセル" />,
+        text: <FormattedMessage id="views.modal.create_video_layer_modal.cancel"
+                                defaultMessage="Cancel" />,
         onClick: this._onCancel,
       }, {
-        text: <FormattedMessage id="views.create_video_layer_modal.ok"
-                                defaultMessage="決定" />,
+        text: <FormattedMessage id="views.modal.create_video_layer_modal.ok"
+                                defaultMessage="OK" />,
         onClick: this._onSubmit,
       },
     ];
@@ -85,8 +85,8 @@ const CreateVideoLayerModal = React.createClass({
             <li>
               <label>
                 <div className="create-video-layer-modal__info__center__dt">
-                  <FormattedMessage id="views.create_video_layer_modal.frame_rate"
-                                    defaultMessage="フレームレート" />
+                  <FormattedMessage id="views.modal.create_video_layer_modal.frame_rate"
+                                    defaultMessage="Frame Rate" />
                 </div>
                 <div className="create-video-layer-modal__info__center__dd">
                   <Select name="videoFPS"
@@ -99,8 +99,8 @@ const CreateVideoLayerModal = React.createClass({
             </li>
             <li>
               <div className="create-video-layer-modal__info__center__dt">
-                <FormattedMessage id="views.create_video_layer_modal.number_of_frame"
-                                  defaultMessage="フレーム数" />
+                <FormattedMessage id="views.modal.create_video_layer_modal.number_of_frames"
+                                  defaultMessage="Number of Frames" />
               </div>
               <div className="create-video-layer-modal__info__center__dd">
                 <span className="modal__badge">
@@ -118,8 +118,8 @@ const CreateVideoLayerModal = React.createClass({
           <ul>
             <li>
               <div className="create-video-layer-modal__info__center__dt">
-                <FormattedMessage id="views.create_video_layer_modal.number_of_frame"
-                                  defaultMessage="フレーム数" />
+                <FormattedMessage id="views.modal.create_video_layer_modal.number_of_frames"
+                                  defaultMessage="Number of Frames" />
               </div>
               <div className="create-video-layer-modal__info__center__dd">
                 <span className="modal__badge">
@@ -150,20 +150,20 @@ const CreateVideoLayerModal = React.createClass({
           </div>
           <div className="create-video-layer-modal__controller">
             <button onClick={this._onBeginButtonClicked}>
-              <FormattedMessage id="views.create_video_layer_modal.set_in_point"
-                                defaultMessage="ここを始点にする" />
+              <FormattedMessage id="views.modal.create_video_layer_modal.set_in_point"
+                                defaultMessage="Set In Point" />
             </button>
             <button onClick={this._onPrevFrameButtonClicked}>
-              <FormattedMessage id="views.create_video_layer_modal.previous_frame"
-                                defaultMessage="前のフレーム" />
+              <FormattedMessage id="views.modal.create_video_layer_modal.previous_frame"
+                                defaultMessage="Previous Frame" />
             </button>
             <button onClick={this._onNextFrameButtonClicked}>
-              <FormattedMessage id="views.create_video_layer_modal.next_frame"
-                                defaultMessage="次のフレーム" />
+              <FormattedMessage id="views.modal.create_video_layer_modal.next_frame"
+                                defaultMessage="Next Frame" />
             </button>
             <button onClick={this._onEndButtonClicked}>
-              <FormattedMessage id="views.create_video_layer_modal.set_out_point"
-                                defaultMessage="ここを終点にする" />
+              <FormattedMessage id="views.modal.create_video_layer_modal.set_out_point"
+                                defaultMessage="Set Out Point" />
             </button>
           </div>
           <div className="create-video-layer-modal__info">

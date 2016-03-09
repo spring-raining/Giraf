@@ -16,14 +16,14 @@ var Project = React.createClass({
   menuContent: [
     {
       name: <FormattedMessage id="views.project.import_file"
-                              defaultMessage="ファイルを読み込む" />,
+                              defaultMessage="Import File" />,
       onClick: () => {
         Actions.updateExpandingMenuId(null);
         Actions.importFile();
       },
     }, {
       name: <FormattedMessage id="views.project.create_composition"
-                              defaultMessage="コンポジションを作成" />,
+                              defaultMessage="Create Composition" />,
       onClick: () => {
         Actions.updateExpandingMenuId(null);
         Actions.createComposition();

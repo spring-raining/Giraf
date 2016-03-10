@@ -1,4 +1,5 @@
 {
+  "views.app.unsaved_warning": "Girafは編集中です。変更は保存されません。",
   "views.effect.anchor_point": "アンカーポイント",
   "views.effect.fix_aspect_ratio": "縦横比を固定",
   "views.effect.frame_rate": "フレームレート",

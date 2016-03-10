@@ -2,6 +2,7 @@
 
 import React                  from "react";
 import Split                  from "react-split-pane";
+import {intlShape, injectIntl, defineMessages} from "react-intl";
 
 import Actions                from "src/actions/actions";
 import Store                  from "src/stores/store";
@@ -14,7 +15,20 @@ import Timeline               from "src/views/timeline";
 import setKeyEvents           from "src/utils/setKeyEvents";
 
 
+const messages = defineMessages({
+  unsaved_warning: {
+    id: "views.app.unsaved_warning",
+    defaultMessage: "Giraf is been editing. Your changes will not be saved."
+  }
+});
+
 var App = React.createClass({
+
+  propTypes() {
+    return {
+      intl: intlShape.isRequired,
+    };
+  },
 
   getGeneralKeyEvents() {
     return {
@@ -66,12 +80,14 @@ var App = React.createClass({
   },
 
   componentDidMount() {
+    const {formatMessage} = this.props.intl;
+
     this.state.store.addChangeListener(this._onChange);
     setKeyEvents(this.getGeneralKeyEvents());
 
     window.onbeforeunload = (e) => {
       if (History.isChanged()) {
-        return "Girafは編集中です 変更は保存されません";
+        return formatMessage(messages.unsaved_warning);
       } else {
         // Pass dialog
         e = null;
@@ -142,4 +158,4 @@ var App = React.createClass({
   }
 });
 
-export default App;
+export default injectIntl(App);

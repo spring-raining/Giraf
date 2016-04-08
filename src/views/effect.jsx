@@ -144,17 +144,16 @@ var Effect = React.createClass({
             </fieldset>
 
             <fieldset>
-              <div className="effect__legend">効果</div>
+              <div className="effect__legend">
+                <FormattedMessage id="views.effect.script"
+                                  defaultMessage="Script" />
+              </div>
               <div className="effect__input">
-                <div className="effect__input__left">
-                  <FormattedMessage id="views.effect.script"
-                                    defaultMessage="Script" />
-                </div>
-                <div className="effect__input__right">
-                  <ScriptArea value={layer.scriptString}
-                              rows={10}
-                              onChange={this._onScriptChanged(layer)} />
-                </div>
+                <ScriptArea value={layer.scriptString}
+                            width="100%"
+                            height="250px"
+                            theme="monokai"
+                            onChange={this._onScriptChanged(layer)} />
               </div>
             </fieldset>
           </section>

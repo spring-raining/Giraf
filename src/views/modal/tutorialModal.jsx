@@ -1,13 +1,15 @@
 "use strict";
 
 import React                                    from "react";
+import {FormattedMessage}                       from "react-intl";
 
 import {Modal, ModalButtonSet}                  from "src/views/modal";
 
 
 const TutorialModal = React.createClass({
   render() {
-    const title = "3ステップでかんたんGIF作成";
+    const title = <FormattedMessage id="views.modal.tutorial_modal.title"
+                                    defaultMessage="Easy 3-step to create GIF" />;
 
     return (
       <Modal title={title}>
@@ -16,17 +18,26 @@ const TutorialModal = React.createClass({
           <div className="tutorial-modal__step">
             <img src="rsc/step1.png" />
             <h3>Step 1</h3>
-            <p>mp4/GIFアニメ/画像を読み込む</p>
+            <p>
+              <FormattedMessage id="views.modal.tutorial_modal.step_1"
+                                defaultMessage="Import the mp4/GIF/image files" />
+            </p>
           </div>
           <div className="tutorial-modal__step">
             <img src="rsc/step2.png" />
             <h3>Step 2</h3>
-            <p>読み込んだ素材をここにドラッグ</p>
+            <p>
+              <FormattedMessage id="views.modal.tutorial_modal.step_2"
+                                defaultMessage="Drop the imported footage on here" />
+            </p>
           </div>
           <div className="tutorial-modal__step">
             <img src="rsc/step3.png" />
             <h3>Step 3</h3>
-            <p>編集してGIFを作成！</p>
+            <p>
+              <FormattedMessage id="views.modal.tutorial_modal.step_3"
+                                defaultMessage="Edit and create the GIF!" />
+            </p>
           </div>
         </div>
       </Modal>

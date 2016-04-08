@@ -3,8 +3,8 @@
 import React                      from "react";
 import ReactDOM                   from "react-dom";
 import {addLocaleData, IntlProvider} from "react-intl";
-import enLocaleData               from "react-intl/lib/locale-data/en";
-import jaLocaleData               from "react-intl/lib/locale-data/ja";
+import enLocaleData               from "react-intl/locale-data/en";
+import jaLocaleData               from "react-intl/locale-data/ja";
 
 import App                        from "src/views/app";
 import getUserLanguage            from "src/utils/getUserLanguage";

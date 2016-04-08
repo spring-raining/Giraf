@@ -442,6 +442,15 @@ body:not(.sm) .only-sm {
 .header .btn-set .btn {
   margin-right: 12px;
 }
+.header .languages {
+  margin: 16px 0;
+}
+.header .languages > * {
+  margin-right: 8px;
+}
+.header .languages a {
+  color: #fff;
+}
 .feats .lead {
   margin: 36px 0 10px;
   font-weight: 200;

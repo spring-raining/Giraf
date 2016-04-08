@@ -96,17 +96,7 @@ q:before, q:after {
 }
 
 a {
-  color: $color-a;
-  text-decoration: none;
-
-  &:active, &:hover {
-    outline: 0;
-  }
-
-  &:hover, &:focus {
-    color: darken($color-a, 20%);
-    text-decoration: underline;
-  }
+  @include giraf-link();
 }
 
 h1 {

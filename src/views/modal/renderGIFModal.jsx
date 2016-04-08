@@ -1,6 +1,7 @@
 "use strict";
 
 import React                                    from "react";
+import {FormattedMessage}                       from "react-intl";
 import keyMirror                                from "keymirror";
 
 import Actions                                  from "src/actions/actions";
@@ -193,7 +194,8 @@ const RenderGIFModal = React.createClass({
   },
 
   render() {
-    const title = "GIFを作成";
+    const title = <FormattedMessage id="views.modal.render_gif_modal.title"
+                                    defaultMessage="Create GIF" />;
 
     const footer = (
       <div className="render-gif-modal-footer-content">
@@ -217,46 +219,54 @@ const RenderGIFModal = React.createClass({
         return (this._canCreateGIF())
           ? [
               {
-                text: "キャンセル",
+                text: <FormattedMessage id="views.modal.render_gif_modal.cancel"
+                                        defaultMessage="Cancel" />,
                 className: "sub",
                 onClick: this._onCancelClicked,
               },
               {
-                text: "GIFを作成",
+                text: <FormattedMessage id="views.modal.render_gif_modal.create_gif"
+                                        defaultMessage="Create GIF" />,
                 onClick: this._onCreateClicked,
               },
             ]
           : [
               {
-                text: "キャンセル",
+                text: <FormattedMessage id="views.modal.render_gif_modal.cancel"
+                                        defaultMessage="Cancel" />,
                 className: "sub",
                 onClick: this._onCancelClicked,
               },
               {
-                text: "レンダリング中...",
+                text: <FormattedMessage id="views.modal.render_gif_modal.rendering"
+                                        defaultMessage="Rendering..." />,
                 className: "disabled",
               },
             ];
       case (MODAL_SCENE.RENDERING):
         return [
           {
-            text: "キャンセル",
+            text: <FormattedMessage id="views.modal.render_gif_modal.cancel"
+                                    defaultMessage="Cancel" />,
             className: "sub",
             onClick: this._onCancelClicked,
           },
           {
-            text: "GIF作成中...",
+            text: <FormattedMessage id="views.modal.render_gif_modal.generating_gif"
+                                    defaultMessage="Generating GIF..." />,
             className: "disabled",
           },
         ];
       case (MODAL_SCENE.RENDERED):
         return [
           {
-            text: "もう一度作成",
+            text: <FormattedMessage id="views.modal.render_gif_modal.create_again"
+                                    defaultMessage="Create again" />,
             onClick: this._onReRenderClicked,
           },
           {
-            text: "終了",
+            text: <FormattedMessage id="views.modal.render_gif_modal.finish"
+                                    defaultMessage="Finish" />,
             onClick: this._onDoneClicked,
           },
         ];
@@ -284,7 +294,8 @@ const RenderGIFModal = React.createClass({
                    ref="previewCanvasContainer">
               </div>
               <div className="render-gif-modal__preview__gif-description">
-                Rendering Now...
+                <FormattedMessage id="views.modal.render_gif_modal.generating_now"
+                                  defaultMessage="Generating now..." />
               </div>
             </div>
           );
@@ -296,7 +307,9 @@ const RenderGIFModal = React.createClass({
                    ref="previewGIFContainer">
               </div>
               <div className="render-gif-modal__preview__gif-description">
-                Rendering Finished : {formatByte(this.state.resultGIF.size)}
+                <FormattedMessage id="views.modal.render_gif_modal.generating_finished"
+                                  defaultMessage="Generating Finished" />
+                 : {formatByte(this.state.resultGIF.size)}
               </div>
             </div>
           );
@@ -312,7 +325,8 @@ const RenderGIFModal = React.createClass({
             <div className="render-gif-modal__settings">
               <div className="render-gif-modal__input">
                 <div className="render-gif-modal__input__left">
-                  GIFの開始フレーム
+                  <FormattedMessage id="views.modal.render_gif_modal.start_frame_of_output_gif"
+                                    defaultMessage="Start Frame of Output GIF" />
                 </div>
                 <div className="render-gif-modal__input__right">
                   <Number value={this.state.gifStart + 1}
@@ -324,7 +338,8 @@ const RenderGIFModal = React.createClass({
               </div>
               <div className="render-gif-modal__input">
                 <div className="render-gif-modal__input__left">
-                  GIFの終了フレーム
+                  <FormattedMessage id="views.modal.render_gif_modal.end_frame_of_output_gif"
+                                    defaultMessage="End Frame of Output GIF" />
                 </div>
                 <div className="render-gif-modal__input__right">
                   <Number value={this.state.gifEnd}
@@ -336,7 +351,8 @@ const RenderGIFModal = React.createClass({
               </div>
               <div className="render-gif-modal__input">
                 <div className="render-gif-modal__input__left">
-                  GIFのフレームレート
+                  <FormattedMessage id="views.modal.render_gif_modal.frame_rate_of_output_gif"
+                                    defaultMessage="Frame Rate of Output GIF" />
                 </div>
                 <div className="render-gif-modal__input__right">
                   <Number value={this.state.gifFPS}
@@ -349,7 +365,8 @@ const RenderGIFModal = React.createClass({
               </div>
               <div className="render-gif-modal__input">
                 <div className="render-gif-modal__input__left">
-                  GIFの大きさ
+                  <FormattedMessage id="views.modal.render_gif_modal.size_of_output_gif"
+                                    defaultMessage="Size of Output GIF" />
                 </div>
                 <div className="render-gif-modal__input__right">
                   <Number value={this.state.gifSize}
@@ -372,7 +389,8 @@ const RenderGIFModal = React.createClass({
             <div className="render-gif-modal__settings">
               <div className="render-gif-modal__input">
                 <div className="render-gif-modal__input__left">
-                  GIFの開始フレーム
+                  <FormattedMessage id="views.modal.render_gif_modal.start_frame_of_output_gif"
+                                    defaultMessage="Start Frame of Output GIF" />
                 </div>
                 <div className="render-gif-modal__input__right">
                   {this.state.gifStart + 1}
@@ -380,7 +398,8 @@ const RenderGIFModal = React.createClass({
               </div>
               <div className="render-gif-modal__input">
                 <div className="render-gif-modal__input__left">
-                  GIFの終了フレーム
+                  <FormattedMessage id="views.modal.render_gif_modal.end_frame_of_output_gif"
+                                    defaultMessage="End Frame of Output GIF" />
                 </div>
                 <div className="render-gif-modal__input__right">
                   {this.state.gifEnd}
@@ -388,7 +407,8 @@ const RenderGIFModal = React.createClass({
               </div>
               <div className="render-gif-modal__input">
                 <div className="render-gif-modal__input__left">
-                  GIFのフレームレート
+                  <FormattedMessage id="views.modal.render_gif_modal.frame_rate_of_output_gif"
+                                    defaultMessage="Frame Rate of Output GIF" />
                 </div>
                 <div className="render-gif-modal__input__right">
                   {this.state.gifFPS} fps
@@ -396,7 +416,8 @@ const RenderGIFModal = React.createClass({
               </div>
               <div className="render-gif-modal__input">
                 <div className="render-gif-modal__input__left">
-                  GIFの大きさ
+                  <FormattedMessage id="views.modal.render_gif_modal.size_of_output_gif"
+                                    defaultMessage="Size of Output GIF" />
                 </div>
                 <div className="render-gif-modal__input__right">
                   {this.state.gifSize} px

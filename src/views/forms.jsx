@@ -1,16 +1,24 @@
 "use strict";
 
 import React                      from "react";
+import AceEditor                  from "react-ace";
+import brace                      from "brace";
 import Decimal                    from "decimal.js";
 import UAParser                   from "ua-parser-js";
 import _Lang                      from "lodash/lang";
 
 import genDummyImg                from "src/utils/genDummyImg";
+import genUUID                    from "src/utils/genUUID";
+
+// Customize Ace Editor
+import "brace/mode/javascript";
+import "brace/theme/github";
+import "brace/theme/monokai";
 
 
 const userAgent = new UAParser();
 
-const NativeCheckbox = React.createClass({
+export const NativeCheckbox = React.createClass({
   propType() {
     return {
       value: React.PropTypes.bool.isRequired,
@@ -27,7 +35,7 @@ const NativeCheckbox = React.createClass({
   },
 });
 
-const NativeNumber = React.createClass({
+export const NativeNumber = React.createClass({
   propTypes() {
     return {
       value: React.PropTypes.number.isRequired,
@@ -43,7 +51,7 @@ const NativeNumber = React.createClass({
   },
 });
 
-const NativeSelect = React.createClass({
+export const NativeSelect = React.createClass({
   propTypes() {
     return {
       value: React.PropTypes.any.isRequired,
@@ -60,7 +68,7 @@ const NativeSelect = React.createClass({
   },
 });
 
-const NativeOption = React.createClass({
+export const NativeOption = React.createClass({
   propTypes() {
     return {
       value: React.PropTypes.any.isRequired,
@@ -77,7 +85,7 @@ const NativeOption = React.createClass({
   }
 });
 
-const NativeRange = React.createClass({
+export const NativeRange = React.createClass({
   propTypes() {
     return {
       value: React.PropTypes.number.isRequired,
@@ -93,7 +101,7 @@ const NativeRange = React.createClass({
   },
 });
 
-const NativeText = React.createClass({
+export const NativeText = React.createClass({
   propTypes() {
     return {
       value: React.PropTypes.string.isRequired,
@@ -109,7 +117,7 @@ const NativeText = React.createClass({
   }
 });
 
-const NativeTextarea = React.createClass({
+export const NativeTextarea = React.createClass({
   propTypes() {
     return {
       value: React.PropTypes.string.isRequired,
@@ -124,7 +132,7 @@ const NativeTextarea = React.createClass({
   },
 });
 
-const Checkbox = React.createClass({
+export const Checkbox = React.createClass({
   propType() {
     return {
       value:    React.PropTypes.bool.isRequired,
@@ -150,7 +158,7 @@ const Checkbox = React.createClass({
   },
 });
 
-const Number = React.createClass({
+export const Number = React.createClass({
   propTypes() {
     return {
       value:        React.PropTypes.number.isRequired,
@@ -363,7 +371,7 @@ const Number = React.createClass({
   },
 });
 
-const Progress = React.createClass({
+export const Progress = React.createClass({
   propTypes() {
     return {
       value:  React.PropTyeps.number.isRequired,
@@ -388,7 +396,7 @@ const Progress = React.createClass({
   },
 });
 
-const Select = React.createClass({
+export const Select = React.createClass({
   propTypes() {
     return {
       value:        React.PropTypes.any.isRequired,
@@ -427,13 +435,14 @@ const Select = React.createClass({
   },
 });
 
-const ScriptArea = React.createClass({
+export const ScriptArea = React.createClass({
   propTypes() {
     return {
       value:    React.PropTypes.string.isRequired,
-      name:    React.PropTypes.string,
-      cols:     React.PropTypes.number,
-      rows:     React.PropTypes.number,
+      name:     React.PropTypes.string,
+      width:    React.PropTypes.string,
+      height:   React.PropTypes.string,
+      theme:    React.PropTypes.string,
       onChange: React.PropTypes.func,
     };
   },
@@ -441,6 +450,7 @@ const ScriptArea = React.createClass({
   getInitialState() {
     return {
       tmpValue: this.props.value,
+      editorID: genUUID(),
     };
   },
 
@@ -451,35 +461,38 @@ const ScriptArea = React.createClass({
   },
 
   render() {
+    const theme = ["github", "monokai"].indexOf(this.props.theme)
+      ? this.props.theme
+      : "github";
+
     return (
       <div className="form form-script-area">
-        <NativeTextarea value={this.state.tmpValue}
-                        name={this.props.name}
-                        cols={this.props.cols}
-                        rows={this.props.rows}
-                        onBlur={this._onBlur}
-                        onChange={this._onChange} />
+        <AceEditor mode="javascript"
+                   theme={theme}
+                   width={this.props.width}
+                   height={this.props.height}
+                   value={this.state.tmpValue}
+                   onBlur={this._onBlur}
+                   onChange={this._onChange}
+                   name={this.state.editorID} />
       </div>
     );
   },
 
-  _onBlur(e) {
-    this.setState({
-      tmpValue: e.target.value,
-    });
+  _onBlur() {
     if (this.props.onChange) {
-      this.props.onChange(e.target.value);
+      this.props.onChange(this.state.tmpValue);
     }
   },
 
-  _onChange(e) {
+  _onChange(newValue) {
     this.setState({
-      tmpValue: e.target.value,
+      tmpValue: newValue,
     });
   },
 });
 
-const Text = React.createClass({
+export const Text = React.createClass({
   propTypes() {
     return {
       value:        React.PropTypes.number.isRequired,

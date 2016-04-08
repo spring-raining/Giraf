@@ -2,6 +2,7 @@
 
 import React              from "react";
 import Isvg               from "react-inlinesvg";
+import {FormattedMessage} from "react-intl";
 
 import pkg                from "package.json";
 import Actions            from "src/actions/actions";
@@ -14,13 +15,15 @@ var Project = React.createClass({
 
   menuContent: [
     {
-      name: "ファイルを読み込む",
+      name: <FormattedMessage id="views.project.import_file"
+                              defaultMessage="Import File" />,
       onClick: () => {
         Actions.updateExpandingMenuId(null);
         Actions.importFile();
       },
     }, {
-      name: "コンポジションを作成",
+      name: <FormattedMessage id="views.project.create_composition"
+                              defaultMessage="Create Composition" />,
       onClick: () => {
         Actions.updateExpandingMenuId(null);
         Actions.createComposition();
@@ -55,7 +58,7 @@ var Project = React.createClass({
           <Isvg src="rsc/giraf_logo.svg"
                 className="project__brand__logo giraf_logo"/>
           <div className="project__brand__text">
-            <span className="project__brand__version">{pkg.version}</span>
+            <span className="project__brand__version">Version: {pkg.version}</span>
             <span className="project__brand__copyright">{pkg.copyright}</span>
           </div>
           <div className="project__brand__menu">

@@ -3,7 +3,7 @@
 import ModelBase            from "src/stores/model/modelBase";
 
 
-class Transform extends ModelBase {
+export class Transform extends ModelBase {
   /**
    *
    * @param {Point} anchorPoint

@@ -9,7 +9,7 @@ const PRIVATE_TRAITS_KEY = "_traits";
 
 class _Base { }
 
-function mixinTraits(object, ...traits) {
+export function mixinTraits(object, ...traits) {
   let _object = object;
   let _traits = [];
 
@@ -45,7 +45,7 @@ function mixinTraits(object, ...traits) {
   return _object;
 }
 
-function classWithTraits(baseClass, ...traits) {
+export function classWithTraits(baseClass, ...traits) {
   if (baseClass === null) {
     class traitedClass extends _Base { }
     mixinTraits.apply(this, [traitedClass.prototype].concat(traits));
@@ -57,7 +57,7 @@ function classWithTraits(baseClass, ...traits) {
   }
 }
 
-function hasTrait(object, trait) {
+export function hasTrait(object, trait) {
   let _traits;
   if (typeof object === "function") {
     _traits = object.prototype[PRIVATE_TRAITS_KEY];

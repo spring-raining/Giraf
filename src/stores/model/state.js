@@ -8,7 +8,7 @@ import ModelBase                  from "src/stores/model/modelBase";
 import {FrameCacheHolder}         from "src/stores/model/frameCacheHolder";
 
 
-class State extends ModelBase {
+export class State extends ModelBase {
   constructor() {
     super();
 

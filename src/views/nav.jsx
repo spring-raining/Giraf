@@ -17,6 +17,10 @@ const messages = defineMessages({
     id: "views.nav.about_giraf",
     defaultMessage: "About Giraf",
   },
+  girafOfficialSite: {
+    id: "views.nav.giraf_official_site",
+    defaultMessage: "Giraf Official Site"
+  },
   github: {
     id: "views.nav.github",
     defaultMessage: "GitHub",
@@ -75,6 +79,12 @@ var Nav = React.createClass({
             onClick: () => {
               Actions.updateExpandingMenuId(null);
               Actions.updateModal(<AboutGirafModal />);
+            },
+          }, {
+            name: <FormattedMessage {...messages.girafOfficialSite} />,
+            onClick: () => {
+              Actions.updateExpandingMenuId(null);
+              window.open("https://spring-raining.github.io/Giraf");
             },
           }, {
             name: <FormattedMessage {...messages.github} />,

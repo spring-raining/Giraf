@@ -1,7 +1,7 @@
 {
   "name": "giraf",
-  "version": "2.0.0-beta-6",
-  "description": "Make gif animations on the web.",
+  "version": "2.0.0",
+  "description": "Powerful & Free GIF Creator",
   "main": "main.js",
   "scripts": {
     "install": "./node_modules/gulp/bin/gulp.js",
@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/spring-raining/giraf/issues"
   },
-  "homepage": "https://github.com/spring-raining/giraf#readme",
+  "homepage": "https://spring-raining.github.io/Giraf",
   "electronName": "Giraf",
   "electronVersion": "0.36.3",
   "dependencies": {

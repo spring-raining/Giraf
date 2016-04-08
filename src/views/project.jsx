@@ -58,7 +58,7 @@ var Project = React.createClass({
           <Isvg src="rsc/giraf_logo.svg"
                 className="project__brand__logo giraf_logo"/>
           <div className="project__brand__text">
-            <span className="project__brand__version">{pkg.version}</span>
+            <span className="project__brand__version">Version: {pkg.version}</span>
             <span className="project__brand__copyright">{pkg.copyright}</span>
           </div>
           <div className="project__brand__menu">

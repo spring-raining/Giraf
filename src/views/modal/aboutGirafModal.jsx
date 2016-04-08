@@ -1,6 +1,7 @@
 "use strict";
 
 import React                                    from "react";
+import {FormattedMessage}                       from "react-intl";
 import _Lang                                    from "lodash/lang";
 
 import pkg                                      from "package.json";
@@ -25,11 +26,13 @@ const AboutGirafModal = React.createClass({
   },
 
   render() {
-    const title = "Girafについて";
+    const title = <FormattedMessage id="views.modal.about_giraf_modal.title"
+                                    defaultMessage="About Giraf" />;
 
     const buttonContent = [
       {
-        text: "閉じる",
+        text: <FormattedMessage id="views.modal.about_giraf_modal.close"
+                                defaultMessage="Close" />,
         onClick: () => {
           Actions.updateModal(null);
         },
@@ -61,7 +64,10 @@ const AboutGirafModal = React.createClass({
           <h2>License</h2>
           <pre>{girafLicense}</pre>
           <h2>Acknowledgement</h2>
-          <p>Girafは多くのオープンソースソフトウェアで成り立っています。</p>
+          <p>
+            <FormattedMessage id="views.modal.about_giraf_modal.acknowledgement_message"
+                              defaultMessage="Giraf depends on many open source projects." />
+          </p>
           {thirdPartyLicenses}
         </div>
       </Modal>

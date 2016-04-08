@@ -6,6 +6,7 @@ var sequence = require("run-sequence");
 var sass = require("gulp-sass");
 var del = require("del");
 var packager = require("electron-packager");
+var exec = require("child_process").exec;
 
 var packageJson = require("./package.json");
 
@@ -86,7 +87,14 @@ gulp.task("clean", del.bind(null, [
   dir.dist,
 ]));
 
-gulp.task("js", function() {
+gulp.task("js", function(callback) {
+  return sequence(
+    "js:bundle",
+    "js:messages",
+    callback
+  );
+});
+gulp.task("js:bundle", function() {
   return browserify({
     entries: dir.src + "/giraf.jsx",
     extensions: [".jsx", ".js"],
@@ -96,6 +104,10 @@ gulp.task("js", function() {
   }).bundle()
     .pipe(source("bundle.js"))
     .pipe(gulp.dest(dir.dist));
+});
+
+gulp.task("js:messages", function() {
+  exec("node_modules/.bin/babel-node scripts/export-messages.js");
 });
 
 gulp.task("css", function() {

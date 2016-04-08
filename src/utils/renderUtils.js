@@ -26,7 +26,7 @@ function _createRenderedCanvasAsync(composition, frame) {
   });
 }
 
-function cloneCanvas(src) {
+export function cloneCanvas(src) {
   return new Promise((resolve,reject) => {
     try {
       const canvas = document.createElement("canvas");
@@ -42,7 +42,7 @@ function cloneCanvas(src) {
   });
 }
 
-function renderFrameAsync(composition, frame) {
+export function renderFrameAsync(composition, frame) {
   return new Promise((resolve, reject) => {
     if (frame !== null
     &&  frame >= 0
@@ -62,7 +62,7 @@ function renderFrameAsync(composition, frame) {
   });
 }
 
-function renderFrameAutomatically(composition,
+export function renderFrameAutomatically(composition,
                                   firstFrame,
                                   onFrameUpdated,
                                   onRenderFinished,
@@ -123,18 +123,8 @@ function renderFrameAutomatically(composition,
   );
 }
 
-function renderGIFAsync(composition,
-                        gifFPS,
-                        gifSize,
-                        gifStart,
-                        gifEnd,
-                        progressCallback) {
-  // TODO
-}
-
 export default {
   cloneCanvas: cloneCanvas,
   renderFrameAsync: renderFrameAsync,
   renderFrameAutomatically: renderFrameAutomatically,
-  renderGIFAsync: renderGIFAsync,
 };

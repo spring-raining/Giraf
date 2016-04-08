@@ -1,6 +1,7 @@
 "use strict";
 
 import React                  from "react";
+import {FormattedMessage, defineMessages} from 'react-intl';
 
 import Actions                from "src/actions/actions";
 import Menu                   from "src/views/menu";
@@ -10,6 +11,49 @@ import History                from "src/stores/history";
 import {Composition}          from "src/stores/model/composition";
 import genUUID                from "src/utils/genUUID";
 
+
+const messages = defineMessages({
+  aboutGiraf: {
+    id: "views.nav.about_giraf",
+    defaultMessage: "About Giraf",
+  },
+  github: {
+    id: "views.nav.github",
+    defaultMessage: "GitHub",
+  },
+  harusamexCom: {
+    id: "views.nav.harusamex_com",
+    defaultMessage: "harusamex.com",
+  },
+  file: {
+    id: "views.nav.file",
+    defaultMessage: "File",
+  },
+  importFile: {
+    id: "views.nav.import_file",
+    defaultMessage: "Import File",
+  },
+  createComposition: {
+    id: "views.nav.create_composition",
+    defaultMessage: "Create Composition",
+  },
+  createGIF: {
+    id: "views.nav.create_gif",
+    defaultMessage: "Create GIF",
+  },
+  edit: {
+    id: "views.nav.edit",
+    defaultMessage: "Edit",
+  },
+  undo: {
+    id: "views.nav.undo",
+    defaultMessage: "Undo"
+  },
+  redo: {
+    id: "views.nav.redo",
+    defaultMessage: "Redo",
+  },
+});
 
 var Nav = React.createClass({
 
@@ -27,19 +71,19 @@ var Nav = React.createClass({
         id: this.menuId + "_1",
         child: [
           {
-            name: "Girafについて",
+            name: <FormattedMessage {...messages.aboutGiraf} />,
             onClick: () => {
               Actions.updateExpandingMenuId(null);
               Actions.updateModal(<AboutGirafModal />);
             },
           }, {
-            name: "GitHub",
+            name: <FormattedMessage {...messages.github} />,
             onClick: () => {
               Actions.updateExpandingMenuId(null);
               window.open("https://github.com/spring-raining/giraf");
             },
           }, {
-            name: "harusamex.com",
+            name: <FormattedMessage {...messages.harusamexCom} />,
             onClick: () => {
               Actions.updateExpandingMenuId(null);
               window.open("http://harusamex.com");
@@ -47,23 +91,23 @@ var Nav = React.createClass({
           },
         ],
       }, {
-        name: "ファイル",
+        name: <FormattedMessage {...messages.file} />,
         id: this.menuId + "_2",
         child: [
           {
-            name: "ファイルを読み込む",
+            name: <FormattedMessage {...messages.importFile} />,
             onClick: () => {
               Actions.updateExpandingMenuId(null);
               Actions.importFile();
             },
           }, {
-            name: "コンポジションを作成",
+            name: <FormattedMessage {...messages.createComposition} />,
             onClick: () => {
               Actions.updateExpandingMenuId(null);
               Actions.createComposition();
             },
           }, {
-            name: "GIFを作成",
+            name: <FormattedMessage {...messages.createGIF} />,
             disabled: (editingComposition? false : true),
             onClick: () => {
               if (editingComposition) {
@@ -74,11 +118,11 @@ var Nav = React.createClass({
           },
         ],
       }, {
-        name: "編集",
+        name: <FormattedMessage {...messages.edit} />,
         id: this.menuId + "_3",
         child: [
           {
-            name: "元に戻す",
+            name: <FormattedMessage {...messages.undo} />,
             disabled: !canUndo,
             onClick: () => {
               if (canUndo) {
@@ -87,7 +131,7 @@ var Nav = React.createClass({
               }
             },
           }, {
-            name: "やり直す",
+            name: <FormattedMessage {...messages.redo} />,
             disabled: !canRedo,
             onClick: () => {
               if (canRedo) {

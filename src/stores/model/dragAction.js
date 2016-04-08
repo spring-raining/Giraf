@@ -2,16 +2,16 @@
 
 import keyMirror from "keymirror";
 
-const dragActionType = keyMirror({
+export const DragActionType = keyMirror({
   FOOTAGE: null,
   COMPOSITION: null,
   LAYER: null,
   UNKNOWN: null,
 });
 
-class DragAction {
+export class DragAction {
   constructor(type, object) {
-    if (!dragActionType[type]) {
+    if (!DragActionType[type]) {
       throw new TypeError(`Drag action type '${type}' is not defined.`);
     }
     Object.assign(this, {
@@ -22,5 +22,5 @@ class DragAction {
 
 export default {
   DragAction: DragAction,
-  DragActionType: dragActionType
+  DragActionType: DragActionType
 };

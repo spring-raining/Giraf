@@ -1,6 +1,7 @@
 "use strict";
 
 import React                              from "react";
+import {FormattedMessage}                 from "react-intl";
 
 import Actions                            from "src/actions/actions";
 import Store                              from "src/stores/store";
@@ -54,10 +55,14 @@ var Effect = React.createClass({
             </fieldset>
 
             <fieldset>
-              <div className="effect__legend">トランスフォーム</div>
+              <div className="effect__legend">
+                <FormattedMessage id="views.effect.transform"
+                                  defaultMessage="Transform" />
+              </div>
               <div className="effect__input">
                 <div className="effect__input__left">
-                  アンカーポイント
+                  <FormattedMessage id="views.effect.anchor_point"
+                                    defaultMessage="Anchor Point" />
                 </div>
                 <div className="effect__input__right">
                   <Number value={layer.transform.anchorPoint.x}
@@ -70,7 +75,10 @@ var Effect = React.createClass({
               </div>
 
               <div className="effect__input">
-                <div className="effect__input__left">位置</div>
+                <div className="effect__input__left">
+                  <FormattedMessage id="views.effect.position"
+                                    defaultMessage="Position" />
+                </div>
 
                 <div className="effect__input__right">
                   <Number value={layer.transform.position.x}
@@ -82,7 +90,10 @@ var Effect = React.createClass({
                 </div>
               </div>
               <div className="effect__input">
-                <div className="effect__input__left">大きさ</div>
+                <div className="effect__input__left">
+                  <FormattedMessage id="views.effect.scale"
+                                    defaultMessage="Scale" />
+                </div>
                 <div className="effect__input__right">
                   <Number value={layer.transform.scale.x}
                           step={0.01}
@@ -95,14 +106,20 @@ var Effect = React.createClass({
                 </div>
               </div>
               <div className="effect__input">
-                <div className="effect__input__left">縦横比を固定</div>
+                <div className="effect__input__left">
+                  <FormattedMessage id="views.effect.fix_aspect_ratio"
+                                    defaultMessage="Fix Aspect Ratio" />
+                </div>
                 <div className="effect__input__right">
                   <Checkbox value={this.state.isFixingAspect}
                             onChange={this._onScaleIsFixingAspectChanged} />
                 </div>
               </div>
               <div className="effect__input">
-                <div className="effect__input__left">回転</div>
+                <div className="effect__input__left">
+                  <FormattedMessage id="views.effect.rotation"
+                                    defaultMessage="Rotation" />
+                </div>
                 <div className="effect__input__right">
                   <Number value={layer.transform.rotation}
                           min={0}
@@ -112,7 +129,10 @@ var Effect = React.createClass({
                 </div>
               </div>
               <div className="effect__input">
-                <div className="effect__input__left">透明度</div>
+                <div className="effect__input__left">
+                  <FormattedMessage id="views.effect.opacity"
+                                    defaultMessage="Opacity" />
+                </div>
                 <div className="effect__input__right">
                   <Number value={layer.transform.opacity}
                           min={0}
@@ -126,11 +146,15 @@ var Effect = React.createClass({
             <fieldset>
               <div className="effect__legend">効果</div>
               <div className="effect__input">
-                <ScriptArea value={layer.scriptString}
-                            width="100%"
-                            height="250px"
-                            theme="github"
-                            onChange={this._onScriptChanged(layer)} />
+                <div className="effect__input__left">
+                  <FormattedMessage id="views.effect.script"
+                                    defaultMessage="Script" />
+                </div>
+                <div className="effect__input__right">
+                  <ScriptArea value={layer.scriptString}
+                              rows={10}
+                              onChange={this._onScriptChanged(layer)} />
+                </div>
               </div>
             </fieldset>
           </section>
@@ -147,7 +171,10 @@ var Effect = React.createClass({
               </div>
 
               <div className="effect__input">
-                <div className="effect__input__left">幅</div>
+                <div className="effect__input__left">
+                  <FormattedMessage id="views.effect.width"
+                                    defaultMessage="Width" />
+                </div>
                 <div className="effect__input__right">
                   <Number value={comp.width}
                           min={1}
@@ -157,7 +184,10 @@ var Effect = React.createClass({
                 </div>
               </div>
               <div className="effect__input">
-                <div className="effect__input__left">高さ</div>
+                <div className="effect__input__left">
+                  <FormattedMessage id="views.effect.height"
+                                    defaultMessage="Height" />
+                </div>
                 <div className="effect__input__right">
                   <Number value={comp.height}
                           min={1}
@@ -167,14 +197,20 @@ var Effect = React.createClass({
                 </div>
               </div>
               <div className="effect__input">
-                <div className="effect__input__left">縦横比を固定</div>
+                <div className="effect__input__left">
+                  <FormattedMessage id="views.effect.fix_aspect_ratio"
+                                    defaultMessage="Fix Aspect Ratio" />
+                </div>
                 <div className="effect__input__right">
                   <Checkbox value={this.state.isFixingAspect}
                             onChange={this._onScaleIsFixingAspectChanged} />
                 </div>
               </div>
               <div className="effect__input">
-                <div className="effect__input__left">フレーム数</div>
+                <div className="effect__input__left">
+                  <FormattedMessage id="views.effect.number_of_frames"
+                                    defaultMessage="Number of Frames" />
+                </div>
                 <div className="effect__input__right">
                   <Number value={comp.frame}
                           min={1}
@@ -184,7 +220,10 @@ var Effect = React.createClass({
                 </div>
               </div>
               <div className="effect__input">
-                <div className="effect__input__left">フレームレート</div>
+                <div className="effect__input__left">
+                  <FormattedMessage id="views.effect.frame_rate"
+                                    defaultMessage="Frame Rate" />
+                </div>
                 <div className="effect__input__right">
                   <Number value={comp.fps}
                           min={1}

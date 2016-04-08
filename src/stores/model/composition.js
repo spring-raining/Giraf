@@ -15,7 +15,7 @@ import {classWithTraits}    from "src/utils/traitUtils";
 
 const Base = classWithTraits(ModelBase, _Selectable, _Renderable);
 
-class Composition extends Base {
+export class Composition extends Base {
   /**
    *
    * @param {string} id

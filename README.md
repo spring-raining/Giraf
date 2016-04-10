@@ -1,5 +1,6 @@
-# Giraf
-Make gif animations on the web. - http://giraf.harusamex.com
+<img alt="Giraf" src="https://cloud.githubusercontent.com/assets/1771005/14407302/5d0a037e-fefe-11e5-9c72-9454ea0a2336.png" width="200px" />
+
+Giraf - Powerful & Free GIF Creator - https://spring-raining.github.io/Giraf
 
 ## Usage on local
 

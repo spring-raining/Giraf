@@ -244,17 +244,17 @@ var Player = React.createClass({
 
         return new Promise((resolve, reject) => {
           new Promise((resolve_, reject_) => {
+            this_.setState({
+              currentGIFFrame: time,
+            });
             setTimeout(() => {
               resolve_();
-            }, (frame.delayTime !== 0) ? frame.delayTime : 100);
+            }, (frame.delayTime > 0) ? frame.delayTime : 100);
           }).then(
             (result) => {
               if (!this_.state.isPlaying) {
                 reject();
               }
-              this_.setState({
-                currentGIFFrame: time,
-              });
               const t = (time + 1 < this_.props.item.gifFrames.length) ? time + 1 : 0;
               resolve(t);
             },

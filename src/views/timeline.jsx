@@ -138,7 +138,7 @@ var Timeline = React.createClass({
                     scrollY={false}
                     hideScrollBar={true}
                     ref="header"
-                    onWheel={this._onWheel("header")}>
+                    onScroll={this._onScroll("header")}>
               <div className="timeline__header"
                    style={{width:this.state.timetableWidth + "px"}}>
                 <TimeController composition={comp}
@@ -153,7 +153,7 @@ var Timeline = React.createClass({
                     hideScrollBar={true}
                     ref="left"
                     onClick={this._onBlankAreaClick}
-                    onWheel={this._onWheel("left")}>
+                    onScroll={this._onScroll("left")}>
               <div className="timeline__left">
                 {layerHeaders}
               </div>
@@ -164,7 +164,8 @@ var Timeline = React.createClass({
                     scrollY={true}
                     ref="timetable"
                     onClick={this._onBlankAreaClick}
-                    onWheel={this._onWheel("timetable")}>
+                    onScroll={this._onScroll("timetable")}
+                    onWheel={this._onWheel}>
               <div className="timeline__timetable"
                    style={{width: this.state.timetableWidth + "px"}}>
                 {layers}
@@ -191,33 +192,34 @@ var Timeline = React.createClass({
     }
   },
 
-  _onWheel(scrollArea) {
+  _onScroll(scrollArea) {
     return (e) => {
-      if (e.altKey) {
-        e.stopPropagation();
-        e.preventDefault();
-        let width = this.state.timetableWidth;
-        let diff = width * e.deltaY * ZOOM_RATIO;
-        this.setState({
-          timetableWidth: Math.max(100, width + diff)
-        });
-        this.headerDOM.scrollLeft    += diff / 2;
-        this.timetableDOM.scrollLeft += diff / 2;
+      if (!e.altKey) {
+        if (scrollArea === "timetable") {
+          this.headerDOM.scrollLeft = this.timetableDOM.scrollLeft;
+          this.leftDOM.scrollTop = this.timetableDOM.scrollTop;
+        }
+        else if (scrollArea === "header") {
+          this.timetableDOM.scrollLeft = this.headerDOM.scrollLeft;
+        }
+        else if (scrollArea === "left") {
+          this.timetableDOM.scrollTop = this.leftDOM.scrollTop;
+        }
       }
-      else {
-        setTimeout(() => {
-          if (scrollArea === "timetable") {
-            this.headerDOM.scrollLeft = this.timetableDOM.scrollLeft;
-            this.leftDOM.scrollTop = this.timetableDOM.scrollTop;
-          }
-          else if (scrollArea === "header") {
-            this.timetableDOM.scrollLeft = this.headerDOM.scrollLeft;
-          }
-          else if (scrollArea === "left") {
-            this.timetableDOM.scrollTop = this.leftDOM.scrollTop;
-          }
-        }, 0);
-      }
+    }
+  },
+
+  _onWheel(e) {
+    if (e.altKey) {
+      e.stopPropagation();
+      e.preventDefault();
+      let width = this.state.timetableWidth;
+      let diff = width * e.deltaY * ZOOM_RATIO;
+      this.setState({
+        timetableWidth: Math.max(100, width + diff)
+      });
+      this.headerDOM.scrollLeft    += diff / 2;
+      this.timetableDOM.scrollLeft += diff / 2;
     }
   },
 

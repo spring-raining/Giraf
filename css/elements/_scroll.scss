@@ -26,7 +26,7 @@
 
 .scroll__bar {
   position: absolute;
-  pointer-events: none;
+  overflow: hidden;
   background-color: $color-scroll-bar-bg;
 
   .scroll__bar__slider {
@@ -35,6 +35,13 @@
     margin: 0;
     padding: 0;
     background-color: $color-scroll-bar-slider-bg;
+  }
+
+  .scroll__bar__before,
+  .scroll__bar__after {
+    position: absolute;
+    width: 100%;
+    height: 100%;
   }
 }
 

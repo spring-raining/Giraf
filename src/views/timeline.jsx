@@ -14,6 +14,7 @@ import LayerHeader                    from "src/views/timeline/layerHeader";
 import TimeController                 from "src/views/timeline/timeController";
 import TimetableOverlay               from "src/views/timeline/timetableOverlay";
 import TutorialModal                  from "src/views/modal/tutorialModal";
+import {Range}                        from "src/views/forms";
 import Scroll                         from "src/views/scroll";
 import genDummyImg                    from "src/utils/genDummyImg";
 
@@ -173,6 +174,17 @@ var Timeline = React.createClass({
                                   currentFrame={store.get("currentFrame")} />
               </div>
             </Scroll>
+          </div>
+          <div className="timeline__scale-scroller">
+            <button className="flat lsf-icon timeline__scale-scroller__zoomout"
+                    title="minus"
+                    onClick={this._onMenuButtonClick}>
+            </button>
+            <Range />
+            <button className="flat lsf-icon timeline__scale-scroller__zoomin"
+                    title="plus"
+                    onClick={this._onMenuButtonClick}>
+            </button>
           </div>
           {drophere}
         </section>

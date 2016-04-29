@@ -130,6 +130,49 @@
   overflow: hidden;
 }
 
+.timeline__scale-scroller {
+  @include giraf-shadow(1);
+  @include calculate-z-index(timeline, scale-scroller);
+  @include font-smoothing();
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: $timeline-summary-width;
+  height: $timeline-scale-scrollbar-height;
+  overflow: hidden;
+  background-color: $color-timeline-bg;
+
+  button {
+    @include giraf-flat-button($color-white);
+    padding: 0;
+    width: $timeline-scale-scrollbar-button-width;
+    height: 100%;
+    font-size: 8px;
+  }
+
+  .timeline__scale-scroller__zoomout {
+    position: absolute;
+    left: 0;
+  }
+
+  .timeline__scale-scroller__zoomin {
+    position: absolute;
+    right: 0;
+  }
+
+  .form-range {
+    position: absolute;
+    top: 0;
+    left: $timeline-scale-scrollbar-button-width;
+    width: $timeline-summary-width - $timeline-scale-scrollbar-button-width * 2;
+    height: 100%;
+
+    input {
+      height: 100%;
+    }
+  }
+}
+
 .timeline__header {
   background-color: $color-timeline-header-bg;
   height: $timeline-summary-height;
@@ -166,6 +209,7 @@
 .timeline__left {
   width: $timeline-summary-width;
   padding-top: $timeline-summary-height;
+  padding-bottom: $timeline-timetable-padding-bottom;
 }
 
 .timeline__timetable {
@@ -173,6 +217,7 @@
   min-height: 100%;
   min-width: 100%;
   padding-top: $timeline-summary-height;
+  padding-bottom: $timeline-timetable-padding-bottom;
 }
 
 .timeline__timetable-overlay {
@@ -204,7 +249,8 @@
 }
 
 .timeline__left-container,
-.timeline__summary {
+.timeline__summary,
+.timeline__scale-scroller {
   border-right: 2px solid $color-timeline-grid;
 }
 

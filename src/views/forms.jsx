@@ -396,6 +396,16 @@ export const Progress = React.createClass({
   },
 });
 
+export const Range = React.createClass({
+  render() {
+    return (
+      <div className="form form-range">
+        <NativeRange {...this.props} />
+      </div>
+    );
+  },
+});
+
 export const Select = React.createClass({
   propTypes() {
     return {
@@ -612,6 +622,7 @@ export default {
   Checkbox: Checkbox,
   Number: Number,
   Progress: Progress,
+  Range: Range,
   Select: Select,
   ScriptArea: ScriptArea,
   Text: Text,

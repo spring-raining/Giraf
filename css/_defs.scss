@@ -84,7 +84,7 @@ $z-order: (
         anyway:                     base,
         menu:                       base,
         modal:                      wall body,
-        timeline:                   base timetable left header summary
+        timeline:                   base timetable left header summary scale-scroller
                                     timetable-entity-handle timetable-layer-handle,
         base:                       base,
 );
@@ -109,6 +109,9 @@ $timeline-layer-height:             48px;
 $timeline-layer-handle-width:       20px;
 $timeline-layer-header-font-size:   12px;
 $timeline-layer-header-button-size: 22px;
+$timeline-timetable-padding-bottom: 20px;
+$timeline-scale-scrollbar-height:   22px;
+$timeline-scale-scrollbar-button-width: 25px;
 
 $modal-title-height:                60px;
 $modal-footer-height:               60px;

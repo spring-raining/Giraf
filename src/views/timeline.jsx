@@ -3,6 +3,7 @@
 import React                          from "react";
 import {FormattedMessage}             from "react-intl";
 import _Array                         from "lodash/array";
+import _Lang                          from "lodash/lang";
 import _Utility                       from "lodash/utility";
 
 import Actions                        from "src/actions/actions";
@@ -19,7 +20,10 @@ import Scroll                         from "src/views/scroll";
 import genDummyImg                    from "src/utils/genDummyImg";
 
 
-var ZOOM_RATIO = 0.01;
+const WHEEL_ZOOM_RATIO = 0.01;
+const STEP_ZOOM_RATIO = 0.5;
+const MIN_TIMETABLE_WIDTH = 500;
+const MAX_TIMETABLE_WIDTH = 10000;
 
 var Timeline = React.createClass({
   getInitialState() {
@@ -83,8 +87,35 @@ var Timeline = React.createClass({
     }
   },
 
+  _updateTimetableScale(width, left = null) {
+    const timetableWidth = Math.min(MAX_TIMETABLE_WIDTH,
+                           Math.max(MIN_TIMETABLE_WIDTH, width));
+    const timetableLeft = _Lang.isNumber(left) ? left
+      : this.timetableDOM.scrollLeft * timetableWidth / this.state.timetableWidth
+        + this.timetableDOM.offsetWidth * (timetableWidth / this.state.timetableWidth - 1) / 2;
+
+    this.setState({
+      timetableWidth: timetableWidth,
+    });
+    this.headerDOM.scrollLeft = timetableLeft;
+    this.timetableDOM.scrollLeft = timetableLeft;
+  },
+
+  _calculateTimetableWidthToRange(width) {
+    return Math.log((Math.E - 1)
+                  * (width - MIN_TIMETABLE_WIDTH)
+                  / (MAX_TIMETABLE_WIDTH - MIN_TIMETABLE_WIDTH)
+                  + 1);
+  },
+
+  _calculateTimetableRangeToWidth(range) {
+    return (Math.exp(range) - 1)
+         * (MAX_TIMETABLE_WIDTH - MIN_TIMETABLE_WIDTH)
+         / (Math.E - 1)
+         + MIN_TIMETABLE_WIDTH;
+  },
+
   render() {
-    let _;
     const store = this.props.store;
     const activeItem = store.get("activeItem");
     const comp = (activeItem instanceof Composition) ? activeItem : null;
@@ -176,14 +207,16 @@ var Timeline = React.createClass({
             </Scroll>
           </div>
           <div className="timeline__scale-scroller">
-            <button className="flat lsf-icon timeline__scale-scroller__zoomout"
+            <button className="flat lsf-icon timeline__scale-scroller__zoom-out"
                     title="minus"
-                    onClick={this._onMenuButtonClick}>
+                    onClick={this._onZoomOutButtonClick}>
             </button>
-            <Range />
-            <button className="flat lsf-icon timeline__scale-scroller__zoomin"
+            <Range value={this._calculateTimetableWidthToRange(this.state.timetableWidth)}
+                   min={0} max={1} step={0.01}
+                   onChange={this._onScaleRangeChange} />
+            <button className="flat lsf-icon timeline__scale-scroller__zoom-in"
                     title="plus"
-                    onClick={this._onMenuButtonClick}>
+                    onClick={this._onZoomInButtonClick}>
             </button>
           </div>
           {drophere}
@@ -225,13 +258,16 @@ var Timeline = React.createClass({
     if (e.altKey) {
       e.stopPropagation();
       e.preventDefault();
-      let width = this.state.timetableWidth;
-      let diff = width * e.deltaY * ZOOM_RATIO;
-      this.setState({
-        timetableWidth: Math.max(100, width + diff)
-      });
-      this.headerDOM.scrollLeft    += diff / 2;
-      this.timetableDOM.scrollLeft += diff / 2;
+      let el = this.timetableDOM;
+      let layerX = 0;
+      while (el && !isNaN(el.offsetLeft)) {
+        layerX += el.offsetLeft;
+        el = el.offsetParent;
+      }
+      const timetableWidth = this.state.timetableWidth * (e.deltaY * WHEEL_ZOOM_RATIO + 1);
+      const timetableLeft = (this.timetableDOM.scrollLeft + e.clientX - layerX) * timetableWidth / this.state.timetableWidth
+                            - (e.clientX - layerX);
+      this._updateTimetableScale(timetableWidth, timetableLeft);
     }
   },
 
@@ -351,7 +387,22 @@ var Timeline = React.createClass({
 
   _onBlankAreaClick() {
     Actions.changeEditingLayer(null);
-  }
+  },
+
+  _onScaleRangeChange(value) {
+    const width = this._calculateTimetableRangeToWidth(value);
+    this._updateTimetableScale(width);
+  },
+
+  _onZoomInButtonClick() {
+    const width = this.state.timetableWidth * (1 + STEP_ZOOM_RATIO);
+    this._updateTimetableScale(width);
+  },
+
+  _onZoomOutButtonClick() {
+    const width = this.state.timetableWidth * (1 - STEP_ZOOM_RATIO);
+    this._updateTimetableScale(width);
+  },
 });
 
 export default Timeline;

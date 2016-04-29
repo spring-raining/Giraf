@@ -150,12 +150,12 @@
     font-size: 8px;
   }
 
-  .timeline__scale-scroller__zoomout {
+  .timeline__scale-scroller__zoom-out {
     position: absolute;
     left: 0;
   }
 
-  .timeline__scale-scroller__zoomin {
+  .timeline__scale-scroller__zoom-in {
     position: absolute;
     right: 0;
   }
@@ -176,7 +176,6 @@
 .timeline__header {
   background-color: $color-timeline-header-bg;
   height: $timeline-summary-height;
-  min-width: 100%;
 }
 
 .timeline__time-controller {
@@ -215,7 +214,6 @@
 .timeline__timetable {
   position: relative;
   min-height: 100%;
-  min-width: 100%;
   padding-top: $timeline-summary-height;
   padding-bottom: $timeline-timetable-padding-bottom;
 }

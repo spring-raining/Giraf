@@ -77,6 +77,19 @@ var Timeline = React.createClass({
         executingAutoRender: false,
       });
     }
+
+    // auto scroll
+    if (this.props.store.get("isPlaying") && comp !== null) {
+      if (this.timetableDOM.offsetWidth < this.state.timetableWidth) {
+        const controllerLeft = this.props.store.get("currentFrame")
+                               * this.state.timetableWidth / comp.frame;
+        if (controllerLeft < this.timetableDOM.scrollLeft
+        ||  controllerLeft > this.timetableDOM.scrollLeft + this.timetableDOM.offsetWidth) {
+          this.headerDOM.scrollLeft = controllerLeft;
+          this.timetableDOM.scrollLeft = controllerLeft;
+        }
+      }
+    }
   },
 
   _createFrameCache(composition, frame) {

@@ -396,6 +396,37 @@ export const Progress = React.createClass({
   },
 });
 
+export const Range = React.createClass({
+  propTypes() {
+    return {
+      value:        React.PropTypes.number.isRequired,
+      name:         React.PropTypes.string,
+      min:          React.PropTypes.number,
+      max:          React.PropTypes.number,
+      step:         React.PropTypes.number,
+    };
+  },
+
+  render() {
+    return (
+      <div className="form form-range">
+        <NativeRange value={this.props.value}
+                     name={this.props.name}
+                     min={this.props.min}
+                     max={this.props.max}
+                     step={this.props.step}
+                     onChange={this._onChange} />
+      </div>
+    );
+  },
+
+  _onChange(e) {
+    if (this.props.onChange) {
+      this.props.onChange(e.target.value);
+    }
+  },
+});
+
 export const Select = React.createClass({
   propTypes() {
     return {
@@ -612,6 +643,7 @@ export default {
   Checkbox: Checkbox,
   Number: Number,
   Progress: Progress,
+  Range: Range,
   Select: Select,
   ScriptArea: ScriptArea,
   Text: Text,

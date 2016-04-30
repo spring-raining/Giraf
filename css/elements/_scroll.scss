@@ -1,18 +1,5 @@
 @import "../defs";
 
-.scroll-box {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  
-  .scroll {
-    width: 100%;
-    height: 100%;
-    box-sizing: content-box;
-    padding: 0 30px 30px 0;
-  }
-}
-
 .scroll__box {
   position: relative;
   width: 100%;
@@ -26,8 +13,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  // TODO: hide default scroll bar and make custom scroll bar
-  //overflow: hidden;
+  overflow: hidden;
 
   &.scroll-x {
     bottom: $scroll-bar-width;
@@ -38,18 +24,43 @@
   }
 }
 
-.scroll__bar-x {
+.scroll__bar {
   position: absolute;
+  overflow: hidden;
+  background-color: $color-scroll-bar-bg;
+
+  .scroll__bar__slider {
+    position: absolute;
+    @include giraf-card(2);
+    margin: 0;
+    padding: 0;
+    background-color: $color-scroll-bar-slider-bg;
+  }
+
+  .scroll__bar__before,
+  .scroll__bar__after {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.scroll__bar-x {
   bottom: 0;
-  width: 100%;
+  @include calc(width, "100% - #{$scroll-bar-width}");
   height: $scroll-bar-width;
-  pointer-events: none;
+
+  .scroll__bar__slider {
+    height: 100%;
+  }
 }
 
 .scroll__bar-y {
-  position: absolute;
   right: 0;
   width: $scroll-bar-width;
-  height: 100%;
-  pointer-events: none;
+  @include calc(height, "100% - #{$scroll-bar-width}");
+
+  .scroll__bar__slider {
+    width: 100%;
+  }
 }

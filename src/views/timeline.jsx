@@ -3,6 +3,7 @@
 import React                          from "react";
 import {FormattedMessage}             from "react-intl";
 import _Array                         from "lodash/array";
+import _Lang                          from "lodash/lang";
 import _Utility                       from "lodash/utility";
 
 import Actions                        from "src/actions/actions";
@@ -14,11 +15,15 @@ import LayerHeader                    from "src/views/timeline/layerHeader";
 import TimeController                 from "src/views/timeline/timeController";
 import TimetableOverlay               from "src/views/timeline/timetableOverlay";
 import TutorialModal                  from "src/views/modal/tutorialModal";
+import {Range}                        from "src/views/forms";
 import Scroll                         from "src/views/scroll";
 import genDummyImg                    from "src/utils/genDummyImg";
 
 
-var ZOOM_RATIO = 0.01;
+const WHEEL_ZOOM_RATIO = 0.01;
+const STEP_ZOOM_RATIO = 0.5;
+const MIN_TIMETABLE_WIDTH = 500;
+const MAX_TIMETABLE_WIDTH = 10000;
 
 var Timeline = React.createClass({
   getInitialState() {
@@ -72,6 +77,19 @@ var Timeline = React.createClass({
         executingAutoRender: false,
       });
     }
+
+    // auto scroll
+    if (this.props.store.get("isPlaying") && comp !== null) {
+      if (this.timetableDOM.offsetWidth < this.state.timetableWidth) {
+        const controllerLeft = this.props.store.get("currentFrame")
+                               * this.state.timetableWidth / comp.frame;
+        if (controllerLeft < this.timetableDOM.scrollLeft
+        ||  controllerLeft > this.timetableDOM.scrollLeft + this.timetableDOM.offsetWidth) {
+          this.headerDOM.scrollLeft = controllerLeft;
+          this.timetableDOM.scrollLeft = controllerLeft;
+        }
+      }
+    }
   },
 
   _createFrameCache(composition, frame) {
@@ -82,8 +100,35 @@ var Timeline = React.createClass({
     }
   },
 
+  _updateTimetableScale(width, left = null) {
+    const timetableWidth = Math.min(MAX_TIMETABLE_WIDTH,
+                           Math.max(MIN_TIMETABLE_WIDTH, width));
+    const timetableLeft = _Lang.isNumber(left) ? left
+      : this.timetableDOM.scrollLeft * timetableWidth / this.state.timetableWidth
+        + this.timetableDOM.offsetWidth * (timetableWidth / this.state.timetableWidth - 1) / 2;
+
+    this.setState({
+      timetableWidth: timetableWidth,
+    });
+    this.headerDOM.scrollLeft = timetableLeft;
+    this.timetableDOM.scrollLeft = timetableLeft;
+  },
+
+  _calculateTimetableWidthToRange(width) {
+    return Math.log((Math.E - 1)
+                  * (width - MIN_TIMETABLE_WIDTH)
+                  / (MAX_TIMETABLE_WIDTH - MIN_TIMETABLE_WIDTH)
+                  + 1);
+  },
+
+  _calculateTimetableRangeToWidth(range) {
+    return (Math.exp(range) - 1)
+         * (MAX_TIMETABLE_WIDTH - MIN_TIMETABLE_WIDTH)
+         / (Math.E - 1)
+         + MIN_TIMETABLE_WIDTH;
+  },
+
   render() {
-    let _;
     const store = this.props.store;
     const activeItem = store.get("activeItem");
     const comp = (activeItem instanceof Composition) ? activeItem : null;
@@ -138,7 +183,7 @@ var Timeline = React.createClass({
                     scrollY={false}
                     hideScrollBar={true}
                     ref="header"
-                    onWheel={this._onWheel("header")}>
+                    onScroll={this._onScroll("header")}>
               <div className="timeline__header"
                    style={{width:this.state.timetableWidth + "px"}}>
                 <TimeController composition={comp}
@@ -153,7 +198,7 @@ var Timeline = React.createClass({
                     hideScrollBar={true}
                     ref="left"
                     onClick={this._onBlankAreaClick}
-                    onWheel={this._onWheel("left")}>
+                    onScroll={this._onScroll("left")}>
               <div className="timeline__left">
                 {layerHeaders}
               </div>
@@ -164,7 +209,8 @@ var Timeline = React.createClass({
                     scrollY={true}
                     ref="timetable"
                     onClick={this._onBlankAreaClick}
-                    onWheel={this._onWheel("timetable")}>
+                    onScroll={this._onScroll("timetable")}
+                    onWheel={this._onWheel}>
               <div className="timeline__timetable"
                    style={{width: this.state.timetableWidth + "px"}}>
                 {layers}
@@ -172,6 +218,19 @@ var Timeline = React.createClass({
                                   currentFrame={store.get("currentFrame")} />
               </div>
             </Scroll>
+          </div>
+          <div className="timeline__scale-scroller">
+            <button className="flat lsf-icon timeline__scale-scroller__zoom-out"
+                    title="minus"
+                    onClick={this._onZoomOutButtonClick}>
+            </button>
+            <Range value={this._calculateTimetableWidthToRange(this.state.timetableWidth)}
+                   min={0} max={1} step={0.01}
+                   onChange={this._onScaleRangeChange} />
+            <button className="flat lsf-icon timeline__scale-scroller__zoom-in"
+                    title="plus"
+                    onClick={this._onZoomInButtonClick}>
+            </button>
           </div>
           {drophere}
         </section>
@@ -191,33 +250,37 @@ var Timeline = React.createClass({
     }
   },
 
-  _onWheel(scrollArea) {
+  _onScroll(scrollArea) {
     return (e) => {
-      if (e.altKey) {
-        e.stopPropagation();
-        e.preventDefault();
-        let width = this.state.timetableWidth;
-        let diff = width * e.deltaY * ZOOM_RATIO;
-        this.setState({
-          timetableWidth: Math.max(100, width + diff)
-        });
-        this.headerDOM.scrollLeft    += diff / 2;
-        this.timetableDOM.scrollLeft += diff / 2;
+      if (!e.altKey) {
+        if (scrollArea === "timetable") {
+          this.headerDOM.scrollLeft = this.timetableDOM.scrollLeft;
+          this.leftDOM.scrollTop = this.timetableDOM.scrollTop;
+        }
+        else if (scrollArea === "header") {
+          this.timetableDOM.scrollLeft = this.headerDOM.scrollLeft;
+        }
+        else if (scrollArea === "left") {
+          this.timetableDOM.scrollTop = this.leftDOM.scrollTop;
+        }
       }
-      else {
-        setTimeout(() => {
-          if (scrollArea === "timetable") {
-            this.headerDOM.scrollLeft = this.timetableDOM.scrollLeft;
-            this.leftDOM.scrollTop = this.timetableDOM.scrollTop;
-          }
-          else if (scrollArea === "header") {
-            this.timetableDOM.scrollLeft = this.headerDOM.scrollLeft;
-          }
-          else if (scrollArea === "left") {
-            this.timetableDOM.scrollTop = this.leftDOM.scrollTop;
-          }
-        }, 0);
+    }
+  },
+
+  _onWheel(e) {
+    if (e.altKey) {
+      e.stopPropagation();
+      e.preventDefault();
+      let el = this.timetableDOM;
+      let layerX = 0;
+      while (el && !isNaN(el.offsetLeft)) {
+        layerX += el.offsetLeft;
+        el = el.offsetParent;
       }
+      const timetableWidth = this.state.timetableWidth * (e.deltaY * WHEEL_ZOOM_RATIO + 1);
+      const timetableLeft = (this.timetableDOM.scrollLeft + e.clientX - layerX) * timetableWidth / this.state.timetableWidth
+                            - (e.clientX - layerX);
+      this._updateTimetableScale(timetableWidth, timetableLeft);
     }
   },
 
@@ -337,7 +400,22 @@ var Timeline = React.createClass({
 
   _onBlankAreaClick() {
     Actions.changeEditingLayer(null);
-  }
+  },
+
+  _onScaleRangeChange(value) {
+    const width = this._calculateTimetableRangeToWidth(value);
+    this._updateTimetableScale(width);
+  },
+
+  _onZoomInButtonClick() {
+    const width = this.state.timetableWidth * (1 + STEP_ZOOM_RATIO);
+    this._updateTimetableScale(width);
+  },
+
+  _onZoomOutButtonClick() {
+    const width = this.state.timetableWidth * (1 - STEP_ZOOM_RATIO);
+    this._updateTimetableScale(width);
+  },
 });
 
 export default Timeline;

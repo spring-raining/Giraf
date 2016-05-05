@@ -1,0 +1,29 @@
+@import "../defs";
+
+.alert {
+  width: 250px;
+}
+
+.alert__popup {
+  @include giraf-card(2);
+  @include font-smoothing();
+  z-index: 100000;
+  position: relative;
+  width: 100%;
+  min-height: 42px;
+  margin: 20px;
+  padding: 10px;
+  color: $color-alert-popup-body;
+  background-color: $color-alert-popup-bg;
+}
+
+.alert__popup__delete-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  opacity: 0;
+
+  .alert__popup:hover & {
+    opacity: 1;
+  }
+}

@@ -188,6 +188,18 @@ function dispatcherCallback(action) {
     });
     Store.emitChange();
   }
+
+  else if (action.actionType === ActionConst.PUSH_ALERT) {
+    Store.push("alerts")(action.alert);
+    Store.emitChange();
+  }
+
+  else if (action.actionType === ActionConst.DELETE_ALERT) {
+    const newAlerts = Store.get("alerts")
+      .filter((e) => e.id !== action.alert.id);
+    Store.set("alerts")(newAlerts);
+    Store.emitChange();
+  }
 }
 
 export default dispatcherCallback;

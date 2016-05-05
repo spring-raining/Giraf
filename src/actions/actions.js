@@ -20,6 +20,7 @@ import {Footage}                      from "src/stores/model/footage";
 import {DragAction, DragActionType}   from "src/stores/model/dragAction";
 import {Point}                        from "src/stores/model/point";
 import {Transform}                    from "src/stores/model/transform"
+import {Alert}                        from "src/stores/model/alert";
 
 
 export default {
@@ -31,6 +32,7 @@ export default {
   createComposition: createComposition,
   createCompositionWithFootage: createCompositionWithFootage,
   createLayer: createLayer,
+  deleteAlert: deleteAlert,
   deleteLayer: deleteLayer,
   deleteSelectingItem: deleteSelectingItem,
   endDrag: endDrag,
@@ -39,6 +41,7 @@ export default {
   importFile: importFile,
   pause: pause,
   play: play,
+  pushAlert: pushAlert,
   redo: redo,
   renderFrame: renderFrame,
   renderFrameAutomatically: renderFrameAutomatically,
@@ -188,6 +191,15 @@ export function createLayer(parentComp, index = 0, entity = null) {
   }
 }
 
+export function deleteAlert(alert) {
+  if (alert instanceof Alert) {
+    Dispatcher.dispatch({
+      actionType: ActionConst.DELETE_ALERT,
+      alert: alert,
+    });
+  }
+}
+
 export function deleteLayer(layer) {
   if (layer instanceof Layer) {
     Dispatcher.dispatch({
@@ -258,6 +270,15 @@ export function play(play = true) {
     actionType: ActionConst.PLAY,
     play: play,
   });
+}
+
+export function pushAlert(alert) {
+  if (alert instanceof Alert) {
+    Dispatcher.dispatch({
+      actionType: ActionConst.PUSH_ALERT,
+      alert: alert,
+    });
+  }
 }
 
 export function redo(repeat = 1) {

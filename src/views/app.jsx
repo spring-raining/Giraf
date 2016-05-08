@@ -1,6 +1,7 @@
 "use strict";
 
 import React                  from "react";
+import ReactCSSTransitionGroup  from "react-addons-css-transition-group";
 import Split                  from "react-split-pane";
 import {intlShape, injectIntl, defineMessages} from "react-intl";
 
@@ -146,7 +147,11 @@ var App = React.createClass({
         <div className="app__alert">
           <Alert alerts={this.state.store.get("alerts")} />
         </div>
-        {modal}
+        <ReactCSSTransitionGroup transitionName="modal-transition"
+                                 transitionEnterTimeout={200}
+                                 transitionLeaveTimeout={150}>
+          {modal}
+        </ReactCSSTransitionGroup>
       </div>
     );
   },

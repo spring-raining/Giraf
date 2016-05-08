@@ -1,6 +1,7 @@
 "use strict";
 
 import React                  from "react";
+import ReactCSSTransitionGroup  from "react-addons-css-transition-group";
 
 
 const MenuPart = React.createClass({
@@ -41,9 +42,15 @@ const MenuPart = React.createClass({
       + ((this.props.expand)? "" : " hidden");
 
     return (
-      <div className={className}>
-        {convert(this.props.content)}
-      </div>
+      <ReactCSSTransitionGroup transitionName="menu-transition"
+                               transitionAppear={true}
+                               transitionAppearTimeout={100}
+                               transitionEnter={false}
+                               transitionLeave={false}>
+        <div className={className}>
+          {convert(this.props.content)}
+        </div>
+      </ReactCSSTransitionGroup>
     );
   },
 

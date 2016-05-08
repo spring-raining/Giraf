@@ -4,6 +4,30 @@
   width: 250px;
 }
 
+.alert-transition-enter {
+  @include calculate-z-index(alert, base);
+  @include giraf-anime(all, 0.2s);
+  @include transform(translate3d(0, 15px, 0));
+  opacity: 0.01;
+
+  &.alert-transition-enter-active {
+    @include transform(translate3d(0, 0, 0));
+    opacity: 1;
+  }
+}
+
+.alert-transition-leave {
+  @include calculate-z-index(alert, base);
+  @include giraf-anime(all, 0.2s);
+  @include transform(translate3d(0, 0, 0));
+  opacity: 1;
+
+  &.alert-transition-leave-active {
+    @include transform(translate3d(0, 15px, 0));
+    opacity: 0.01;
+  }
+}
+
 .alert__popup {
   @include giraf-card(2);
   @include font-smoothing();

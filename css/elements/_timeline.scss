@@ -31,28 +31,37 @@
     width: 200px;
     background-color: $color-timeline-drophere-border;
     text-align: center;
+  }
+}
 
-    @include reveal(timeline-drophere-card, 0.2s, block, 0.2s) {
-      0% {
-        opacity: 0;
-        @include transform(translate3d(0, 20px , 0));
-      }
+.timeline__drophere-transition-enter {
+  @include calculate-z-index(anyway, base);
+  @include giraf-anime(opacity, 0.2s);
+  opacity: 0;
 
-      100% {
-        opacity: 1;
-        @include transform(translate3d(0, 0, 0));
-      }
-    }
+  .timeline__drophere__card {
+    @include giraf-anime(all, 0.2s, 0.2s);
+    @include transform(translate3d(0, 20px, 0));
+    opacity: 0;
   }
 
-  @include reveal(timeline-drophere, 0.2s) {
-    0% {
-      opacity: 0;
-    }
+  &.timeline__drophere-transition-enter-active {
+    opacity: 1;
 
-    100% {
+    .timeline__drophere__card {
+      @include transform(translate3d(0, 0, 0));
       opacity: 1;
     }
+  }
+}
+
+.timeline__drophere-transition-leave {
+  @include calculate-z-index(anyway, base);
+  @include giraf-anime(opacity, 0.2s);
+  opacity: 1;
+
+  &.timeline__drophere-transition-leave-active {
+    opacity: 0;
   }
 }
 

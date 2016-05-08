@@ -86,7 +86,7 @@ $z-order: (
         anyway:                     base,
         menu:                       base,
         alert:                      base,
-        modal:                      wall body,
+        modal:                      base wall body,
         timeline:                   base timetable left header summary scale-scroller
                                     timetable-entity-handle timetable-layer-handle,
         base:                       base,
@@ -140,8 +140,8 @@ $create-video-layer-modal-info-height:    150px;
   }
 }
 
-@mixin giraf-anime($property: all, $duration: 0.2s) {
-  @include transition($property $duration cubic-bezier(0.4, 0, 0.2, 1));
+@mixin giraf-anime($property: all, $duration: 0.2s, $delay: 0s) {
+  @include transition($property $duration cubic-bezier(0.4, 0, 0.2, 1) $delay);
 }
 
 @mixin giraf-shadow($height: 1) {

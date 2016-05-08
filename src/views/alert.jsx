@@ -1,6 +1,7 @@
 "use strict";
 
 import React                          from "react";
+import ReactCSSTransitionGroup        from "react-addons-css-transition-group";
 import Actions                        from "src/actions/actions";
 
 
@@ -100,7 +101,11 @@ const Alert = React.createClass({
       <div className="alert"
            onMouseEnter={this._onMouseEnter}
            onMouseLeave={this._onMouseLeave}>
-        {popups}
+        <ReactCSSTransitionGroup transitionName="alert-transition"
+                                 transitionEnterTimeout={200}
+                                 transitionLeaveTimeout={200}>
+          {popups}
+        </ReactCSSTransitionGroup>
       </div>
     );
   },

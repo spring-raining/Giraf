@@ -7,7 +7,7 @@
 .alert__popup {
   @include giraf-card(2);
   @include font-smoothing();
-  z-index: 100000;
+  @include calculate-z-index(alert, base);
   position: relative;
   width: 100%;
   min-height: 42px;

@@ -7,8 +7,6 @@ import {intlShape, injectIntl, defineMessages} from "react-intl";
 import Actions                from "src/actions/actions";
 import Store                  from "src/stores/store";
 import History                from "src/stores/history";
-import {Alert as AlertModel} from "src/stores/model/alert";
-import genUUID  from "src/utils/genUUID";
 import Alert                  from "src/views/alert";
 import Nav                    from "src/views/nav";
 import Project                from "src/views/project";
@@ -147,7 +145,6 @@ var App = React.createClass({
         </div>
         <div className="app__alert">
           <Alert alerts={this.state.store.get("alerts")} />
-          <button onClick={() => Actions.pushAlert(new AlertModel(genUUID(), Date.now()))} />
         </div>
         {modal}
       </div>

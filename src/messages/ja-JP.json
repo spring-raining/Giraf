@@ -1,4 +1,6 @@
 {
+  "actions.task.create_layer_async.alert_circular_reference": "相互参照するレイヤーは作成できません。",
+  "utils.file_loader.alert_cannot_load": "このファイルは読み込めません : {filename}",
   "views.app.unsaved_warning": "Girafは編集中です。変更は保存されません。",
   "views.effect.anchor_point": "アンカーポイント",
   "views.effect.fix_aspect_ratio": "縦横比を固定",

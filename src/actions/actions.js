@@ -7,6 +7,7 @@ import ActionConst                    from "src/actions/const";
 import createCompositionAsync         from "src/actions/task/createCompositionAsync";
 import createLayerAsync               from "src/actions/task/createLayerAsync";
 import renderGIFAsync                 from "src/actions/task/renderGIFAsync";
+import FileLoader                     from "src/utils/fileLoader";
 import genUUID                        from "src/utils/genUUID";
 import SelectFile                     from "src/utils/selectFile";
 import {hasTrait}                     from "src/utils/traitUtils";
@@ -123,8 +124,15 @@ export function createComposition(composition = null) {
         });
       },
       (error) => {
-        console.error(error);
-        console.warn("Failed to create composition.")
+        if (error) {
+          if (error instanceof Alert) {
+            pushAlert(error);
+          }
+          else {
+            console.error(error);
+            console.warn("Failed to create composition.")
+          }
+        }
       }
     )
   }
@@ -158,8 +166,16 @@ export function createCompositionWithFootage(footage) {
       });
     },
     (error) => {
-      console.error(error);
-      console.warn("Failed to create layer");
+      if (error) {
+        if (error instanceof Alert) {
+          pushAlert(error);
+        }
+        else {
+          console.error(error);
+          console.warn("Failed to create layer");
+        }
+      }
+      pushAlert();
     }
   );
 }
@@ -184,8 +200,15 @@ export function createLayer(parentComp, index = 0, entity = null) {
         clearFrameCache(parentComp, _Utility.range(result.layerStart, result.layerEnd));
       },
       (error) => {
-        console.error(error);
-        console.warn("Failed to create layer");
+        if (error) {
+          if (error instanceof Alert) {
+            pushAlert(error);
+          }
+          else {
+            console.error(error);
+            console.warn("Failed to create layer");
+          }
+        }
       }
     );
   }
@@ -239,23 +262,37 @@ export function goForwardCurrentFrame(frame = 1) {
   }
 }
 
-export function importFile(file = null) {
-  if (file) {
-    Dispatcher.dispatch({
-      actionType: ActionConst.IMPORT_FILE,
-      files: file
-    });
-  }
-  else {
-    SelectFile.run((f) => {
-      let files = [];
-      for (let i=0; i < f.length; i++) files.push(f[i]);
-      Dispatcher.dispatch({
-        actionType: ActionConst.IMPORT_FILE,
-        files: files
-      })
-    });
-  }
+export function importFile(fileList = null) {
+  new Promise((resolve) => {
+    if (fileList) {
+      resolve(fileList);
+    }
+    else {
+      SelectFile.run((f) => resolve(f));
+    }
+  }).then((fileList) => {
+    for (let i=0; i < fileList.length; i++) {
+      const file = fileList[i];
+      const footage = new Footage(genUUID(), file.name, file.size, file.type);
+      FileLoader.run(footage, file).then(
+        () => {
+          Dispatcher.dispatch({
+            actionType: ActionConst.IMPORT_FILE,
+            footage: footage,
+          });
+        },
+        (error) => {
+          if (error instanceof Alert) {
+            pushAlert(error);
+          }
+          else {
+            console.error(error);
+            console.warn("Failed to load file : ", file);
+          }
+        }
+      );
+    }
+  });
 }
 
 export function pause() {
@@ -306,7 +343,7 @@ export function renderFrame(composition, frame) {
     },
     (error) => {
       console.error(error);
-      console.warn("Rendering failed : " + composition.name);
+      console.warn("Rendering failed", composition.name);
     }
   );
 }
@@ -334,7 +371,7 @@ export function renderFrameAutomatically(composition) {
     },
     (error) => {
       console.error(error);
-      console.warn("Rendering failed : " + composition.name);
+      console.warn("Rendering failed", composition);
     });
 }
 
@@ -345,8 +382,15 @@ export function renderGIF(composition) {
   renderGIFAsync(composition).then(
     (result) => {},
     (error) => {
-      console.error(error);
-      console.warn("Failed to render GIF.\ncomposition : " + composition.name);
+      if (error) {
+        if (error instanceof Alert) {
+          pushAlert(error);
+        }
+        else {
+          console.error(error);
+          console.warn("Failed to render GIF", composition);
+        }
+      }
     }
   );
 }

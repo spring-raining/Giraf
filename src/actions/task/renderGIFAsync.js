@@ -13,7 +13,7 @@ export default ((composition) =>
         React.createElement(RenderGIFModal, {
           composition: composition,
           onCancelClicked: () => {
-            reject("Creating GIF canceled.");
+            reject();
           },
           onDoneClicked: () => {
             resolve();

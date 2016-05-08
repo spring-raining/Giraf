@@ -34,9 +34,6 @@ export const Modal = React.createClass({
     if (_Lang.isObject(this.props.keyEvents)) {
       setKeyEvnets(this.getModalKeyEvents());
     }
-
-    // reveal
-    this.refs.modalWall.classList.remove("hidden");
   },
 
   render() {
@@ -51,7 +48,7 @@ export const Modal = React.createClass({
       </div>;
 
     return (
-      <div className="modal__wall hidden"
+      <div className="modal__wall"
            ref="modalWall"
            onClick={this._onWallClick}>
         <div className={`modal ${this.props.className}`}

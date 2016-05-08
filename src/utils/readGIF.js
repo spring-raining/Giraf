@@ -128,30 +128,21 @@ export default (objectURL) => {
       resolve(frames);
     };
 
-    try {
-      url2Binary(objectURL).then(
-        (result) => {
-          let stream = new Stream(result);
+    url2Binary(objectURL).then(
+      (result) => {
+        let stream = new Stream(result);
 
-          try {
-            parseGIF(stream, {
-              hdr: hdrCallback,
-              gce: gceCallback,
-              img: imgCallback,
-              pte: pteCallback,
-              eof: eofCallback,
-            });
-          } catch (e) {
-            console.warn(e);
-            throw new Error("Failed to parse GIF");
-          }
-        },
-        (error) => {
-          throw error;
-        }
-      );
-    } catch (e) {
-      reject(e);
-    }
+        parseGIF(stream, {
+          hdr: hdrCallback,
+          gce: gceCallback,
+          img: imgCallback,
+          pte: pteCallback,
+          eof: eofCallback,
+        });
+      },
+      (error) => {
+        reject(error);
+      }
+    );
   });
 };

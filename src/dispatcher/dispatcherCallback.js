@@ -3,30 +3,18 @@
 import { EventEmitter } from "events";
 
 import ActionConst          from "src/actions/const";
-import GenUUID              from "src/utils/genUUID";
 import FileLoader           from "src/utils/fileLoader";
 import History              from "src/stores/history";
 import Store                from "src/stores/store";
 import {Footage}            from "src/stores/model/footage";
 
 
-const CHANGE_EVENT = "change";
-
 function dispatcherCallback(action) {
 
   const searchById = (list) => (id) => list.filter((e) => e.id === id)[0];
 
   if (action.actionType === ActionConst.IMPORT_FILE) {
-    action.files.forEach((e) => {
-      let f = new Footage(GenUUID(), e.name, e.size, e.type);
-      if (FileLoader.check(f)) {
-        Store.push("footages")(f);
-        FileLoader.run(f, e);
-      }
-      else {
-        console.warn("File load failed : " + e.name);
-      }
-    });
+    Store.push("footages")(action.footage);
     History.save(action.actionType, false);
     Store.emitChange();
   }
@@ -186,6 +174,18 @@ function dispatcherCallback(action) {
     Store.update({
       modal: action.modal,
     });
+    Store.emitChange();
+  }
+
+  else if (action.actionType === ActionConst.PUSH_ALERT) {
+    Store.push("alerts")(action.alert);
+    Store.emitChange();
+  }
+
+  else if (action.actionType === ActionConst.DELETE_ALERT) {
+    const newAlerts = Store.get("alerts")
+      .filter((e) => e.id !== action.alert.id);
+    Store.set("alerts")(newAlerts);
     Store.emitChange();
   }
 }

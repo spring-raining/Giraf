@@ -19,6 +19,12 @@
     position: relative;
   }
 
+  .app__alert {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+
   .app__modal {
     position: absolute;
     top: 0;

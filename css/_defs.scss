@@ -74,16 +74,19 @@ $color-render-gif-modal-download-body:          $color-white;
 $color-render-gif-modal-download-bg:            rgba(0, 0, 0, 0.6);
 $color-scroll-bar-bg:               rgba(0, 0, 0, 0.1);
 $color-scroll-bar-slider-bg:        rgba(255, 255, 255, 0.2);
+$color-alert-popup-bg:              $color-giraf;
+$color-alert-popup-body:            $color-black;
 
 /*
  *  Lists of z-index order.
  *  A later tag will make upper than an early tag.
  */
-$z-order-global:                    base timeline modal menu anyway;
+$z-order-global:                    base timeline modal alert menu anyway;
 $z-order: (
         anyway:                     base,
         menu:                       base,
-        modal:                      wall body,
+        alert:                      base,
+        modal:                      base wall body,
         timeline:                   base timetable left header summary scale-scroller
                                     timetable-entity-handle timetable-layer-handle,
         base:                       base,
@@ -137,8 +140,8 @@ $create-video-layer-modal-info-height:    150px;
   }
 }
 
-@mixin giraf-anime($property: all, $duration: 0.2s) {
-  @include transition($property $duration cubic-bezier(0.4, 0, 0.2, 1));
+@mixin giraf-anime($property: all, $duration: 0.2s, $delay: 0s) {
+  @include transition($property $duration cubic-bezier(0.4, 0, 0.2, 1) $delay);
 }
 
 @mixin giraf-shadow($height: 1) {

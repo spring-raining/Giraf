@@ -1,6 +1,7 @@
 "use strict";
 
 import React                          from "react";
+import ReactCSSTransitionGroup        from "react-addons-css-transition-group";
 import {FormattedMessage}             from "react-intl";
 import _Array                         from "lodash/array";
 import _Lang                          from "lodash/lang";
@@ -232,19 +233,28 @@ var Timeline = React.createClass({
                     onClick={this._onZoomInButtonClick}>
             </button>
           </div>
-          {drophere}
+          <ReactCSSTransitionGroup transitionName="timeline__drophere-transition"
+                                   transitionEnterTimeout={500}
+                                   transitionLeaveTimeout={200}>
+            {drophere}
+          </ReactCSSTransitionGroup>
         </section>
       );
     }
     else {
       return (
         <section className="timeline panel"
+                 style={{zIndex: 0}}
                  onDragEnter={this._onDragEnter}
                  onDragOver={this._onDragOver}
                  onDragLeave={this._onDragLeave}
                  onDrop={this._onDrop}>
           <TutorialModal />
-          {drophere}
+          <ReactCSSTransitionGroup transitionName="timeline__drophere-transition"
+                                   transitionEnterTimeout={500}
+                                   transitionLeaveTimeout={200}>
+            {drophere}
+          </ReactCSSTransitionGroup>
         </section>
       );
     }

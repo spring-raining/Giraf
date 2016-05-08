@@ -6,16 +6,6 @@
   height: 100%;
   position: absolute;
   background-color: $color-modal-wall-bg;
-
-  @include reveal(modal__wall) {
-    0% {
-      opacity: 0;
-    }
-
-    100% {
-      opacity: 1;
-    }
-  }
 }
 
 .modal {
@@ -45,16 +35,42 @@
     max-width: 600px;
     max-height: 500px;
   }
+}
 
-  @include reveal(modal) {
-    0% {
-      opacity: 0;
-      @include transform(scale(0.9, 0.7));
-    }
+.modal-transition-enter {
+  @include calculate-z-index(modal, base);
+  @include giraf-anime(opacity, 0.2s);
+  opacity: 0.01;
 
-    100% {
-      opacity: 1;
+  .modal {
+    @include giraf-anime(all, 0.2s);
+    @include transform(scale(0.9, 0.7));
+  }
+
+  &.modal-transition-enter-active {
+    opacity: 1;
+
+    .modal {
       @include transform(scale(1));
+    }
+  }
+}
+
+.modal-transition-leave {
+  @include calculate-z-index(modal, base);
+  @include giraf-anime(opacity, 0.15s);
+  opacity: 1;
+
+  .modal {
+    @include giraf-anime(all, 0.1s);
+    @include transform(translate3d(0, 0, 0));
+  }
+
+  &.modal-transition-leave-active {
+    opacity: 0.01;
+
+    .modal {
+      @include transform(translate3d(0, 10px, 0));
     }
   }
 }

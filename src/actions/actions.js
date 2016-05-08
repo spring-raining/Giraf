@@ -7,6 +7,7 @@ import ActionConst                    from "src/actions/const";
 import createCompositionAsync         from "src/actions/task/createCompositionAsync";
 import createLayerAsync               from "src/actions/task/createLayerAsync";
 import renderGIFAsync                 from "src/actions/task/renderGIFAsync";
+import FileLoader                     from "src/utils/fileLoader";
 import genUUID                        from "src/utils/genUUID";
 import SelectFile                     from "src/utils/selectFile";
 import {hasTrait}                     from "src/utils/traitUtils";
@@ -20,63 +21,62 @@ import {Footage}                      from "src/stores/model/footage";
 import {DragAction, DragActionType}   from "src/stores/model/dragAction";
 import {Point}                        from "src/stores/model/point";
 import {Transform}                    from "src/stores/model/transform"
+import {Alert}                        from "src/stores/model/alert";
 
 
 export default {
-  importFile: importFile,
-  updateFootage: updateFootage,
-  changeSelectingItem: changeSelectingItem,
-  deleteSelectingItem: deleteSelectingItem,
   changeActiveItem: changeActiveItem,
-  createComposition: createComposition,
-  createCompositionWithFootage: createCompositionWithFootage,
-  updateComposition: updateComposition,
   changeEditingComposition: changeEditingComposition,
   changeEditingLayer: changeEditingLayer,
+  changeSelectingItem: changeSelectingItem,
+  clearFrameCache: clearFrameCache,
+  createComposition: createComposition,
+  createCompositionWithFootage: createCompositionWithFootage,
   createLayer: createLayer,
-  updateLayer: updateLayer,
-  startDrag: startDrag,
+  deleteAlert: deleteAlert,
+  deleteLayer: deleteLayer,
+  deleteSelectingItem: deleteSelectingItem,
   endDrag: endDrag,
-  updateCurrentFrame: updateCurrentFrame,
-  goForwardCurrentFrame: goForwardCurrentFrame,
   goBackwardCurrentFrame: goBackwardCurrentFrame,
+  goForwardCurrentFrame: goForwardCurrentFrame,
+  importFile: importFile,
+  pause: pause,
+  play: play,
+  pushAlert: pushAlert,
+  redo: redo,
   renderFrame: renderFrame,
   renderFrameAutomatically: renderFrameAutomatically,
-  clearFrameCache: clearFrameCache,
-  togglePlay: togglePlay,
-  play: play,
-  pause: pause,
-  undo: undo,
-  redo: redo,
-  updateExpandingMenuId: updateExpandingMenuId,
-  updateModal: updateModal,
   renderGIF: renderGIF,
+  startDrag: startDrag,
+  togglePlay: togglePlay,
+  undo: undo,
+  updateComposition: updateComposition,
+  updateCurrentFrame: updateCurrentFrame,
+  updateExpandingMenuId: updateExpandingMenuId,
+  updateFootage: updateFootage,
+  updateLayer: updateLayer,
+  updateModal: updateModal,
 }
 
-export function importFile(file = null) {
-  if (file) {
+export function changeActiveItem(item) {
+  if (item === null || hasTrait(item, _Selectable)) {
     Dispatcher.dispatch({
-      actionType: ActionConst.IMPORT_FILE,
-      files: file
-    });
-  }
-  else {
-    SelectFile.run((f) => {
-      let files = [];
-      for (let i=0; i < f.length; i++) files.push(f[i]);
-      Dispatcher.dispatch({
-        actionType: ActionConst.IMPORT_FILE,
-        files: files
-      })
+      actionType: ActionConst.CHANGE_ACTIVE_ITEM,
+      item: item,
     });
   }
 }
 
-export function updateFootage(footage) {
-  Dispatcher.dispatch({
-    actionType: ActionConst.UPDATE_FOOTAGE,
-    footage: footage
-  });
+export function changeEditingComposition(composition) {
+  if (composition === null || composition instanceof Composition) {
+    changeActiveItem(composition);
+  }
+}
+
+export function changeEditingLayer(layer) {
+  if (layer === null || layer instanceof Layer) {
+    changeSelectingItem(layer);
+  }
 }
 
 export function changeSelectingItem(item) {
@@ -88,19 +88,23 @@ export function changeSelectingItem(item) {
   }
 }
 
-export function deleteSelectingItem() {
-  const item = Store.get("selectingItem");
-  if (item instanceof Layer) {
-    deleteLayer(item);
+export function clearFrameCache(composition, frames=null) {
+  let _frames = frames;
+  if (frames === null) {
+    _frames = [];
+    for (let i=0; i < composition.frame; i++) {
+      _frames.push(i);
+    }
   }
-}
-
-export function changeActiveItem(item) {
-  if (item === null || hasTrait(item, _Selectable)) {
+  if (typeof(frames) === "number") {
+    _frames = [frames];
+  }
+  if (_frames instanceof Array) {
     Dispatcher.dispatch({
-      actionType: ActionConst.CHANGE_ACTIVE_ITEM,
-      item: item,
-    });
+      actionType: ActionConst.CLEAR_FRAME_CACHE,
+      composition: composition,
+      frames: _frames.filter((e) => e >= 0 && e < composition.frame),
+    })
   }
 }
 
@@ -120,8 +124,15 @@ export function createComposition(composition = null) {
         });
       },
       (error) => {
-        console.error(error);
-        console.warn("Failed to create composition.")
+        if (error) {
+          if (error instanceof Alert) {
+            pushAlert(error);
+          }
+          else {
+            console.error(error);
+            console.warn("Failed to create composition.")
+          }
+        }
       }
     )
   }
@@ -155,34 +166,18 @@ export function createCompositionWithFootage(footage) {
       });
     },
     (error) => {
-      console.error(error);
-      console.warn("Failed to create layer");
+      if (error) {
+        if (error instanceof Alert) {
+          pushAlert(error);
+        }
+        else {
+          console.error(error);
+          console.warn("Failed to create layer");
+        }
+      }
+      pushAlert();
     }
   );
-}
-
-export function updateComposition(composition, refreshFrameCache = true) {
-  if (composition instanceof Composition) {
-    Dispatcher.dispatch({
-      actionType: ActionConst.UPDATE_COMPOSITION,
-      composition: composition
-    });
-  }
-  if (refreshFrameCache) {
-    clearFrameCache(composition);
-  }
-}
-
-export function changeEditingComposition(composition) {
-  if (composition === null || composition instanceof Composition) {
-    changeActiveItem(composition);
-  }
-}
-
-export function changeEditingLayer(layer) {
-  if (layer === null || layer instanceof Layer) {
-    changeSelectingItem(layer);
-  }
 }
 
 export function createLayer(parentComp, index = 0, entity = null) {
@@ -205,24 +200,26 @@ export function createLayer(parentComp, index = 0, entity = null) {
         clearFrameCache(parentComp, _Utility.range(result.layerStart, result.layerEnd));
       },
       (error) => {
-        console.error(error);
-        console.warn("Failed to create layer");
+        if (error) {
+          if (error instanceof Alert) {
+            pushAlert(error);
+          }
+          else {
+            console.error(error);
+            console.warn("Failed to create layer");
+          }
+        }
       }
     );
   }
 }
 
-export function updateLayer(layer, refreshFrameCache = true) {
-  if (layer instanceof Layer) {
+export function deleteAlert(alert) {
+  if (alert instanceof Alert) {
     Dispatcher.dispatch({
-      actionType: ActionConst.UPDATE_LAYER,
-      layer: layer
+      actionType: ActionConst.DELETE_ALERT,
+      alert: alert,
     });
-    let parentComp = Store.get("compositions")
-      .filter((e) => e.id === layer.parentCompId)[0];
-    if (refreshFrameCache) {
-      clearFrameCache(parentComp, _Utility.range(layer.layerStart, layer.layerEnd));
-    }
   }
 }
 
@@ -235,22 +232,10 @@ export function deleteLayer(layer) {
   }
 }
 
-export function startDrag(dragObj) {
-  let dragAction = (dragObj instanceof DragAction)? dragObj : null;
-  if (!dragAction) {
-    let type = (dragObj instanceof Footage) ? DragActionType.FOOTAGE
-      : (dragObj instanceof Composition) ? DragActionType.COMPOSITION
-      : (dragObj instanceof Layer) ?       DragActionType.LAYER
-      : null;
-    if (type) {
-      dragAction = new DragAction(type, dragObj);
-    }
-  }
-  if (dragAction) {
-    Dispatcher.dispatch({
-      actionType: ActionConst.START_DRAG,
-      dragAction: dragAction
-    });
+export function deleteSelectingItem() {
+  const item = Store.get("selectingItem");
+  if (item instanceof Layer) {
+    deleteLayer(item);
   }
 }
 
@@ -260,13 +245,8 @@ export function endDrag() {
   });
 }
 
-export function updateCurrentFrame(frame) {
-  if (frame === null || typeof(frame) === "number") {
-    Dispatcher.dispatch({
-      actionType: ActionConst.UPDATE_CURRENT_FRAME,
-      currentFrame: frame
-    });
-  }
+export function goBackwardCurrentFrame(frame = 1) {
+  goForwardCurrentFrame(-frame);
 }
 
 export function goForwardCurrentFrame(frame = 1) {
@@ -282,8 +262,70 @@ export function goForwardCurrentFrame(frame = 1) {
   }
 }
 
-export function goBackwardCurrentFrame(frame = 1) {
-  goForwardCurrentFrame(-frame);
+export function importFile(fileList = null) {
+  new Promise((resolve) => {
+    if (fileList) {
+      resolve(fileList);
+    }
+    else {
+      SelectFile.run((f) => resolve(f));
+    }
+  }).then((fileList) => {
+    for (let i=0; i < fileList.length; i++) {
+      const file = fileList[i];
+      const footage = new Footage(genUUID(), file.name, file.size, file.type);
+      FileLoader.run(footage, file).then(
+        () => {
+          Dispatcher.dispatch({
+            actionType: ActionConst.IMPORT_FILE,
+            footage: footage,
+          });
+        },
+        (error) => {
+          if (error instanceof Alert) {
+            pushAlert(error);
+          }
+          else {
+            console.error(error);
+            console.warn("Failed to load file : ", file);
+          }
+        }
+      );
+    }
+  });
+}
+
+export function pause() {
+  play(false);
+}
+
+export function play(play = true) {
+  if (typeof(play) !== "boolean") {
+    return;
+  }
+  Dispatcher.dispatch({
+    actionType: ActionConst.PLAY,
+    play: play,
+  });
+}
+
+export function pushAlert(alert) {
+  if (alert instanceof Alert) {
+    Dispatcher.dispatch({
+      actionType: ActionConst.PUSH_ALERT,
+      alert: alert,
+    });
+  }
+}
+
+export function redo(repeat = 1) {
+  if (typeof(repeat) !== "number" || repeat < 1) {
+    return;
+  }
+  Dispatcher.dispatch({
+    actionType: ActionConst.REDO,
+    repeat: repeat,
+  });
 }
 
 export function renderFrame(composition, frame) {
@@ -301,7 +343,7 @@ export function renderFrame(composition, frame) {
     },
     (error) => {
       console.error(error);
-      console.warn("Rendering failed : " + composition.name);
+      console.warn("Rendering failed", composition.name);
     }
   );
 }
@@ -329,47 +371,52 @@ export function renderFrameAutomatically(composition) {
     },
     (error) => {
       console.error(error);
-      console.warn("Rendering failed : " + composition.name);
+      console.warn("Rendering failed", composition);
     });
 }
 
-export function clearFrameCache(composition, frames=null) {
-  let _frames = frames;
-  if (frames === null) {
-    _frames = [];
-    for (let i=0; i < composition.frame; i++) {
-      _frames.push(i);
+export function renderGIF(composition) {
+  if (!(composition instanceof Composition)) {
+    return;
+  }
+  renderGIFAsync(composition).then(
+    (result) => {},
+    (error) => {
+      if (error) {
+        if (error instanceof Alert) {
+          pushAlert(error);
+        }
+        else {
+          console.error(error);
+          console.warn("Failed to render GIF", composition);
+        }
+      }
+    }
+  );
+}
+
+export function startDrag(dragObj) {
+  let dragAction = (dragObj instanceof DragAction)? dragObj : null;
+  if (!dragAction) {
+    let type = (dragObj instanceof Footage) ? DragActionType.FOOTAGE
+      : (dragObj instanceof Composition) ? DragActionType.COMPOSITION
+      : (dragObj instanceof Layer) ?       DragActionType.LAYER
+      : null;
+    if (type) {
+      dragAction = new DragAction(type, dragObj);
     }
   }
-  if (typeof(frames) === "number") {
-    _frames = [frames];
-  }
-  if (_frames instanceof Array) {
+  if (dragAction) {
     Dispatcher.dispatch({
-      actionType: ActionConst.CLEAR_FRAME_CACHE,
-      composition: composition,
-      frames: _frames.filter((e) => e >= 0 && e < composition.frame),
-    })
+      actionType: ActionConst.START_DRAG,
+      dragAction: dragAction
+    });
   }
 }
 
 export function togglePlay() {
   let isPlaying = Store.get("isPlaying");
   play(!isPlaying);
-}
-
-export function play(play = true) {
-  if (typeof(play) !== "boolean") {
-    return;
-  }
-  Dispatcher.dispatch({
-    actionType: ActionConst.PLAY,
-    play: play,
-  });
-}
-
-export function pause() {
-  play(false);
 }
 
 export function undo(repeat = 1) {
@@ -382,14 +429,25 @@ export function undo(repeat = 1) {
   });
 }
 
-export function redo(repeat = 1) {
-  if (typeof(repeat) !== "number" || repeat < 1) {
-    return;
+export function updateComposition(composition, refreshFrameCache = true) {
+  if (composition instanceof Composition) {
+    Dispatcher.dispatch({
+      actionType: ActionConst.UPDATE_COMPOSITION,
+      composition: composition
+    });
   }
-  Dispatcher.dispatch({
-    actionType: ActionConst.REDO,
-    repeat: repeat,
-  });
+  if (refreshFrameCache) {
+    clearFrameCache(composition);
+  }
+}
+
+export function updateCurrentFrame(frame) {
+  if (frame === null || typeof(frame) === "number") {
+    Dispatcher.dispatch({
+      actionType: ActionConst.UPDATE_CURRENT_FRAME,
+      currentFrame: frame
+    });
+  }
 }
 
 export function updateExpandingMenuId(id) {
@@ -397,6 +455,27 @@ export function updateExpandingMenuId(id) {
     actionType: ActionConst.UPDATE_EXPANDING_MENU_ID,
     id: id,
   });
+}
+
+export function updateFootage(footage) {
+  Dispatcher.dispatch({
+    actionType: ActionConst.UPDATE_FOOTAGE,
+    footage: footage
+  });
+}
+
+export function updateLayer(layer, refreshFrameCache = true) {
+  if (layer instanceof Layer) {
+    Dispatcher.dispatch({
+      actionType: ActionConst.UPDATE_LAYER,
+      layer: layer
+    });
+    let parentComp = Store.get("compositions")
+      .filter((e) => e.id === layer.parentCompId)[0];
+    if (refreshFrameCache) {
+      clearFrameCache(parentComp, _Utility.range(layer.layerStart, layer.layerEnd));
+    }
+  }
 }
 
 export function updateModal(modal) {
@@ -407,19 +486,6 @@ export function updateModal(modal) {
     actionType: ActionConst.UPDATE_MODAL,
     modal: modal,
   });
-}
-
-export function renderGIF(composition) {
-  if (!(composition instanceof Composition)) {
-    return;
-  }
-  renderGIFAsync(composition).then(
-    (result) => {},
-    (error) => {
-      console.error(error);
-      console.warn("Failed to render GIF.\ncomposition : " + composition.name);
-    }
-  );
 }
 
 function _createCanvasWithRenderedFrame(composition, frame) {

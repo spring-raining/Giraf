@@ -170,8 +170,8 @@ export class Composition extends Base {
               let rad = layer.transform.rotation * Math.PI / 180;
               this.context.setTransform(
                 layer.transform.scale.x * Math.cos(rad),
-                Math.sin(rad),
-                -Math.sin(rad),
+                layer.transform.scale.x * Math.sin(rad),
+                layer.transform.scale.y * -Math.sin(rad),
                 layer.transform.scale.y * Math.cos(rad),
                 layer.transform.position.x,
                 layer.transform.position.y);

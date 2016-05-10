@@ -1,6 +1,6 @@
 {
   "name": "giraf",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Powerful & Free GIF Creator",
   "main": "main.js",
   "scripts": {
@@ -50,6 +50,7 @@
     "mousetrap": "^1.5.3",
     "react": "^0.14.3",
     "react-ace": "^3.1.0",
+    "react-addons-css-transition-group": "^0.14.3",
     "react-dom": "^0.14.3",
     "react-inlinesvg": "~0.4.2",
     "react-intl": "^2.0.1",

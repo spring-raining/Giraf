@@ -1,12 +1,14 @@
 "use strict";
 
 import React                  from "react";
+import ReactCSSTransitionGroup  from "react-addons-css-transition-group";
 import Split                  from "react-split-pane";
 import {intlShape, injectIntl, defineMessages} from "react-intl";
 
 import Actions                from "src/actions/actions";
 import Store                  from "src/stores/store";
 import History                from "src/stores/history";
+import Alert                  from "src/views/alert";
 import Nav                    from "src/views/nav";
 import Project                from "src/views/project";
 import Effect                 from "src/views/effect";
@@ -142,7 +144,14 @@ var App = React.createClass({
             </Split>
           </Split>
         </div>
-        {modal}
+        <div className="app__alert">
+          <Alert alerts={this.state.store.get("alerts")} />
+        </div>
+        <ReactCSSTransitionGroup transitionName="modal-transition"
+                                 transitionEnterTimeout={200}
+                                 transitionLeaveTimeout={150}>
+          {modal}
+        </ReactCSSTransitionGroup>
       </div>
     );
   },

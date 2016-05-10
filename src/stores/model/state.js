@@ -12,40 +12,17 @@ export class State extends ModelBase {
   constructor() {
     super();
 
-    this._footages = [];
-    this._compositions = [];
-    this._selectingItem = null;
     this._activeItem = null;
-    this._dragging = null;
+    this._compositions = [];
     this._currentFrame = 0;
+    this._dragging = null;
+    this._expandingMenuId = null;
+    this._footages = [];
     this._frameCache = new FrameCacheHolder();
     this._isPlaying = false;
-    this._expandingMenuId = null;
     this._modal = null;
-  }
-
-  get footages() {
-    return [].concat(this._footages);
-  }
-
-  set footages(footages) {
-    super.assign("_footages", footages);
-  }
-
-  get compositions() {
-    return [].concat(this._compositions);
-  }
-
-  set compositions(compositions) {
-    super.assign("_compositions", compositions);
-  }
-
-  get selectingItem() {
-    return this._selectingItem;
-  }
-
-  set selectingItem(selectingItem) {
-    super.assign("_selectingItem", selectingItem);
+    this._alerts = [];
+    this._selectingItem = null;
   }
 
   get activeItem() {
@@ -56,12 +33,20 @@ export class State extends ModelBase {
     super.assign("_activeItem", activeItem);
   }
 
-  get dragging() {
-    return this._dragging;
+  get alerts() {
+    return [].concat(this._alerts);
   }
 
-  set dragging(dragging) {
-    super.assign("_dragging", dragging);
+  set alerts(alerts) {
+    super.assign("_alerts", alerts);
+  }
+
+  get compositions() {
+    return [].concat(this._compositions);
+  }
+
+  set compositions(compositions) {
+    super.assign("_compositions", compositions);
   }
 
   get currentFrame() {
@@ -70,6 +55,30 @@ export class State extends ModelBase {
 
   set currentFrame(currentFrame) {
     super.assign("_currentFrame", currentFrame);
+  }
+
+  get dragging() {
+    return this._dragging;
+  }
+
+  set dragging(dragging) {
+    super.assign("_dragging", dragging);
+  }
+
+  get expandingMenuId() {
+    return this._expandingMenuId;
+  }
+
+  set expandingMenuId(expandingMenuId) {
+    super.assign("_expandingMenuId", expandingMenuId);
+  }
+
+  get footages() {
+    return [].concat(this._footages);
+  }
+
+  set footages(footages) {
+    super.assign("_footages", footages);
   }
 
   get frameCache() {
@@ -84,20 +93,20 @@ export class State extends ModelBase {
     super.assign("_isPlaying", isPlaying);
   }
 
-  get expandingMenuId() {
-    return this._expandingMenuId;
-  }
-
-  set expandingMenuId(expandingMenuId) {
-    super.assign("_expandingMenuId", expandingMenuId);
-  }
-
   get modal() {
     return this._modal;
   }
 
   set modal(modal) {
     super.assign("_modal", modal);
+  }
+
+  get selectingItem() {
+    return this._selectingItem;
+  }
+
+  set selectingItem(selectingItem) {
+    super.assign("_selectingItem", selectingItem);
   }
 }
 

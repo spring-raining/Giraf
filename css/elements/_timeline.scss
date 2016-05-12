@@ -352,6 +352,8 @@
 }
 
 .timeline__layer-timetable {
+  overflow: hidden;
+
   .timeline__layer-timetable__entity {
     background-color: $color-timeline-layer-entity-bg;
     border-radius: 2px;
@@ -388,13 +390,41 @@
     top: 0;
     bottom: 0;
     width: $timeline-layer-handle-width;
+    cursor: ew-resize;
   }
 
   .timeline__layer-timetable-area__left-handle {
-    left: 0;
+    left: - $timeline-layer-handle-width / 2;
   }
 
   .timeline__layer-timetable-area__right-handle {
-    right: 0;
+    right: - $timeline-layer-handle-width / 2;
   }
+}
+
+.timeline__layer-timetable__repeat-before-button,
+.timeline__layer-timetable__repeat-after-button {
+  @include calculate-z-index(timeline, timetable-repeat-button);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  padding: 0;
+  width: $timeline-layer-repeat-button-size;
+  height: $timeline-layer-repeat-button-size;
+  border-radius: 50%;
+  font-size: 10px;
+  opacity: 0;
+
+  .timeline__layer:hover & {
+    opacity: 1;
+  }
+}
+
+.timeline__layer-timetable__repeat-before-button {
+  left: $timeline-layer-repeat-button-position;
+}
+
+.timeline__layer-timetable__repeat-after-button {
+  right: $timeline-layer-repeat-button-position;
 }

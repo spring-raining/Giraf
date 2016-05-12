@@ -88,7 +88,7 @@ $z-order: (
         alert:                      base,
         modal:                      base wall body,
         timeline:                   base timetable left header summary scale-scroller
-                                    timetable-entity-handle timetable-layer-handle,
+                                    timetable-entity-handle timetable-layer-handle timetable-repeat-button,
         base:                       base,
 );
 
@@ -112,6 +112,8 @@ $timeline-layer-height:             48px;
 $timeline-layer-handle-width:       20px;
 $timeline-layer-header-font-size:   12px;
 $timeline-layer-header-button-size: 22px;
+$timeline-layer-repeat-button-size: 28px;
+$timeline-layer-repeat-button-position: -50px;
 $timeline-timetable-padding-bottom: 20px;
 $timeline-scale-scrollbar-height:   22px;
 $timeline-scale-scrollbar-button-width: 25px;

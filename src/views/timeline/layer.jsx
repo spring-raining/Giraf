@@ -5,6 +5,7 @@ import ReactDOM                   from "react-dom";
 import KeyMirror                  from "keyMirror";
 import _Array                     from "lodash/array";
 import _Utility                   from "lodash/utility";
+import _Object                    from "lodash/object";
 import UAParser                   from "ua-parser-js";
 
 import Actions                    from "src/actions/actions";
@@ -109,12 +110,7 @@ var LayerTimetable = React.createClass({
       dragging: null,
       dragStartInfo: null,
       dragInfo: null,
-      layerPos: {
-        entityStart:  this.props.layer.entityStart,
-        entityEnd:    this.props.layer.entityEnd,
-        layerStart:   this.props.layer.layerStart,
-        layerEnd:     this.props.layer.layerEnd,
-      }
+      tmpLayerPos: null,
     }
   },
 
@@ -130,7 +126,7 @@ var LayerTimetable = React.createClass({
     return {
       x:     Math.max(0, Math.min(maxWidth, e.clientX - bcr.left)),
       y:     Math.max(0, Math.min(maxHeight, e.clientY - bcr.top)),
-      frame: Math.max(0, Math.min(this.props.composition.frame - 1,
+      frame: Math.max(0, Math.min(this.props.composition.frame,
                                   Math.floor((e.clientX - bcr.left) / this.getCellWidth())))
     }
   },
@@ -148,92 +144,110 @@ var LayerTimetable = React.createClass({
   },
 
   render() {
-    let comp = this.props.composition;
-    let layer = this.props.layer;
-    let layerPos = this.state.layerPos;
+    const comp = this.props.composition;
+    const layer = this.props.layer;
+    const layerPos = (this.state.dragging)? this.state.tmpLayerPos
+      : {
+        entityStart:  layer.entityStart,
+        entityEnd:    layer.entityEnd,
+        layerStart:   layer.layerStart,
+        layerEnd:     layer.layerEnd,
+      };
+    const className = "timeline__layer-timetable timeline__layer-flex"
+      + (layer.getLayerKind() === LayerKinds.ANIMATED? " animated" : "")
+      + (layer.getLayerKind() === LayerKinds.STILL? " still" : "");
 
-    if (layer.getLayerKind() === LayerKinds.ANIMATED) {
-      const flex = [
-        Math.min(comp.frame, layerPos.layerStart),
-        Math.min(comp.frame, layerPos.entityStart) - Math.min(comp.frame, layerPos.layerStart),
-        Math.min(comp.frame, layerPos.entityEnd)   - Math.min(comp.frame, layerPos.entityStart),
-        Math.min(comp.frame, layerPos.layerEnd)    - Math.min(comp.frame, layerPos.entityEnd),
-        comp.frame - Math.min(comp.frame, layerPos.layerEnd),
-      ];
-      return (
-        <div className="timeline__layer-timetable timeline__layer-flex animated"
-             data-giraf-dragging={this.state.dragging}>
-          <LayerTimetableArea className="timeline__layer-timetable__before pointer-disable"
-                              flexGrow={flex[0]} />
-          <div className="timeline__layer-timetable__layer-container timeline__layer-flex"
-               style={{flexGrow: flex[1] + flex[2] + flex[3]}}>
-            <LayerTimetableArea className="timeline__layer-timetable__layer-before"
-                                flexGrow={flex[1]}
-                                onLeftDragStart={this._onDragStart(draggingTarget.LAYER_START)}
-                                onLeftDrag={this._onDrag(draggingTarget.LAYER_START)}
-                                onLeftDragEnd={this._onDragEnd(draggingTarget.LAYER_START)}
-                                onBodyDragStart={this._onDragStart(draggingTarget.LAYER)}
-                                onBodyDrag={this._onDrag(draggingTarget.LAYER)}
-                                onBodyDragEnd={this._onDragEnd(draggingTarget.LAYER)} />
+    const floor = (x) => Math.min(x, comp.frame);
+    const flex = [
+      (layer.repeatBefore)
+        ? floor(layerPos.layerStart)
+        : floor(layerPos.entityStart),
+      (layer.repeatBefore)
+        ? floor(layerPos.entityStart) - floor(layerPos.layerStart)
+        : 0,
+      floor(layerPos.entityEnd) - floor(layerPos.entityStart),
+      (layer.repeatAfter)
+        ? floor(layerPos.layerEnd) - floor(layerPos.entityEnd)
+        : 0,
+      (layer.repeatAfter)
+        ? comp.frame - floor(layerPos.layerEnd)
+        : comp.frame - floor(layerPos.entityEnd),
+    ];
 
-            <LayerTimetableArea className="timeline__layer-timetable__entity"
-                                flexGrow={flex[2]}
-                                onLeftDragStart={this._onDragStart(draggingTarget.ENTITY_START)}
-                                onLeftDrag={this._onDrag(draggingTarget.ENTITY_START)}
-                                onLeftDragEnd={this._onDragEnd(draggingTarget.ENTITY_START)}
-                                onBodyDragStart={this._onDragStart(draggingTarget.ENTITY)}
-                                onBodyDrag={this._onDrag(draggingTarget.ENTITY)}
-                                onBodyDragEnd={this._onDragEnd(draggingTarget.ENTITY)}
-                                onRightDragStart={this._onDragStart(draggingTarget.ENTITY_END)}
-                                onRightDrag={this._onDrag(draggingTarget.ENTITY_END)}
-                                onRightDragEnd={this._onDragEnd(draggingTarget.ENTITY_END)}>
-            </LayerTimetableArea>
+    const cancelEvent = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+    };
 
-            <LayerTimetableArea className="timeline__layer-timetable__layer-after"
-                                flexGrow={flex[3]}
-                                onRightDragStart={this._onDragStart(draggingTarget.LAYER_END)}
-                                onRightDrag={this._onDrag(draggingTarget.LAYER_END)}
-                                onRightDragEnd={this._onDragEnd(draggingTarget.LAYER_END)}
-                                onBodyDragStart={this._onDragStart(draggingTarget.LAYER)}
-                                onBodyDrag={this._onDrag(draggingTarget.LAYER)}
-                                onBodyDragEnd={this._onDragEnd(draggingTarget.LAYER)} />
-          </div>
+    const layerBefore = (!layer.repeatBefore)? null
+      : <LayerTimetableArea className="timeline__layer-timetable__layer-before"
+                            flexGrow={flex[1]}
+                            onLeftDragStart={this._onDragStart(draggingTarget.LAYER_START)}
+                            onLeftDrag={this._onDrag(draggingTarget.LAYER_START)}
+                            onLeftDragEnd={this._onDragEnd(draggingTarget.LAYER_START)}
+                            onBodyDragStart={this._onDragStart(draggingTarget.LAYER)}
+                            onBodyDrag={this._onDrag(draggingTarget.LAYER)}
+                            onBodyDragEnd={this._onDragEnd(draggingTarget.LAYER)} />;
 
-          <LayerTimetableArea className="timeline__layer-timetable__after pointer-disable"
-                              flexGrow={flex[4]} />
-        </div>
-      );
-    }
-    else if (layer.getLayerKind() === LayerKinds.STILL) {
-      const flex = [
-        Math.min(comp.frame, layerPos.layerStart),
-        Math.min(comp.frame, layerPos.layerEnd) - Math.min(comp.frame, layerPos.layerStart),
-        comp.frame - Math.min(comp.frame, layerPos.layerEnd),
-      ];
-      return (
-        <div className="timeline__layer-timetable timeline__layer-flex still"
-             data-giraf-dragging={this.state.dragging}>
-          <LayerTimetableArea className="timeline__layer-timetable__before pointer-disable"
-                              flexGrow={flex[0]} />
+    const layerAfter = (!layer.repeatAfter)? null
+      : <LayerTimetableArea className="timeline__layer-timetable__layer-after"
+                            flexGrow={flex[3]}
+                            onRightDragStart={this._onDragStart(draggingTarget.LAYER_END)}
+                            onRightDrag={this._onDrag(draggingTarget.LAYER_END)}
+                            onRightDragEnd={this._onDragEnd(draggingTarget.LAYER_END)}
+                            onBodyDragStart={this._onDragStart(draggingTarget.LAYER)}
+                            onBodyDrag={this._onDrag(draggingTarget.LAYER)}
+                            onBodyDragEnd={this._onDragEnd(draggingTarget.LAYER)} />;
 
+    const repeatBeforeButton = (layer.getLayerKind() !== LayerKinds.ANIMATED)? null
+      : <button className="lsf-icon timeline__layer-timetable__repeat-before-button"
+                title={layer.repeatBefore? "right" : "left"}
+                draggable="true"
+                onDragStart={cancelEvent}
+                onDrag={cancelEvent}
+                onDragEnd={cancelEvent}
+                onClick={this._onRepeatBeforeButtonClick}>
+        </button>;
+
+    const repeatAfterButton = (layer.getLayerKind() !== LayerKinds.ANIMATED)? null
+      : <button className="lsf-icon timeline__layer-timetable__repeat-after-button"
+                title={layer.repeatAfter? "left" : "right"}
+                draggable="true"
+                onDragStart={cancelEvent}
+                onDrag={cancelEvent}
+                onDragEnd={cancelEvent}
+                onClick={this._onRepeatAfterButtonClick}>
+        </button>;
+
+    return (
+      <div className={className}
+           data-giraf-dragging={this.state.dragging}>
+        <LayerTimetableArea className="timeline__layer-timetable__before pointer-disable"
+                            flexGrow={flex[0]} />
+        <div className="timeline__layer-timetable__layer-container timeline__layer-flex"
+             style={{flexGrow: flex[1] + flex[2] + flex[3]}}>
+          {layerBefore}
           <LayerTimetableArea className="timeline__layer-timetable__entity"
-                              flexGrow={flex[1]}
-                              onLeftDragStart={this._onDragStart(draggingTarget.LAYER_START)}
-                              onLeftDrag={this._onDrag(draggingTarget.LAYER_START)}
-                              onLeftDragEnd={this._onDragEnd(draggingTarget.LAYER_START)}
-                              onBodyDragStart={this._onDragStart(draggingTarget.LAYER)}
-                              onBodyDrag={this._onDrag(draggingTarget.LAYER)}
-                              onBodyDragEnd={this._onDragEnd(draggingTarget.LAYER)}
-                              onRightDragStart={this._onDragStart(draggingTarget.LAYER_END)}
-                              onRightDrag={this._onDrag(draggingTarget.LAYER_END)}
-                              onRightDragEnd={this._onDragEnd(draggingTarget.LAYER_END)}>
+                              flexGrow={flex[2]}
+                              onLeftDragStart={this._onDragStart(draggingTarget.ENTITY_START)}
+                              onLeftDrag={this._onDrag(draggingTarget.ENTITY_START)}
+                              onLeftDragEnd={this._onDragEnd(draggingTarget.ENTITY_START)}
+                              onBodyDragStart={this._onDragStart(draggingTarget.ENTITY)}
+                              onBodyDrag={this._onDrag(draggingTarget.ENTITY)}
+                              onBodyDragEnd={this._onDragEnd(draggingTarget.ENTITY)}
+                              onRightDragStart={this._onDragStart(draggingTarget.ENTITY_END)}
+                              onRightDrag={this._onDrag(draggingTarget.ENTITY_END)}
+                              onRightDragEnd={this._onDragEnd(draggingTarget.ENTITY_END)}>
+            {repeatBeforeButton}
+            {repeatAfterButton}
           </LayerTimetableArea>
-
-          <LayerTimetableArea className="timeline__layer-timetable__after pointer-disable"
-                              flexGrow={flex[2]} />
+          {layerAfter}
         </div>
-      );
-    }
+
+        <LayerTimetableArea className="timeline__layer-timetable__after pointer-disable"
+                            flexGrow={flex[4]} />
+      </div>
+    );
   },
 
   _mouseMoveOnFirefox: null,
@@ -259,6 +273,12 @@ var LayerTimetable = React.createClass({
         dragging: target,
         dragStartInfo: pos,
         dragInfo: pos,
+        tmpLayerPos: {
+          entityStart:  this.props.layer.entityStart,
+          entityEnd:    this.props.layer.entityEnd,
+          layerStart:   this.props.layer.layerStart,
+          layerEnd:     this.props.layer.layerEnd,
+        },
       });
     }
   },
@@ -271,72 +291,73 @@ var LayerTimetable = React.createClass({
       const comp = this.props.composition;
       const layer = this.props.layer;
 
-      let layerPos = Object.assign({}, this.state.layerPos);
+      let layerPos = Object.assign({}, this.state.tmpLayerPos);
       let diff;
-      let entityDiff;
 
       switch(target) {
         case draggingTarget.LAYER_START:
           diff = this.getDragDiffOfRelativeFrames();
-          layerPos.layerStart = minmax(0, layer.layerEnd - 1)
+          layerPos.layerStart = minmax(0, layer.entityStart - 1)
                                       (layer.layerStart + diff);
-          if (layer.getLayerKind() === LayerKinds.ANIMATED) {
-            entityDiff = Math.max(0, layer.layerStart + diff - layer.entityStart);
-            layerPos.entityStart  = Math.min(layer.entityStart + entityDiff, layer.layerEnd - 1);
-            layerPos.entityEnd    = Math.min(layer.entityEnd + entityDiff,   layer.layerEnd);
-          }
-          else {
-            layerPos.entityStart  = layerPos.layerStart;
-          }
           break;
         case draggingTarget.LAYER:
-          diff = minmax(-layer.layerStart, comp.frame - layer.layerEnd)
-                       (this.getDragDiffOfFrames());
-          layerPos.layerStart  = layer.layerStart + diff;
-          layerPos.layerEnd    = layer.layerEnd + diff;
+          diff = minmax(
+            (layer.repeatBefore? -layer.layerStart : -layer.entityStart),
+            comp.frame - (layer.repeatAfter? layer.layerEnd : layer.entityEnd)
+          )(this.getDragDiffOfFrames());
+          if (layer.repeatBefore) {
+            layerPos.layerStart = layer.layerStart + diff;
+          }
+          if (layer.repeatAfter) {
+            layerPos.layerEnd = layer.layerEnd + diff;
+          }
           layerPos.entityStart = layer.entityStart + diff;
-          layerPos.entityEnd   = layer.entityEnd + diff;
+          layerPos.entityEnd = layer.entityEnd + diff;
           break;
         case draggingTarget.LAYER_END:
           diff = this.getDragDiffOfRelativeFrames();
-          layerPos.layerEnd = minmax(layer.layerStart + 1, comp.frame)
+          layerPos.layerEnd = minmax(layer.entityEnd + 1, comp.frame)
                                     (layer.layerEnd + diff);
-
-          if (layer.getLayerKind() === LayerKinds.ANIMATED) {
-            entityDiff = Math.min(0, layer.layerEnd + diff - layer.entityEnd);
-            layerPos.entityStart  = Math.max(layer.entityStart + entityDiff, layer.layerStart);
-            layerPos.entityEnd    = Math.max(layer.entityEnd + entityDiff,   layer.layerStart + 1);
-          }
-          else {
-            layerPos.entityEnd    = layerPos.layerEnd;
-          }
           break;
         case draggingTarget.ENTITY_START:
           diff = this.getDragDiffOfRelativeFrames();
-          layerPos.entityStart = minmax(layer.layerStart, layer.entityEnd - 1)
-                                       (layer.entityStart + diff);
+          if (layer.repeatBefore) {
+            layerPos.entityStart = minmax(layer.layerStart + 1, layer.entityEnd - 1)
+                                         (layer.entityStart + diff);
+          }
+          else {
+            layerPos.entityStart = minmax(0, layer.entityEnd - 1)
+                                        (layer.entityStart + diff);
+          }
           break;
         case draggingTarget.ENTITY:
           diff = minmax(-layer.entityStart, comp.frame - layer.entityEnd)
                        (this.getDragDiffOfFrames());
-          layerPos.layerStart  = Math.min(layer.layerStart, layer.entityStart + diff);
-          layerPos.layerEnd    = Math.max(layer.layerEnd,   layer.entityEnd + diff);
+          if (layer.repeatBefore) {
+            layerPos.layerStart = Math.min(layer.layerStart, layer.entityStart + diff);
+          }
+          if (layer.repeatAfter) {
+            layerPos.layerEnd = Math.max(layer.layerEnd, layer.entityEnd + diff);
+          }
           layerPos.entityStart = layer.entityStart + diff;
-          layerPos.entityEnd   = layer.entityEnd + diff;
+          layerPos.entityEnd = layer.entityEnd + diff;
           break;
         case draggingTarget.ENTITY_END:
           diff = this.getDragDiffOfRelativeFrames();
-          layerPos.entityEnd = minmax(layer.entityStart + 1, layer.layerEnd)
-                                     (layer.entityEnd + diff);
+          if (layer.repeatAfter) {
+            layerPos.entityEnd = minmax(layer.entityStart + 1, layer.layerEnd - 1)
+                                       (layer.entityEnd + diff);
+          }
+          else {
+            layerPos.entityEnd = minmax(layer.entityStart + 1, comp.frame)
+                                       (layer.entityEnd + diff);
+          }
           break;
       }
-      //if (!(layerPos.layerStart <= layerPos.entityStart && layerPos.entityStart < layerPos.entityEnd && layerPos.entityEnd <= layerPos.layerEnd)) {
-      //  console.warn(layerPos);
-      //}
 
       this.setState({
         dragInfo: this.getPositionInfo(e),
-        layerPos: layerPos,
+        tmpLayerPos: layerPos,
       });
     }
   },
@@ -347,7 +368,7 @@ var LayerTimetable = React.createClass({
 
       const fill = (a, b) => _Utility.range(Math.min(a, b), Math.max(a, b));
       const layer = this.props.layer;
-      const layerPos = this.state.layerPos;
+      const layerPos = this.state.tmpLayerPos;
 
       if (userAgent.getBrowser().name === "Firefox") {
         e.target.removeEventListener("mousemove", this._mouseMoveOnFirefox, false);
@@ -357,49 +378,43 @@ var LayerTimetable = React.createClass({
       }
 
       let changedFrames = null;
+      const layeredFrames = _Array.union(
+        fill(
+          layer.repeatBefore? layer.layerStart : layer.entityStart,
+          layer.repeatAfter?  layer.layerEnd   : layer.entityEnd),
+        fill(
+          layer.repeatBefore? layerPos.layerStart : layerPos.entityStart,
+          layer.repeatAfter?  layerPos.layerEnd   : layerPos.entityEnd));
+
       switch (target) {
         case draggingTarget.LAYER_START:
           if (layerPos.layerStart !== layer.layerStart) {
-            if (layer.getLayerKind() === LayerKinds.ANIMATED
-            &&  layerPos.entityStart !== layer.entityStart) {
-              changedFrames = fill(layer.layerStart, layer.layerEnd);
-            }
-            else {
-              changedFrames = fill(layerPos.layerStart, layer.layerStart);
-            }
+            changedFrames = fill(layerPos.layerStart, layer.layerStart);
           }
           break;
         case draggingTarget.LAYER:
-          if (layerPos.layerStart !== layer.layerStart) {
-            changedFrames = _Array.union(
-              fill(layer.layerStart,    layer.layerEnd),
-              fill(layerPos.layerStart, layerPos.layerEnd));
+          if (layerPos.entityStart !== layer.entityStart) {
+            changedFrames = layeredFrames;
           }
           break;
         case draggingTarget.LAYER_END:
           if (layerPos.layerEnd !== layer.layerEnd) {
-            if (layer.getLayerKind() === LayerKinds.ANIMATED
-            &&  layerPos.entityEnd !== layer.entityEnd) {
-              changedFrames = fill(layer.layerStart, layer.layerEnd);
-            }
-            else {
-              changedFrames = fill(layerPos.layerEnd, layer.layerEnd);
-            }
+            changedFrames = fill(layerPos.layerEnd, layer.layerEnd);
           }
           break;
         case draggingTarget.ENTITY_START:
           if (layerPos.entityStart !== layer.entityStart) {
-            changedFrames = fill(layerPos.layerStart, layerPos.layerEnd);
+            changedFrames = layeredFrames;
           }
           break;
         case draggingTarget.ENTITY:
-          if (layerPos.entityStart !== layer.entityEnd) {
-            changedFrames = fill(layerPos.layerStart, layerPos.layerEnd);
+          if (layerPos.entityStart !== layer.entityStart) {
+            changedFrames = layeredFrames;
           }
           break;
         case draggingTarget.ENTITY_END:
           if (layerPos.entityEnd !== layer.entityEnd) {
-            changedFrames = fill(layerPos.layerStart, layerPos.layerEnd);
+            changedFrames = layeredFrames;
           }
           break;
       }
@@ -430,8 +445,39 @@ var LayerTimetable = React.createClass({
         dragging: null,
         dragStartInfo: null,
         dragInfo: null,
+        tmpLayerPos: null,
       });
     }
+  },
+
+  _onRepeatBeforeButtonClick() {
+    const layer = this.props.layer;
+    const layerStart = (layer.layerStart < layer.entityStart)
+      ? layer.layerStart
+      : Math.min(0, layer.entityStart);
+
+    Actions.clearFrameCache(this.props.composition,
+      _Utility.range(layerStart, layer.entityStart));
+    layer.update({
+      repeatBefore: !layer.repeatBefore,
+      layerStart: layerStart,
+    }, false);
+    Actions.updateLayer(layer, false);
+  },
+
+  _onRepeatAfterButtonClick() {
+    const layer = this.props.layer;
+    const layerEnd = (layer.layerEnd > layer.entityEnd)
+      ? layer.layerEnd
+      : Math.max(this.props.composition.frame, layer.entityEnd);
+
+    Actions.clearFrameCache(this.props.composition,
+      _Utility.range(layer.entityEnd, layerEnd));
+    layer.update({
+      repeatAfter: !layer.repeatAfter,
+      layerEnd: layerEnd,
+    }, false);
+    Actions.updateLayer(layer, false);
   },
 });
 

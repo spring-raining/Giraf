@@ -197,11 +197,13 @@ export class Layer extends Base {
   capture(frame) {
     return new Promise((resolve, reject) => {
       try {
-        if (!this.entity
-          || !hasTrait(this.entity, _Renderable)
-          || frame < this.layerStart
-          || frame >= this.layerEnd
-        ) {
+        if (!this.entity || !hasTrait(this.entity, _Renderable)) {
+          resolve(null);
+        }
+
+        const start = (this.repeatBefore)? this.layerStart : this.entityStart;
+        const end = (this.repeatAfter)? this.layerEnd : this.entityEnd;
+        if (frame < start || frame >= end) {
           resolve(null);
         }
 

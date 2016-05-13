@@ -47,13 +47,15 @@ const ScrollBar = React.createClass({
       entireRange:      React.PropTypes.number.isRequired,
       displayRange:     React.PropTypes.number.isRequired,
       position:         React.PropTypes.number.isRequired,
-      onScrollBarMoved: React.PropTypes.func,
+      onScrollBarMoved: React.PropTypes.func.isRequired,
     };
   },
 
   getInitialState() {
     return {
-      previousPosition: null,
+      previousCoord: null,
+      firstCoord: null,
+      startPosition: null,
     };
   },
 
@@ -108,12 +110,10 @@ const ScrollBar = React.createClass({
 
   _onGutterClick(direction) {
     return (e) => {
-      if (_Lang.isFunction(this.props.onScrollBarMoved)) {
-        const result = Math.max(0,
-                       Math.min(this.props.entireRange - this.props.displayRange,
-                       this.props.position + this.props.displayRange * direction));
-        this.props.onScrollBarMoved(result);
-      }
+      const result = Math.max(0,
+                     Math.min(this.props.entireRange - this.props.displayRange,
+                     this.props.position + this.props.displayRange * direction));
+      this.props.onScrollBarMoved(result);
     }
   },
 
@@ -129,12 +129,14 @@ const ScrollBar = React.createClass({
     }
 
     e.dataTransfer.setDragImage(genDummyImg(), 0, 0);
-    const previousPosition =
+    const coord =
       (this.props.axis === "x")? e.clientX :
       (this.props.axis === "y")? e.clientY :
       null;
     this.setState({
-      previousPosition: previousPosition,
+      previousCoord: coord,
+      firstCoord: coord,
+      startPosition: this.props.position,
     });
   },
 
@@ -145,23 +147,21 @@ const ScrollBar = React.createClass({
       return;
     }
 
-    const position =
+    const coord =
       (this.props.axis === "x")? e.clientX :
       (this.props.axis === "y")? e.clientY :
-      this.state.previousPosition;
-    const diff = position - this.state.previousPosition;
-    if (diff !== 0) {
-      if (_Lang.isFunction(this.props.onScrollBarMoved)) {
-        const dom = ReactDOM.findDOMNode(this);
-        const rectRange = (this.props.axis === "x")? dom.offsetWidth : dom.offsetHeight;
-        const result = Math.max(0,
-                       Math.min(this.props.entireRange - this.props.displayRange,
-                       this.props.position + this.props.entireRange * (diff / rectRange)));
-        this.setState({
-          previousPosition: position,
-        });
-        this.props.onScrollBarMoved(result);
-      }
+      this.state.previousCoord;
+    if (coord !== this.state.previousCoord) {
+      const dom = ReactDOM.findDOMNode(this);
+      const rectRange = (this.props.axis === "x")? dom.offsetWidth : dom.offsetHeight;
+      const diff = coord - this.state.firstCoord;
+      const result = Math.max(0,
+                     Math.min(this.props.entireRange - this.props.displayRange,
+                     this.state.startPosition + this.props.entireRange * (diff / rectRange)));
+      this.setState({
+        previousCoord: coord,
+      });
+      this.props.onScrollBarMoved(result);
     }
   },
 
@@ -175,7 +175,9 @@ const ScrollBar = React.createClass({
     }
 
     this.setState({
-      previousPosition: null,
+      previousCoord: null,
+      firstCoord: null,
+      startPosition: null,
     });
   },
 });

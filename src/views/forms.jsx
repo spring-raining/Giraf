@@ -14,6 +14,7 @@ import genUUID                    from "src/utils/genUUID";
 import "brace/mode/javascript";
 import "brace/theme/github";
 import "brace/theme/monokai";
+import "brace/ext/language_tools";
 
 
 const userAgent = new UAParser();
@@ -503,6 +504,8 @@ export const ScriptArea = React.createClass({
                    width={this.props.width}
                    height={this.props.height}
                    value={this.state.tmpValue}
+                   enableBasicAutocompletion={true}
+                   enableLiveAutocompletion={false}
                    onBlur={this._onBlur}
                    onChange={this._onChange}
                    name={this.state.editorID} />

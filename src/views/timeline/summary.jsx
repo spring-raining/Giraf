@@ -40,7 +40,7 @@ export default React.createClass({
     return <div className="timeline__summary"
                 onClick={this._onClick}>
       <div className="timeline__summary__info">
-        <span className="timeline__summary__badge">{this.props.currentFrame}</span>
+        <span className="timeline__summary__badge">{this.props.currentFrame + 1}</span>
         <span>f</span>
         <span className="timeline__summary__badge">{comp.fps}</span>
         <span>fps</span>

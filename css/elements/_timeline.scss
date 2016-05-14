@@ -1,5 +1,19 @@
 @import "../defs";
 
+@mixin timeline-layer-color($color, $color-active) {
+  .timeline__layer-timetable__entity {
+    background-color: $color;
+  }
+
+  &.edited .timeline__layer-timetable__entity {
+    background-color: $color-active;
+  }
+
+  .timeline__layer-timetable__layer-container {
+    background-color: transparentize(lighten($color, 30%), 0.5);
+  }
+}
+
 .timeline {
   color: $color-timeline-body;
   background-color: $color-timeline-bg;
@@ -318,10 +332,17 @@
   position: relative;
   @include giraf-shadow(2);
 
-  &.edited {
-    .timeline__layer-timetable__entity {
-      background-color: $color-timeline-edited-layer-entity-bg;
-    }
+  &.composition {
+    @include timeline-layer-color($color-composition, $color-composition-active);
+  }
+  &.footage.image {
+    @include timeline-layer-color($color-footage-image, $color-footage-image-active);
+  }
+  &.footage.gif {
+    @include timeline-layer-color($color-footage-gif, $color-footage-gif-active);
+  }
+  &.footage.video {
+    @include timeline-layer-color($color-footage-video, $color-footage-video-active);
   }
 }
 
@@ -352,8 +373,9 @@
 }
 
 .timeline__layer-timetable {
+  overflow: hidden;
+
   .timeline__layer-timetable__entity {
-    background-color: $color-timeline-layer-entity-bg;
     border-radius: 2px;
     @include giraf-shadow(1);
 
@@ -364,7 +386,6 @@
   }
 
   .timeline__layer-timetable__layer-container {
-    background-color: $color-timeline-layer-layer-bg;
     border-radius: 2px;
     @include giraf-shadow(1);
   }
@@ -388,13 +409,41 @@
     top: 0;
     bottom: 0;
     width: $timeline-layer-handle-width;
+    cursor: ew-resize;
   }
 
   .timeline__layer-timetable-area__left-handle {
-    left: 0;
+    left: - $timeline-layer-handle-width / 2;
   }
 
   .timeline__layer-timetable-area__right-handle {
-    right: 0;
+    right: - $timeline-layer-handle-width / 2;
   }
+}
+
+.timeline__layer-timetable__repeat-before-button,
+.timeline__layer-timetable__repeat-after-button {
+  @include calculate-z-index(timeline, timetable-repeat-button);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  padding: 0;
+  width: $timeline-layer-repeat-button-size;
+  height: $timeline-layer-repeat-button-size;
+  border-radius: 50%;
+  font-size: 10px;
+  opacity: 0;
+
+  .timeline__layer:hover & {
+    opacity: 1;
+  }
+}
+
+.timeline__layer-timetable__repeat-before-button {
+  left: $timeline-layer-repeat-button-position;
+}
+
+.timeline__layer-timetable__repeat-after-button {
+  right: $timeline-layer-repeat-button-position;
 }

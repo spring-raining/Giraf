@@ -21,6 +21,7 @@ export const FootageKinds = keyMirror({
   UNKNOWN: null,
   IMAGE: null,
   VIDEO: null,
+  GIF: null,
 });
 
 const Base = classWithTraits(ModelBase, _Selectable, _Renderable);
@@ -177,16 +178,26 @@ export class Footage extends Base {
   }
 
   getFootageKind() {
-    if      (this.type.indexOf("image/") === 0) return FootageKinds.IMAGE;
-    else if (this.type.indexOf("video/") === 0) return FootageKinds.VIDEO;
-    else                                        return FootageKinds.UNKNOWN;
+    if (this.type.indexOf("image/") === 0) {
+      if (this.type === "image/gif") {
+        return FootageKinds.GIF;
+      }
+      else {
+        return FootageKinds.IMAGE;
+      }
+    }
+    else if (this.type.indexOf("video/") === 0) {
+      return FootageKinds.VIDEO;
+    }
+
+    return FootageKinds.UNKNOWN;
   }
 
   getLength() {
     if (this.getFootageKind() === FootageKinds.VIDEO) {
       return this.videoDuration;
     }
-    else if (this.type === "image/gif") {
+    else if (this.getFootageKind() === FootageKinds.GIF) {
       return this.gifFrames.length;
     }
     else {
@@ -209,7 +220,7 @@ export class Footage extends Base {
            + "."
            + (Math.round(d * 100 % 100 + 100) + "").slice(1, 3)
     }
-    else if (this.type === "image/gif"
+    else if (this.getFootageKind() === FootageKinds.GIF
          &&  this.gifFrames.length > 0) {
       return this.gifFrames.length + "f";
     }
@@ -220,7 +231,7 @@ export class Footage extends Base {
 
   isAnimatable() {
     return this.getFootageKind() === FootageKinds.VIDEO
-        || this.type === "image/gif";
+        || this.getFootageKind() === FootageKinds.GIF;
   }
 
   render(time) {
@@ -234,20 +245,19 @@ export class Footage extends Base {
 
         if (this.getFootageKind() === FootageKinds.IMAGE) {
           this.context.clearRect(0, 0, this.width, this.height);
-          if (this.type === "image/gif") {
-            this.context.putImageData(
-              this.gifFrames[Math.round(time_)].imageData,
-              0, 0);
+          let img = document.createElement("img");
+          img.src = this.objectURL;
+          img.onload = () => {
+            this.context.drawImage(img, 0, 0);
             resolve(this.canvas);
-          }
-          else {
-            let img = document.createElement("img");
-            img.src = this.objectURL;
-            img.onload = () => {
-              this.context.drawImage(img, 0, 0);
-              resolve(this.canvas);
-            };
-          }
+          };
+        }
+        else if (this.getFootageKind() === FootageKinds.GIF) {
+          this.context.clearRect(0, 0, this.width, this.height);
+          this.context.putImageData(
+            this.gifFrames[Math.round(time_)].imageData,
+            0, 0);
+          resolve(this.canvas);
         }
         else if (this.getFootageKind() === FootageKinds.VIDEO) {
           const video = document.createElement("video");

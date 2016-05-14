@@ -14,6 +14,15 @@ $color-warn-body:                   darken($color-warn, 7%);
 $color-danger:                      rgb(255, 51, 51);
 $color-danger-body:                 darken($color-danger, 5%);
 
+$color-composition:                 #AD5547;
+$color-composition-active:          #E25F4A;
+$color-footage-video:               #818E98;
+$color-footage-video-active:        #A9BCCA;
+$color-footage-gif:                 #818498;
+$color-footage-gif-active:          #AAAEC5;
+$color-footage-image:               #819887;
+$color-footage-image-active:        #AEC8B5;
+
 $color-a:                           $color-link;
 $color-button-flat-hover-bg:        rgba(0, 0, 0, .06);
 $color-form-focus-border:           $color-link;
@@ -40,9 +49,6 @@ $color-timeline-body:               $color-white;
 $color-timeline-edited-bg:          lighten($color-timeline-bg, 12%);
 $color-timeline-grid:               lighten($color-timeline-bg, 7%);
 $color-timeline-header-bg:          rgba(0, 0, 0, 0.7);
-$color-timeline-layer-entity-bg:    #A26D6D;
-$color-timeline-edited-layer-entity-bg: lighten($color-timeline-layer-entity-bg, 10%);
-$color-timeline-layer-layer-bg:     rgba(224, 194, 194, 0.5);
 $color-timeline-layer-header-body:              $color-white-sub;
 $color-timeline-layer-header-button-body:       rgb(121, 121, 121);
 $color-timeline-layer-header-button-bg:         linear-gradient(0deg,rgba(0,0,0,0), rgba(230,230,230,.1));
@@ -59,8 +65,6 @@ $color-timeline-drophere-border:    $color-giraf;
 $color-timeline-drophere-bg:        transparentize($color-giraf, 0.9);
 $color-project-body:                $color-white;
 $color-project-bg:                  rgb(109, 90, 68);
-$color-project-card-footage-bg:     rgb(89, 100, 101);
-$color-project-card-composition-bg: rgb(89, 96, 76);
 $color-project-loading-body:        transparentize($color-project-body, 0.7);
 $color-project-dying-body:          #F78585;
 $color-project-input-bg:            rgba(255, 255, 255, 0.1);
@@ -88,7 +92,7 @@ $z-order: (
         alert:                      base,
         modal:                      base wall body,
         timeline:                   base timetable left header summary scale-scroller
-                                    timetable-entity-handle timetable-layer-handle,
+                                    timetable-entity-handle timetable-layer-handle timetable-repeat-button,
         base:                       base,
 );
 
@@ -112,6 +116,8 @@ $timeline-layer-height:             48px;
 $timeline-layer-handle-width:       20px;
 $timeline-layer-header-font-size:   12px;
 $timeline-layer-header-button-size: 22px;
+$timeline-layer-repeat-button-size: 28px;
+$timeline-layer-repeat-button-position: -50px;
 $timeline-timetable-padding-bottom: 20px;
 $timeline-scale-scrollbar-height:   22px;
 $timeline-scale-scrollbar-button-width: 25px;

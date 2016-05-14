@@ -59,14 +59,11 @@ export default React.createClass({
     let description = null;
 
     if (this.props.item instanceof Footage) {
-      className += `
-        footage
-        ${this.props.item.status.toLowerCase()}
-        ${this.props.item.getFootageKind().toLowerCase()}
-        ${this.props.item.type}
-        ${this.props.isSelected? "selected" : ""}
-        ${this.props.isActive?   "active" : ""}
-      `.replace("\s+", " ");
+      className += " footage"
+        + ` ${this.props.item.status.toLowerCase()}`
+        + ` ${this.props.item.getFootageKind().toLowerCase()}`
+        + ` ${this.props.isSelected? "selected": ""}`
+        + ` ${this.props.isActive? "active" : ""}`;
 
       description = (
         <div className="project__item__description">
@@ -83,11 +80,9 @@ export default React.createClass({
       );
     }
     else if (this.props.item instanceof Composition) {
-      className += `
-        composition
-        ${this.props.isSelected? "selected" : ""}
-        ${this.props.isActive?   "active" : ""}
-      `.replace("\s+", " ");
+      className += " composition"
+        + ` ${this.props.isSelected? "selected" : ""}`
+        + ` ${this.props.isActive?   "active" : ""}`;
 
       description = (
         <div className="project__item__description">

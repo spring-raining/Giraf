@@ -20,7 +20,7 @@ export default React.createClass({
       <div className="timeline__timetable-overlay pointer-disabled">
         <div className="timeline__timetable-overlay__before pointer-disabled"
              style={{flexGrow: this.props.currentFrame}}></div>
-        <div className="timeline__timetable-overlay__controller pointer-enabled"
+        <div className="timeline__timetable-overlay__controller pointer-disabled"
              style={{flexGrow: 1}}></div>
         <div className="timeline__timetable-overlay__after pointer-disabled"
              style={{flexGrow: this.props.composition.frame - this.props.currentFrame - 1}}></div>

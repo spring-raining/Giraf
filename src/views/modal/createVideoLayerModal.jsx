@@ -113,7 +113,7 @@ const CreateVideoLayerModal = React.createClass({
           </ul>
         );
       }
-      else if (this.props.targetFootage.type === "image/gif") {
+      else if (this.props.targetFootage.getFootageKind() === FootageKinds.GIF) {
         return (
           <ul>
             <li>
@@ -259,7 +259,7 @@ const CreateVideoLayerModal = React.createClass({
         playerTime: this.state.currentTime - (1 / this.state.videoFPS),
       });
     }
-    else if (this.props.targetFootage.type === "image/gif") {
+    else if (this.props.targetFootage.getFootageKind() === FootageKinds.GIF) {
       this.setState({
         playerPlaying: false,
         playerTime: this.state.currentTime - 1,
@@ -275,7 +275,7 @@ const CreateVideoLayerModal = React.createClass({
         playerTime: this.state.currentTime + (1 / this.state.videoFPS),
       });
     }
-    else if (this.props.targetFootage.type === "image/gif") {
+    else if (this.props.targetFootage.getFootageKind() === FootageKinds.GIF) {
       this.setState({
         playerPlaying: false,
         playerTime: this.state.currentTime + 1,
@@ -333,7 +333,7 @@ const CreateVideoLayerModal = React.createClass({
     if (footage.getFootageKind() === FootageKinds.VIDEO) {
       endTime += 1 / this.state.videoFPS;
     }
-    else if (footage.type === "image/gif") {
+    else if (footage.getFootageKind() === FootageKinds.GIF) {
       endTime += 1;
     }
 
@@ -364,7 +364,7 @@ const CreateVideoLayerModal = React.createClass({
     if (this.props.targetFootage.getFootageKind() === FootageKinds.VIDEO) {
       return Math.floor((b - a) * this.state.videoFPS) + 1;
     }
-    else if (this.props.targetFootage.type === "image/gif") {
+    else if (this.props.targetFootage.getFootageKind() === FootageKinds.GIF) {
       return b - a + 1;
     }
   },

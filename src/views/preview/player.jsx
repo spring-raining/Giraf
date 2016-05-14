@@ -88,7 +88,8 @@ var Player = React.createClass({
   render() {
     let item = this.props.item;
 
-    if (item.type === "image/gif") {
+    if (item instanceof Footage
+    &&  item.getFootageKind() === FootageKinds.GIF) {
       return (
         <div className="preview__player">
           <div ref="GIFCanvasContainer"

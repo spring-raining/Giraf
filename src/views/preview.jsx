@@ -77,7 +77,8 @@ var Preview = React.createClass({
     const activeItem = this.props.store.get("activeItem");
     let previewContainer;
     if (activeItem instanceof Footage) {
-      if (activeItem.getFootageKind() === FootageKinds.IMAGE) {
+      if (activeItem.getFootageKind() === FootageKinds.IMAGE
+      ||  activeItem.getFootageKind() === FootageKinds.GIF) {
         previewContainer =
           <div className="preview__container preview__footage-container">
             <img src={activeItem.objectURL} />

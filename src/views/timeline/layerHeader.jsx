@@ -3,6 +3,7 @@
 import React                      from "react";
 
 import Actions                    from "src/actions/actions";
+import {Footage as ModelFootage}  from "src/stores/model/footage";
 import {Composition as ModelComp} from "src/stores/model/composition";
 import {Layer as ModelLayer}      from "src/stores/model/layer";
 
@@ -21,10 +22,19 @@ export default React.createClass({
   },
 
   render() {
-    let comp = this.props.composition;
-    let layer = this.props.layer;
+    const layer = this.props.layer;
     let className = "timeline__layer-header"
                   + (this.props.isEdited? " edited" : "");
+
+    if (layer.entity instanceof ModelFootage) {
+      className += " footage"
+        + ` ${layer.entity.status.toLowerCase()}`
+        + ` ${layer.entity.getFootageKind().toLowerCase()}`;
+    }
+    else if (layer.entity instanceof ModelComp) {
+      className += " composition";
+    }
+
     let visibleButton = (layer.visible)
       ? <button className="timeline__layer-header__visible-button lsf on"
                 onClick={this._onCheckboxButtonClick("visible")(true)}>
@@ -35,11 +45,11 @@ export default React.createClass({
           eye
         </button>;
     let soloButton = (layer.solo)
-      ? <button className="timeline__layer-header__solo-button lsf on"
+      ? <button className="timeline__layer-header__solo-button on"
                 onClick={this._onCheckboxButtonClick("solo")(true)}>
           ●
         </button>
-      : <button className="timeline__layer-header__solo-button lsf"
+      : <button className="timeline__layer-header__solo-button"
                 onClick={this._onCheckboxButtonClick("solo")(false)}>
           ●
         </button>;

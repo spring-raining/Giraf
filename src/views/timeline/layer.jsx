@@ -9,6 +9,7 @@ import _Object                    from "lodash/object";
 import UAParser                   from "ua-parser-js";
 
 import Actions                    from "src/actions/actions";
+import {Footage as ModelFootage}  from "src/stores/model/footage";
 import {Composition as ModelComp} from "src/stores/model/composition";
 import {Layer as ModelLayer}      from "src/stores/model/layer";
 import {LayerKinds}               from "src/stores/model/layer";
@@ -499,6 +500,8 @@ export default React.createClass({
 
   render() {
     let cells = [];
+    const layer = this.props.layer;
+
     for (var i=0; i < this.props.composition.frame; i++) {
       cells.push(<FlexibleCell key={i} index={i} flexGlow={1}
                                className="timeline__layer-cell" />);
@@ -506,6 +509,15 @@ export default React.createClass({
 
     let className = "timeline__layer"
                   + (this.props.isEdited? " edited" : "");
+
+    if (layer.entity instanceof ModelFootage) {
+      className += " footage"
+        + ` ${layer.entity.status.toLowerCase()}`
+        + ` ${layer.entity.getFootageKind().toLowerCase()}`;
+    }
+    else if (layer.entity instanceof ModelComp) {
+      className += " composition";
+    }
 
     return (
       <div className={className}

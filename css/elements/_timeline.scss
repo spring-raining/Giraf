@@ -1,5 +1,19 @@
 @import "../defs";
 
+@mixin timeline-layer-color($color, $color-active) {
+  .timeline__layer-timetable__entity {
+    background-color: $color;
+  }
+
+  &.edited .timeline__layer-timetable__entity {
+    background-color: $color-active;
+  }
+
+  .timeline__layer-timetable__layer-container {
+    background-color: transparentize(lighten($color, 30%), 0.5);
+  }
+}
+
 .timeline {
   color: $color-timeline-body;
   background-color: $color-timeline-bg;
@@ -318,10 +332,17 @@
   position: relative;
   @include giraf-shadow(2);
 
-  &.edited {
-    .timeline__layer-timetable__entity {
-      background-color: $color-timeline-edited-layer-entity-bg;
-    }
+  &.composition {
+    @include timeline-layer-color($color-composition, $color-composition-active);
+  }
+  &.footage.image {
+    @include timeline-layer-color($color-footage-image, $color-footage-image-active);
+  }
+  &.footage.gif {
+    @include timeline-layer-color($color-footage-gif, $color-footage-gif-active);
+  }
+  &.footage.video {
+    @include timeline-layer-color($color-footage-video, $color-footage-video-active);
   }
 }
 
@@ -355,7 +376,6 @@
   overflow: hidden;
 
   .timeline__layer-timetable__entity {
-    background-color: $color-timeline-layer-entity-bg;
     border-radius: 2px;
     @include giraf-shadow(1);
 
@@ -366,7 +386,6 @@
   }
 
   .timeline__layer-timetable__layer-container {
-    background-color: $color-timeline-layer-layer-bg;
     border-radius: 2px;
     @include giraf-shadow(1);
   }

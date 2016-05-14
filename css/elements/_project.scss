@@ -1,7 +1,9 @@
 @import "../defs";
 
-@mixin project-item-thumbnail-gradient($color) {
-  &::after {
+@mixin project-item-color($color) {
+  background-color: $color;
+
+  .project__item__thumbnail-container::after {
     @include position(absolute, 0 0 0 0);
     content: "";
     @include background-image(linear-gradient(90deg, $color, transparent));
@@ -73,32 +75,29 @@
       float: left;
     }
 
-    &.footage {
-      background-color: $color-project-card-footage-bg;
-      .project__item__thumbnail-container {
-        @include project-item-thumbnail-gradient($color-project-card-footage-bg);
-      }
-
-      &.selected {
-        background-color: lighten($color-project-card-footage-bg, 10%);
-        .project__item__thumbnail-container {
-          @include project-item-thumbnail-gradient(lighten($color-project-card-footage-bg, 10%));
-        }
-      }
-    }
-
     &.composition {
-      background-color: $color-project-card-composition-bg;
-      .project__item__thumbnail-container {
-        @include project-item-thumbnail-gradient($color-project-card-composition-bg);
-      }
-
-      &.selected {
-        background-color: lighten($color-project-card-composition-bg, 10%);
-        .project__item__thumbnail-container {
-          @include project-item-thumbnail-gradient(lighten($color-project-card-composition-bg, 10%));
-        }
-      }
+      @include project-item-color(mix($color-composition, $color-project-bg));
+    }
+    &.composition.selected {
+      @include project-item-color(mix($color-composition-active, $color-project-bg));
+    }
+    &.footage.image {
+      @include project-item-color(mix($color-footage-image, $color-project-bg));
+    }
+    &.footage.image.selected {
+      @include project-item-color(mix($color-footage-image-active, $color-project-bg));
+    }
+    &.footage.gif {
+      @include project-item-color(mix($color-footage-gif, $color-project-bg));
+    }
+    &.footage.gif.selected {
+      @include project-item-color(mix($color-footage-gif-active, $color-project-bg));
+    }
+    &.footage.video {
+      @include project-item-color(mix($color-footage-video, $color-project-bg));
+    }
+    &.footage.video.selected {
+      @include project-item-color(mix($color-footage-video-active, $color-project-bg));
     }
 
     &.selected {

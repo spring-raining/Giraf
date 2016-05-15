@@ -7,6 +7,12 @@ import {Composition}              from "src/stores/model/composition";
 
 
 var Preview = React.createClass({
+  getInitialState() {
+    return {
+      fullScreen: false,
+    };
+  },
+
   componentWillUpdate(nextProps, nextState) {
     let activeItem = nextProps.store.get("activeItem");
 
@@ -75,6 +81,9 @@ var Preview = React.createClass({
 
   render() {
     const activeItem = this.props.store.get("activeItem");
+    const className = "preview panel"
+      + (this.state.fullScreen? " full-screen" : "");
+
     let previewContainer;
     if (activeItem instanceof Footage) {
       if (activeItem.getFootageKind() === FootageKinds.IMAGE
@@ -103,14 +112,24 @@ var Preview = React.createClass({
         <div className="preview__container preview__none-container"></div>;
     }
 
-    return <section className="preview panel">
+    return <section className={className}>
       {previewContainer}
+      <button className="preview__full-screen-button flat lsf sub"
+              onClick={this._onFullScreenButtonClick}>
+        {this.state.fullScreen? "small" : "full"}
+      </button>
     </section>;
   },
 
   _onPause(e) {
 
   },
+
+  _onFullScreenButtonClick() {
+    this.setState({
+      fullScreen: !this.state.fullScreen,
+    });
+  }
 });
 
 export default Preview;

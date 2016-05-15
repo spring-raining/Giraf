@@ -27,6 +27,12 @@
   .preview__footage-container {
     background-color: #000;
   }
+
+  .preview__full-screen-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
 }
 
 .preview__player {

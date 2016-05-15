@@ -85,12 +85,13 @@ $color-alert-popup-body:            $color-black;
  *  Lists of z-index order.
  *  A later tag will make upper than an early tag.
  */
-$z-order-global:                    base timeline modal alert menu anyway;
+$z-order-global:                    base timeline full-screen modal alert menu anyway;
 $z-order: (
         anyway:                     base,
         menu:                       base,
         alert:                      base,
         modal:                      base wall body,
+        full-screen:                base,
         timeline:                   base timetable left header summary scale-scroller
                                     timetable-entity-handle timetable-layer-handle timetable-repeat-button,
         base:                       base,

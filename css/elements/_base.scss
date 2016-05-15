@@ -222,6 +222,13 @@ button.flat.danger {
   width: 100%;
   height: 100%;
   overflow: auto;
+
+  &.full-screen {
+    @include position(fixed, $nav-height 0 0 0);
+    @include calculate-z-index(full-screen, base);
+    width: auto;
+    height: auto;
+  }
 }
 
 .pointer-enabled {

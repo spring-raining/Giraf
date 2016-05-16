@@ -3,36 +3,55 @@
 .preview {
   color: $color-preview-body;
   background-color: $color-preview-bg;
+}
 
-  .preview__container {
-    width: 100%;
-    height: 100%;
+.preview__footage-container {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
 
-    img, video, canvas {
-      position: absolute;
-      max-width: 100%;
-      max-height: 100%;
-      margin: auto;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-    }
+  img, video {
+    position: absolute;
+    max-width: 100%;
+    max-height: 100%;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}
+
+.preview__composition-container-wrapper {
+  @include position(absolute, 0 0 0 0);
+  overflow: hidden;
+
+  .preview__composition-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
 
     canvas {
+      position: absolute;
+      @include transform(translate3d(-50%, -50%, 0));
+      image-rendering: pixelated;
       background-color: #000;
     }
   }
+}
 
-  .preview__footage-container {
-    background-color: #000;
-  }
+.preview__full-screen-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
 
-  .preview__full-screen-button {
-    position: absolute;
-    top: 0;
-    right: 0;
-  }
+.preview__wireframe {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 
 .preview__player {

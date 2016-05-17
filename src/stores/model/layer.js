@@ -231,6 +231,11 @@ export class Layer extends Base {
       }
     });
   }
+
+  getClassName() {
+    return "layer"
+      + (this.entity? " " + this.entity.getClassName() : "");
+  }
 }
 
 export default {

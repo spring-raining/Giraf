@@ -212,6 +212,10 @@ export class Composition extends Base {
       .indexOf(this.id) === -1;
   }
 
+  getClassName() {
+    return "composition";
+  }
+
   _prepareCanvas(width, height) {
     return new Promise((resolve, reject) => {
       try {

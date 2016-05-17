@@ -59,9 +59,7 @@ export default React.createClass({
     let description = null;
 
     if (this.props.item instanceof Footage) {
-      className += " footage"
-        + ` ${this.props.item.status.toLowerCase()}`
-        + ` ${this.props.item.getFootageKind().toLowerCase()}`
+      className += ` ${this.props.item.getClassName()}`
         + ` ${this.props.isSelected? "selected": ""}`
         + ` ${this.props.isActive? "active" : ""}`;
 
@@ -80,7 +78,7 @@ export default React.createClass({
       );
     }
     else if (this.props.item instanceof Composition) {
-      className += " composition"
+      className += ` ${this.props.item.getClassName()}`
         + ` ${this.props.isSelected? "selected" : ""}`
         + ` ${this.props.isActive?   "active" : ""}`;
 

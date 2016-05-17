@@ -1,3 +1,7 @@
 "use strict";
 
-export default { }
+export default {
+  getClassName() {
+    throw new ReferenceError("Function 'getClassName' must be overridden.")
+  },
+}

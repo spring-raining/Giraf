@@ -4,7 +4,9 @@ import React                      from "react";
 
 import {Footage, FootageKinds}    from "src/stores/model/footage";
 import {Composition}              from "src/stores/model/composition";
+import _Renderable                from "src/stores/model/_renderable";
 import {Rect, Group, Layer}       from "src/views/preview/wireframes";
+import {hasTrait}                 from "src/utils/traitUtils";
 
 
 const WHEEL_ZOOM_RATIO = 0.01;
@@ -108,9 +110,30 @@ var Preview = React.createClass({
       }
     }
     else if (activeItem instanceof Composition) {
+      const selectingItemId = this.props.store.get("selectingItem", "id");
       const svgTransform = `translate(${-activeItem.width * this.state.previewScale / 2} `
                                    + `${-activeItem.height * this.state.previewScale / 2}) `
                              + `scale(${this.state.previewScale})`;
+      const layers = [].concat(activeItem.layers).reverse()
+        .filter((e) => hasTrait(e.entity, _Renderable))
+        .map((e) => {
+          const className = e.getClassName()
+            + ((e.id === selectingItemId)? " edited" : "");
+          return (
+            <Layer className={className}
+                   key={e.id}
+                   x={e.transform.position.x - e.transform.anchorPoint.x * e.transform.scale.x}
+                   y={e.transform.position.y - e.transform.anchorPoint.y * e.transform.scale.y}
+                   width={e.entity.width * e.transform.scale.x}
+                   height={e.entity.height * e.transform.scale.y}
+                   rotation={e.transform.rotation}
+                   handle={{
+                     x: e.transform.position.x,
+                     y: e.transform.position.y,
+                   }}
+                   previewScale={this.state.previewScale}/>
+          );
+        });
 
       previewContainer =
         <div className="preview__composition-container-wrapper">
@@ -126,6 +149,7 @@ var Preview = React.createClass({
             <g transform={svgTransform}>
               <Layer x={0} y={0} width={activeItem.width} height={activeItem.height}
                      previewScale={this.state.previewScale} />
+              {layers}
             </g>
           </svg>
         </svg>;

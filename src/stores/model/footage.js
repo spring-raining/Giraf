@@ -337,6 +337,13 @@ export class Footage extends Base {
     });
   }
 
+  getClassName() {
+    return "footage "
+      + this.status.toLowerCase()
+      + " "
+      + this.getFootageKind().toLowerCase();
+  }
+
   _loadContent(objectURL, type, width, height) {
     return new Promise((resolve, reject) => {
       if (!width || width < 1 || !height || height < 1) {

@@ -8,6 +8,12 @@
   .wireframe-stroke {
     stroke: $color;
   }
+
+  &:hover {
+    .wireframe__layer__rect {
+      fill: transparentize($color, 0.8);
+    }
+  }
 }
 
 .preview {
@@ -62,6 +68,7 @@
   height: 100%;
   top: 0;
   left: 0;
+  pointer-events: visible;
 }
 
 .preview__player {
@@ -122,6 +129,69 @@
     .wireframe__corner,
     .wireframe__handle {
       opacity: 1;
+    }
+  }
+
+  .wireframe__layer__corner {
+    .wireframe__corner:hover {
+      fill: white;
+    }
+  }
+
+  .wireframe__layer__rect {
+    cursor: move;
+  }
+
+  .wireframe__layer__handle {
+    .wireframe__handle__anchor,
+    .wireframe__handle__circle {
+      cursor: pointer;
+    }
+  }
+
+  .wireframe__layer__corner-nw,
+  .wireframe__layer__corner-se {
+    cursor: nwse-resize;
+  }
+
+  .wireframe__layer__corner-n,
+  .wireframe__layer__corner-s {
+    cursor: ns-resize;
+  }
+
+  .wireframe__layer__corner-ne,
+  .wireframe__layer__corner-sw {
+    cursor: nesw-resize;
+  }
+
+  .wireframe__layer__corner-e,
+  .wireframe__layer__corner-w {
+    cursor: ew-resize;
+  }
+}
+
+.wireframe__handle {
+  .wireframe__handle__circle__skeleton {
+    pointer-events: none;
+  }
+
+  .wireframe__handle__circle__hover {
+    pointer-events: stroke;
+  }
+
+  .wireframe__handle__circle:hover {
+    & .wireframe__handle__circle__skeleton {
+      stroke: white;
+    }
+  }
+
+  .wireframe__handle__anchor__hover {
+    pointer-events: all;
+  }
+
+  .wireframe__handle__anchor:hover {
+    & .wireframe__handle__anchor__skeleton {
+      stroke: white;
     }
   }
 }

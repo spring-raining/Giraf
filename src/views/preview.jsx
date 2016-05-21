@@ -1,6 +1,7 @@
 "use strict";
 
 import React                      from "react";
+import ReactDOM                   from "react-dom";
 
 import {Footage, FootageKinds}    from "src/stores/model/footage";
 import {Composition}              from "src/stores/model/composition";
@@ -16,6 +17,8 @@ var Preview = React.createClass({
     return {
       previewScale: 1,
       fullScreen: false,
+      wireframeMousePos: {x: 0, y: 0},
+      wireframeOffset: {top: 0, left: 0},
     };
   },
 
@@ -130,8 +133,11 @@ var Preview = React.createClass({
                    handle={{
                      x: e.transform.position.x,
                      y: e.transform.position.y,
+                     r: (e.entity.width * Math.abs(e.transform.scale.x) + e.entity.height * Math.abs(e.transform.scale.y)) / 6,
                    }}
-                   previewScale={this.state.previewScale}/>
+                   onDrag={this._onLayerDrag(e)}
+                   onClick={this._onLayerClick(e)}
+                   previewScale={this.state.previewScale} />
           );
         });
 
@@ -143,16 +149,21 @@ var Preview = React.createClass({
           </div>
         </div>;
       previewWireframe =
-        <svg className="preview__wireframe"
-             onWheel={this._onScroll}>
-          <svg x="50%" y="50%" style={{overflow: "visible"}}>
-            <g transform={svgTransform}>
-              <Layer x={0} y={0} width={activeItem.width} height={activeItem.height}
-                     previewScale={this.state.previewScale} />
-              {layers}
-            </g>
+        <div className="preview__wireframe-wrapper"
+             ref="wireframe">
+          <svg className="preview__wireframe"
+               onWheel={this._onScroll}
+               onMouseEnter={this._onWireframeMouseEnter}
+               onMouseMove={this._onWireframeMouseMove}>
+            <svg x="50%" y="50%" style={{overflow: "visible"}}>
+              <g transform={svgTransform}>
+                <Layer x={0} y={0} width={activeItem.width} height={activeItem.height}
+                       previewScale={this.state.previewScale} />
+                {layers}
+              </g>
+            </svg>
           </svg>
-        </svg>;
+        </div>;
     }
     else {
       previewContainer =
@@ -187,6 +198,47 @@ var Preview = React.createClass({
       previewScale: Math.min(10, Math.max(0.1, val)),
     });
   },
+
+  _onWireframeMouseEnter(e) {
+    const wireframeDOM = ReactDOM.findDOMNode(this.refs.wireframe);
+    let offsetTop = 0;
+    let offsetLeft = 0;
+    let el = wireframeDOM;
+    while (el && !isNaN(el.offsetLeft)) {
+      offsetLeft += el.offsetLeft;
+      el = el.offsetParent;
+    }
+    el = wireframeDOM;
+    while (el && !isNaN(el.offsetTop)) {
+      offsetTop += el.offsetTop;
+      el = el.offsetParent;
+    }
+
+    this.setState({
+      wireframeOffset: {top: offsetTop, left: offsetLeft},
+    });
+  },
+
+  _onWireframeMouseMove(e) {
+    this.setState({
+      wireframeMousePos: {
+        x: e.clientX - this.state.wireframeOffset.left,
+        y: e.clientY - this.state.wireframeOffset.top,
+      }
+    });
+  },
+
+  _onLayerDrag(layer) {
+    return (el) => (e) => {
+      //console.log(el, this.state.wireframeMousePos.x);
+    };
+  },
+
+  _onLayerClick(layer) {
+    return (e) => {
+
+    };
+  }
 });
 
 export default Preview;

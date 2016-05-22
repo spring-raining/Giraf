@@ -60,6 +60,15 @@ export class Transform extends ModelBase {
   set opacity(opacity) {
     super.assign("_opacity", opacity);
   }
+  
+  clone() {
+    return new Transform(
+      this.anchorPoint.clone(),
+      this.position.clone(),
+      this.scale.clone(),
+      this.rotation,
+      this.opacity);
+  }
 }
 
 export default {

@@ -7,7 +7,7 @@ export class Point extends ModelBase {
   constructor(points) {
     super();
     if (points.length === 2) {
-      this._value = points;
+      this._dimension = 2;
       this._x = points[0];
       this._y = points[1];
     }
@@ -15,11 +15,7 @@ export class Point extends ModelBase {
       throw new TypeError("Invalid argument length.");
     }
   }
-
-  get() {
-    return [].concat(this._value);
-  }
-
+  
   get x() {
     return this._x;
   }
@@ -34,6 +30,20 @@ export class Point extends ModelBase {
 
   set y(y) {
     super.assign("_y", y);
+  }
+  
+  get dimension() {
+    return this._dimension;
+  }
+
+  get() {
+    if (this.dimension === 2) {
+      return [this.x, this.y];
+    }
+  }
+
+  clone() {
+    return new Point(this.get.bind(this)());
   }
 }
 

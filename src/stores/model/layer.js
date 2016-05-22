@@ -1,6 +1,7 @@
 "use strict";
 
 import keyMirror                      from "keymirror";
+import _Lang                          from "lodash/lang";
 
 import Actions                        from "src/actions/actions";
 import {Composition}                  from "src/stores/model/composition";
@@ -48,6 +49,7 @@ export class Layer extends Base {
     this._parentCompId = parentCompId;
     this._entity = entity;
     this._transform = transform;
+    this._tmpTransform = null;
     this._layerStart = start;
     this._layerEnd = end;
     this._entityStart = start;
@@ -83,6 +85,14 @@ export class Layer extends Base {
 
   get transform() {
     return this._transform;
+  }
+
+  get tmpTransform() {
+    return this._tmpTransform;
+  }
+
+  set tmpTransform(tmpTransform) {
+    super.assign("_tmpTransform", tmpTransform);
   }
 
   get layerStart() {
@@ -194,16 +204,24 @@ export class Layer extends Base {
     }
   }
 
+  isVisible(frame) {
+    if (!this.entity || !hasTrait(this.entity, _Renderable)) {
+      return false;
+    }
+
+    const start = (this.repeatBefore)? this.layerStart : this.entityStart;
+    const end = (this.repeatAfter)? this.layerEnd : this.entityEnd;
+    if (!_Lang.isNumber(frame) || frame < start || frame >= end) {
+      return false;
+    }
+
+    return true;
+  }
+
   capture(frame) {
     return new Promise((resolve, reject) => {
       try {
-        if (!this.entity || !hasTrait(this.entity, _Renderable)) {
-          resolve(null);
-        }
-
-        const start = (this.repeatBefore)? this.layerStart : this.entityStart;
-        const end = (this.repeatAfter)? this.layerEnd : this.entityEnd;
-        if (frame < start || frame >= end) {
+        if (!this.isVisible(frame)) {
           resolve(null);
         }
 

@@ -255,28 +255,36 @@ export class Layer extends _WireframeBase {
         mouseMoveEvent: mouseMoveEvent,
         mouseUpEvent: mouseUpEvent,
       });
+      if (_Lang.isFunction(this.props.onDragStart)) {
+        this.props.onDragStart(el)(e.nativeEvent);
+      }
     };
   }
 
   _onMouseMove(el) {
     return (e) => {
       if (e.buttons % 2 === 1) { // left button
-        this.props.onDrag(el)(e);
+        if (_Lang.isFunction(this.props.onDrag)) {
+          this.props.onDrag(el)(e);
+        }
       }
       else {
-        this._onMouseUp(el).bind(this)();
+        this._onMouseUp(el).bind(this)(e);
       }
     };
   }
 
   _onMouseUp(el) {
-    return () => {
+    return (e) => {
       document.body.removeEventListener("mousemove", this.state.mouseMoveEvent);
       document.body.removeEventListener("mouseup", this.state.mouseUpEvent);
       this.setState({
         mouseMoveEvent: null,
         mouseUpEvent: null,
       });
+      if (_Lang.isFunction(this.props.onDragEnd)) {
+        this.props.onDragEnd(el)(e);
+      }
     };
   }
 }
@@ -291,7 +299,9 @@ Layer.propTypes = {
     y: React.PropTypes.number.isRequired,
     r: React.PropTypes.number,
   }),
+  onDragStart: React.PropTypes.func,
   onDrag: React.PropTypes.func,
+  onDragEnd: React.PropTypes.func,
   onClick: React.PropTypes.func,
 };
 Layer.defaultProps = {

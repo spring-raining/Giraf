@@ -2,11 +2,11 @@
 
 import React                      from "react";
 import ReactDOM                   from "react-dom";
-import Decimal                    from "decimal.js";
 
 import Actions                    from "src/actions/actions";
 import {Footage, FootageKinds}    from "src/stores/model/footage";
 import {Composition}              from "src/stores/model/composition";
+import {round}                    from "src/utils/mathUtils";
 import {Rect, Group, Layer}       from "src/views/preview/wireframes";
 
 
@@ -360,6 +360,8 @@ var Preview = React.createClass({
           y: layer.transform.position.y + diffY,
         });
       }
+
+      Actions.updateLayer(layer, false);
     };
   },
 
@@ -369,18 +371,17 @@ var Preview = React.createClass({
         return;
       }
 
-      const round = (step, n) => new Decimal(n + "").toNearest(step).toNumber();
       layer.transform.anchorPoint.update({
-        x: round(1, layer.tmpTransform.anchorPoint.x),
-        y: round(1, layer.tmpTransform.anchorPoint.y),
+        x: round(layer.tmpTransform.anchorPoint.x, 1),
+        y: round(layer.tmpTransform.anchorPoint.y, 1),
       });
       layer.transform.position.update({
-        x: round(1, layer.tmpTransform.position.x),
-        y: round(1, layer.tmpTransform.position.y),
+        x: round(layer.tmpTransform.position.x, 1),
+        y: round(layer.tmpTransform.position.y, 1),
       });
       layer.transform.scale.update({
-        y: round(0.01, layer.tmpTransform.scale.y),
-        x: round(0.01, layer.tmpTransform.scale.x),
+        y: round(layer.tmpTransform.scale.y, 0.01),
+        x: round(layer.tmpTransform.scale.x, 0.01),
       });
       layer.tmpTransform = null;
       layer.update();

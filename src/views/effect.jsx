@@ -7,14 +7,15 @@ import Actions                            from "src/actions/actions";
 import Store                              from "src/stores/store";
 import {Composition}                      from "src/stores/model/composition";
 import {Layer}                            from "src/stores/model/layer";
-import {Number, Checkbox, ScriptArea, Text}
-                                          from "src/views/forms";
+import {round}                            from "src/utils/mathUtils";
+import {Number, Checkbox, ScriptArea, Text} from "src/views/forms";
 
 
 var Effect = React.createClass({
   getInitialState() {
     return {
       isFixingAspect: true,
+      layerTransformDragging: false,
     };
   },
 
@@ -28,13 +29,16 @@ var Effect = React.createClass({
       if (selectingItem instanceof Layer) {
         // Layer edit mode
         const layer = selectingItem;
+        const transform = this.state.layerTransformDragging
+          ? layer.transform
+          : layer.tmpTransform || layer.transform;
         const source = (layer.entity)
           ? <div className="effect__input">
               <div className="effect__input__left">ソース名</div>
               <div className="effect__input__right">
                 <div>
                   <div>{layer.entity.name}</div>
-                  <a onClick={this._onChangeActiveItemClicked(layer.entity)}>
+                  <a onClick={this._onChangeActiveItemClick(layer.entity)}>
                     ソースを編集
                   </a>
                 </div>
@@ -48,7 +52,7 @@ var Effect = React.createClass({
             <fieldset>
               <div className="effect__legend">
                 <Text value={layer.name}
-                      onChange={this._onLayerNameChanged(layer)} />
+                      onChange={this._onLayerNameChange(layer)} />
               </div>
 
               {source}
@@ -65,12 +69,18 @@ var Effect = React.createClass({
                                     defaultMessage="Anchor Point" />
                 </div>
                 <div className="effect__input__right">
-                  <Number value={layer.transform.anchorPoint.x}
+                  <Number value={transform.anchorPoint.x}
                           prefixString="X "
-                          onChange={this._onAnchorPointXChanged(layer)} />
-                  <Number value={layer.transform.anchorPoint.y}
+                          onChange={this._onLayerTransformChange(layer)("anchor-point-x")}
+                          onDragStart={this._onLayerTransformDragStart(layer)("anchor-point-x")}
+                          onDrag={this._onLayerTransformDrag(layer)("anchor-point-x")}
+                          onDragEnd={this._onLayerTransformDragEnd(layer)("anchor-point-x")} />
+                  <Number value={transform.anchorPoint.y}
                           prefixString="Y "
-                          onChange={this._onAnchorPointYChanged(layer)} />
+                          onChange={this._onLayerTransformChange(layer)("anchor-point-y")}
+                          onDragStart={this._onLayerTransformDragStart(layer)("anchor-point-y")}
+                          onDrag={this._onLayerTransformDrag(layer)("anchor-point-y")}
+                          onDragEnd={this._onLayerTransformDragEnd(layer)("anchor-point-y")} />
                 </div>
               </div>
 
@@ -81,12 +91,18 @@ var Effect = React.createClass({
                 </div>
 
                 <div className="effect__input__right">
-                  <Number value={layer.transform.position.x}
+                  <Number value={transform.position.x}
                           prefixString="X "
-                          onChange={this._onPositionXChanged(layer)} />
-                  <Number value={layer.transform.position.y}
+                          onChange={this._onLayerTransformChange(layer)("position-x")}
+                          onDragStart={this._onLayerTransformDragStart(layer)("position-x")}
+                          onDrag={this._onLayerTransformDrag(layer)("position-x")}
+                          onDragEnd={this._onLayerTransformDragEnd(layer)("position-x")} />
+                  <Number value={transform.position.y}
                           prefixString="Y "
-                          onChange={this._onPositionYChanged(layer)} />
+                          onChange={this._onLayerTransformChange(layer)("position-y")}
+                          onDragStart={this._onLayerTransformDragStart(layer)("position-y")}
+                          onDrag={this._onLayerTransformDrag(layer)("position-y")}
+                          onDragEnd={this._onLayerTransformDragEnd(layer)("position-y")} />
                 </div>
               </div>
               <div className="effect__input">
@@ -95,14 +111,20 @@ var Effect = React.createClass({
                                     defaultMessage="Scale" />
                 </div>
                 <div className="effect__input__right">
-                  <Number value={layer.transform.scale.x}
+                  <Number value={transform.scale.x}
                           step={0.01}
                           prefixString="X "
-                          onChange={this._onScaleXChanged(layer)} />
-                  <Number value={layer.transform.scale.y}
+                          onChange={this._onLayerTransformChange(layer)("scale-x")}
+                          onDragStart={this._onLayerTransformDragStart(layer)("scale-x")}
+                          onDrag={this._onLayerTransformDrag(layer)("scale-x")}
+                          onDragEnd={this._onLayerTransformDragEnd(layer)("scale-x")} />
+                  <Number value={transform.scale.y}
                           step={0.01}
                           prefixString="Y "
-                          onChange={this._onScaleYChanged(layer)} />
+                          onChange={this._onLayerTransformChange(layer)("scale-y")}
+                          onDragStart={this._onLayerTransformDragStart(layer)("scale-y")}
+                          onDrag={this._onLayerTransformDrag(layer)("scale-y")}
+                          onDragEnd={this._onLayerTransformDragEnd(layer)("scale-y")} />
                 </div>
               </div>
               <div className="effect__input">
@@ -112,7 +134,7 @@ var Effect = React.createClass({
                 </div>
                 <div className="effect__input__right">
                   <Checkbox value={this.state.isFixingAspect}
-                            onChange={this._onScaleIsFixingAspectChanged} />
+                            onChange={this._onScaleIsFixingAspectChange} />
                 </div>
               </div>
               <div className="effect__input">
@@ -121,11 +143,14 @@ var Effect = React.createClass({
                                     defaultMessage="Rotation" />
                 </div>
                 <div className="effect__input__right">
-                  <Number value={layer.transform.rotation}
+                  <Number value={transform.rotation}
                           min={0}
                           max={360}
                           suffixString="°"
-                          onChange={this._onRotationChanged(layer)} />
+                          onChange={this._onLayerTransformChange(layer)("rotation")}
+                          onDragStart={this._onLayerTransformDragStart(layer)("rotation")}
+                          onDrag={this._onLayerTransformDrag(layer)("rotation")}
+                          onDragEnd={this._onLayerTransformDragEnd(layer)("rotation")} />
                 </div>
               </div>
               <div className="effect__input">
@@ -134,11 +159,14 @@ var Effect = React.createClass({
                                     defaultMessage="Opacity" />
                 </div>
                 <div className="effect__input__right">
-                  <Number value={layer.transform.opacity}
+                  <Number value={transform.opacity}
                           min={0}
                           max={1}
                           step={0.01}
-                          onChange={this._onOpacityChanged(layer)} />
+                          onChange={this._onLayerTransformChange(layer)("opacity")}
+                          onDragStart={this._onLayerTransformDragStart(layer)("opacity")}
+                          onDrag={this._onLayerTransformDrag(layer)("opacity")}
+                          onDragEnd={this._onLayerTransformDragEnd(layer)("opacity")} />
                 </div>
               </div>
             </fieldset>
@@ -153,7 +181,7 @@ var Effect = React.createClass({
                             width="100%"
                             height="250px"
                             theme="monokai"
-                            onChange={this._onScriptChanged(layer)} />
+                            onChange={this._onScriptChange(layer)} />
               </div>
             </fieldset>
           </section>
@@ -166,7 +194,7 @@ var Effect = React.createClass({
             <fieldset>
               <div className="effect__legend">
                 <Text value={comp.name}
-                      onChange={this._onCompositionNameChanged(comp)} />
+                      onChange={this._onCompositionNameChange(comp)} />
               </div>
 
               <div className="effect__input">
@@ -179,7 +207,7 @@ var Effect = React.createClass({
                           min={1}
                           step={1}
                           suffixString="px"
-                          onChange={this._onCompWidthChanged(comp)} />
+                          onChange={this._onCompWidthChange(comp)} />
                 </div>
               </div>
               <div className="effect__input">
@@ -192,7 +220,7 @@ var Effect = React.createClass({
                           min={1}
                           step={1}
                           suffixString="px"
-                          onChange={this._onCompHeightChanged(comp)} />
+                          onChange={this._onCompHeightChange(comp)} />
                 </div>
               </div>
               <div className="effect__input">
@@ -202,7 +230,7 @@ var Effect = React.createClass({
                 </div>
                 <div className="effect__input__right">
                   <Checkbox value={this.state.isFixingAspect}
-                            onChange={this._onScaleIsFixingAspectChanged} />
+                            onChange={this._onScaleIsFixingAspectChange} />
                 </div>
               </div>
               <div className="effect__input">
@@ -215,7 +243,7 @@ var Effect = React.createClass({
                           min={1}
                           step={1}
                           suffixString="frame"
-                          onChange={this._onCompFrameChanged(comp)} />
+                          onChange={this._onCompFrameChange(comp)} />
                 </div>
               </div>
               <div className="effect__input">
@@ -229,7 +257,7 @@ var Effect = React.createClass({
                           max={30}
                           step={1}
                           suffixString="fps"
-                          onChange={this._onCompFPSChanged(comp)} />
+                          onChange={this._onCompFPSChange(comp)} />
                 </div>
               </div>
             </fieldset>
@@ -246,108 +274,139 @@ var Effect = React.createClass({
     }
   },
 
-  _onLayerNameChanged(layer) {
+  _onLayerNameChange(layer) {
     return (value) => {
       layer.name = value;
       layer.update();
     };
   },
 
-  _onCompositionNameChanged(composition) {
+  _onCompositionNameChange(composition) {
     return (value) => {
       composition.name = value;
       composition.update();
     };
   },
 
-  _onChangeActiveItemClicked(item) {
+  _onChangeActiveItemClick(item) {
     return () => {
       Actions.changeSelectingItem(null);
       Actions.changeActiveItem(item);
     };
   },
 
-  _onAnchorPointXChanged(layer) {
-    return (value) => {
-      layer.transform.anchorPoint.x = value;
-      layer.update();
-    };
+  _onLayerTransformChange(layer) {
+    return this._onLayerTransformDragEnd(layer);
   },
 
-  _onAnchorPointYChanged(layer) {
-    return (value) => {
-      layer.transform.anchorPoint.y = value;
-      layer.update();
-    };
+  _onLayerTransformDragStart(layer) {
+    return (el) => () => {
+
+      layer.update({
+        tmpTransform: layer.transform.clone(),
+      }, false);
+      this.setState({
+        layerTransformDragging: true,
+      });
+    }
   },
 
-  _onPositionXChanged(layer) {
-    return (value) => {
-      layer.transform.position.x = value;
-      layer.update();
-    };
-  },
+  _onLayerTransformDrag(layer) {
+    return (el) => (value) => {
+      const tmpTr = layer.tmpTransform;
 
-  _onPositionYChanged(layer) {
-    return (value) => {
-      layer.transform.position.y = value;
-      layer.update();
-    };
-  },
-
-  _onScaleXChanged(layer) {
-    return (value) => {
-      let scale = layer.transform.scale;
-
-      if (this.state.isFixingAspect && scale.x !== 0) {
-        layer.transform.scale.y = Math.round(100 * value * scale.y / scale.x) / 100;
+      if (el === "anchor-point-x") {
+        tmpTr.anchorPoint.x = value;
       }
-      layer.transform.scale.x = value;
-      layer.update();
-    };
-  },
-
-  _onScaleYChanged(layer) {
-    return (value) => {
-      let scale = layer.transform.scale;
-
-      if (this.state.isFixingAspect && scale.y !== 0) {
-        layer.transform.scale.x = Math.round(100 * value * scale.x / scale.y) / 100;
+      else if (el === "anchor-point-y") {
+        tmpTr.anchorPoint.y = value;
       }
-      layer.transform.scale.y = value;
-      layer.update();
+      else if (el === "position-x") {
+        tmpTr.position.x = value;
+      }
+      else if (el === "position-y") {
+        tmpTr.position.y = value;
+      }
+      else if (el === "scale-x") {
+        if (this.state.isFixingAspect && tmpTr.scale.x !== 0) {
+          tmpTr.scale.y = round(value * layer.transform.scale.y / tmpTr.scale.x, 0.01);
+        }
+        tmpTr.scale.x = value;
+      }
+      else if (el === "scale-y") {
+        if (this.state.isFixingAspect && tmpTr.scale.y !== 0) {
+          tmpTr.scale.x = round(value * layer.transform.scale.x / tmpTr.scale.y, 0.01);
+        }
+        tmpTr.scale.y = value;
+      }
+      else if (el === "rotation") {
+        tmpTr.rotation = value;
+      }
+      else if (el === "opacity") {
+        tmpTr.opacity = value;
+      }
+
+      Actions.updateLayer(layer, false);
+    }
+  },
+
+  _onLayerTransformDragEnd(layer) {
+    return (el) => (value) => {
+      const tr = layer.transform;
+
+      if (el === "anchor-point-x") {
+        tr.anchorPoint.x = value;
+      }
+      else if (el === "anchor-point-y") {
+        tr.anchorPoint.y = value;
+      }
+      else if (el === "position-x") {
+        tr.position.x = value;
+      }
+      else if (el === "position-y") {
+        tr.position.y = value;
+      }
+      else if (el === "scale-x") {
+        if (this.state.isFixingAspect && tr.scale.x !== 0) {
+          tr.scale.y = round(value * tr.scale.y / tr.scale.x, 0.01);
+        }
+        tr.scale.x = value;
+      }
+      else if (el === "scale-y") {
+        if (this.state.isFixingAspect && tr.scale.y !== 0) {
+          tr.scale.x = round(value * tr.scale.x / tr.scale.y, 0.01);
+        }
+        tr.scale.y = value;
+      }
+      else if (el === "rotation") {
+        tr.rotation = value;
+      }
+      else if (el === "opacity") {
+        tr.opacity = value;
+      }
+      layer.update({
+        tmpTransform: null,
+      });
+      this.setState({
+        layerTransformDragging: false,
+      });
     };
   },
 
-  _onScaleIsFixingAspectChanged(value) {
+  _onScaleIsFixingAspectChange(value) {
     this.setState({
       isFixingAspect: value,
     });
   },
 
-  _onRotationChanged(layer) {
-    return (value) => {
-      layer.transform.rotation = value;
-      layer.update();
-    };
-  },
-
-  _onOpacityChanged(layer) {
-    return (value) => {
-      layer.transform.opacity = value;
-      layer.update();
-    };
-  },
-
-
-  _onScriptChanged(layer) {
+  _onScriptChange(layer) {
     return (value) => {
       layer.scriptString = value;
       layer.update();
     };
   },
 
-  _onCompWidthChanged(composition) {
+  _onCompWidthChange(composition) {
     return (value) => {
       const h = (this.state.isFixingAspect)
         ? Math.round(composition.height * value / composition.width)
@@ -359,7 +418,7 @@ var Effect = React.createClass({
     };
   },
 
-  _onCompHeightChanged(composition) {
+  _onCompHeightChange(composition) {
     return (value) => {
       const w = (this.state.isFixingAspect)
         ? Math.round(composition.width * value / composition.height)
@@ -371,7 +430,7 @@ var Effect = React.createClass({
     };
   },
 
-  _onCompFrameChanged(composition) {
+  _onCompFrameChange(composition) {
     return (value) => {
       composition.update({
         frame: value,
@@ -379,7 +438,7 @@ var Effect = React.createClass({
     };
   },
 
-  _onCompFPSChanged(composition) {
+  _onCompFPSChange(composition) {
     return (value) => {
       composition.update({
         fps: value,

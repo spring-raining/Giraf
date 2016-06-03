@@ -9,6 +9,7 @@ import _Lang                      from "lodash/lang";
 
 import genDummyImg                from "src/utils/genDummyImg";
 import genUUID                    from "src/utils/genUUID";
+import {round}                    from "src/utils/mathUtils";
 
 // Customize Ace Editor
 import "brace/mode/javascript";
@@ -167,6 +168,9 @@ export const Number = React.createClass({
       min:          React.PropTypes.number,
       max:          React.PropTypes.number,
       step:         React.PropTypes.number,
+      onDragStart:  React.PropTypes.func,
+      onDrag:       React.PropTyeps.func,
+      onDragEnd:    React.PropTypes.func,
       onChange:     React.PropTypes.func,
       prefixString: React.PropTypes.string,
       suffixString: React.PropTypes.string,
@@ -178,6 +182,7 @@ export const Number = React.createClass({
       tmpValue: this.props.value,
       isEditing: false,
       draggingClientX: null,
+      nativeClientX: null,
     };
   },
 
@@ -197,8 +202,8 @@ export const Number = React.createClass({
       : null;
 
     const unfocusValue = (this.state.draggingClientX !== null)
-      ? this.state.tmpValue
-      : this.props.value;
+      ? round(this.state.tmpValue, (this.props.step || 1))
+      : round(this.props.value, (this.props.step || 1));
 
     const input = (this.state.isEditing)
       ? <div className="form-number__focus">
@@ -324,12 +329,18 @@ export const Number = React.createClass({
     this.setState({
       draggingClientX: e.clientX,
     });
+    if (_Lang.isFunction(this.props.onDragStart)) {
+      this.props.onDragStart(this.props.value);
+    }
   },
 
   _onDrag(e) {
     e.stopPropagation();
     // HACK: It sometimes fire event e.clientX is zero when mouse up.
     if (e.clientX === 0) {
+      return;
+    }
+    if (e.clientX === this.state.nativeClientX) {
       return;
     }
 
@@ -351,7 +362,11 @@ export const Number = React.createClass({
     this.setState({
       tmpValue: result,
       draggingClientX: this.state.draggingClientX + diff * unit,
+      nativeClientX: e.clientX,
     });
+    if (_Lang.isFunction(this.props.onDrag)) {
+      this.props.onDrag(result);
+    }
   },
 
   _onDragEnd(e) {
@@ -365,8 +380,12 @@ export const Number = React.createClass({
 
     this.setState({
       draggingClientX: null,
+      nativeClientX: null,
     });
-    if (this.props.onChange && this.props.value !== this.state.tmpValue) {
+    if (_Lang.isFunction(this.props.onDragEnd)) {
+      this.props.onDragEnd(this.state.tmpValue);
+    }
+    if (_Lang.isFunction(this.props.onChange) && this.props.value !== this.state.tmpValue) {
       this.props.onChange(this.state.tmpValue);
     }
   },

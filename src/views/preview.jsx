@@ -140,6 +140,7 @@ var Preview = React.createClass({
                    onDrag={this._onLayerDrag(e)}
                    onDragEnd={this._onLayerDragEnd(e)}
                    onClick={this._onLayerClick(e)}
+                   onMouseDown={this._onLayerMouseDown(e)}
                    previewScale={this.state.previewScale} />
           );
         });
@@ -239,16 +240,17 @@ var Preview = React.createClass({
   _onLayerClick(layer) {
     return (e) => {
       e.stopPropagation();
+    };
+  },
+
+  _onLayerMouseDown(layer) {
+    return (e) => {
       Actions.changeEditingLayer(layer);
     };
   },
 
   _onLayerDragStart(layer) {
     return (el) => (e) => {
-      if (layer.id !== this.props.store.get("selectingItem", "id")) {
-        return;
-      }
-      
       layer.update({
         tmpTransform: layer.transform.clone(),
       }, false);

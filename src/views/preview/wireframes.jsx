@@ -192,6 +192,7 @@ export class Layer extends _WireframeBase {
       <Group className={`wireframe__layer ${this.props.className}`}
              transform={transform}
              onClick={this.props.onClick}
+             onMouseDown={this.props.onMouseDown}
              previewScale={this.props.previewScale}>
         <Rect className="wireframe__layer__rect wireframe-stroke"
               x={this.props.x} y={this.props.y}
@@ -303,6 +304,7 @@ Layer.propTypes = {
   onDrag: React.PropTypes.func,
   onDragEnd: React.PropTypes.func,
   onClick: React.PropTypes.func,
+  onMouseDown: React.PropTypes.func,
 };
 Layer.defaultProps = {
   rotation: 0,
